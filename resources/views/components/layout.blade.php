@@ -8,7 +8,7 @@
 </head>
 <body class="bg-orange-50">
     <!-- Header -->
-<header id="main-header" class="fixed top-0 left-0 w-full h-20 bg-white border-b border-gray-200 flex justify-between items-center shadow-md z-50 transition-all duration-300">
+<header id="main-header" class="fixed top-0 left-0 w-full h-20 bg-white border-0 flex justify-between items-center shadow-md z-50 transition-all duration-300">
 
     <nav class="flex justify-between items-center w-full pl-8 pr-0">
         <!-- Left Side: Saylor's Mirissa -->
@@ -18,10 +18,10 @@
 
         <!-- Center: Navigation Menu Items -->
         <div class="menu menu-horizontal hidden md:flex justify-center items-center gap-10 mx-auto">
-            <x-mary-menu-item title="HOME" link="{{ route('home') }}" class="header-nav-item text-gray-700 text-sm font-normal hover:text-gray-900 transition-colors" />
-            <x-mary-menu-item title="ACCOMMODATION" link="#Accomodation" class="header-nav-item text-gray-700 text-sm font-normal hover:text-gray-900 transition-colors" />
-            <x-mary-menu-item title="LOCATION" link="#location" class="header-nav-item text-gray-700 text-sm font-normal hover:text-gray-900 transition-colors" />
-            <x-mary-menu-item title="EXPERIENCES" link="#Experiences" class="header-nav-item text-gray-700 text-sm font-normal hover:text-gray-900 transition-colors" />
+            <x-mary-menu-item title="HOME" link="{{ route('home') }}" class="header-nav-item text-gray-700 text-lg font-extrabold hover:text-gray-900 transition-colors" />
+            <x-mary-menu-item title="LOCATION" link="#location" class="header-nav-item text-gray-700 text-lg font-extrabold hover:text-gray-900 transition-colors" />
+            <x-mary-menu-item title="ACCOMMODATION" link="#Accomodation" class="header-nav-item text-gray-700 text-lg font-extrabold hover:text-gray-900 transition-colors" />
+            <x-mary-menu-item title="EXPERIENCES" link="#Experiences" class="header-nav-item text-gray-700 text-lg font-extrabold hover:text-gray-900 transition-colors" />
             
         </div>
 
@@ -63,7 +63,7 @@
 
                 if (isOverlapping) {
                     // Make header translucent and blurred when over featured section
-                    header.className = 'fixed top-0 left-0 w-full h-20 bg-black/30 backdrop-blur-md border-b border-white/20 flex justify-between items-center shadow-md z-50 transition-all duration-300';
+                    header.className = 'fixed top-0 left-0 w-full h-20 bg-black/10 flex justify-between items-center z-50 transition-all duration-300';
                     logo.className = 'text-2xl font-normal font-[\'Belleza\'] text-white leading-10 drop-shadow-sm transition-colors duration-300';
                     
                     navItems.forEach(item => {

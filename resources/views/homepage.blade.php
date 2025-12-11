@@ -3,7 +3,11 @@
 
     <x-homepage.hero />
 
-    <x-homepage.location-info />
+    {{-- <x-homepage.location-info /> --}}
+
+    <x-homepage.interactive-map />
+
+    <x-homepage.map-location />
 
     <x-homepage.accommodation-header />
 
@@ -12,8 +16,6 @@
     <x-homepage.room-tabs />
 
     <x-homepage.gallery />
-
-    <x-homepage.map-location />
 
     <x-homepage.experiences />
 

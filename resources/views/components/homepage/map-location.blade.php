@@ -29,3 +29,37 @@
         </div>
     </div>
 </section>
+
+            <!-- 360 Viewer -->
+            <div class="order-2 lg:order-1">
+                <div class="bg-white shadow-xl overflow-hidden h-screen relative">
+                    <div id="viewer360" class="w-full h-full"></div>
+                    <div class="absolute top-4 right-4 bg-black/50 text-white px-3 py-1 rounded text-sm pointer-events-none z-10">
+                        Drag to explore
+                    </div>
+                </div>
+            </div>
+            
+<!-- Pannellum Library -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css"/>
+<script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        pannellum.viewer('viewer360', {
+            "type": "equirectangular",
+            "panorama": "/images/photos/DJI_0712.jpg",
+            "autoLoad": true,
+            "autoRotate": 0,
+            "showControls": false,
+            "mouseZoom": false,
+            "draggable": true,
+            "friction": 0.15,
+            "hfov": 100,
+            "minHfov": 60,
+            "maxHfov": 120,
+            "pitch": -73,
+            "yaw": 0
+        });
+    });
+</script>
