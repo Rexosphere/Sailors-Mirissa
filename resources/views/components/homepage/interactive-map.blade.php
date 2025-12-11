@@ -2,10 +2,7 @@
 <section id="interactive-map" class="relative h-screen overflow-hidden bg-gray-100">
     <div class="relative w-full h-full">
         <!-- Image Map -->
-        <img id="map-image"
-             src="/images/photos/DJI_0683.jpg"
-             alt="Mirissa Area Map"
-             class="w-full h-full object-cover">
+        <img id="map-image" src="/images/photos/DJI_0683.jpg" alt="Mirissa Area Map" class="w-full h-full object-cover">
 
         <!-- SVG Overlay for clickable areas -->
         <svg id="map-overlay" class="absolute inset-0 w-full h-full pointer-events-none" style="top: 0; left: 0;">
@@ -19,12 +16,16 @@
     </div>
 
     <!-- Popup Modal -->
-    <div id="landmark-popup" class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
-        <div class="bg-white rounded-lg max-w-2xl w-full mx-4 transform scale-95 transition-transform duration-300 relative" id="popup-content">
+    <div id="landmark-popup"
+        class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-lg max-w-2xl w-full mx-4 transform scale-95 transition-transform duration-300 relative"
+            id="popup-content">
             <!-- Close Button -->
-            <button onclick="closeLandmarkPopup()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-10">
+            <button onclick="closeLandmarkPopup()"
+                class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-10">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
                 </svg>
             </button>
 
@@ -47,7 +48,7 @@
         fill: transparent;
         stroke: transparent;
         stroke-width: 4;
-        stroke-dasharray: 10, 5;
+        stroke-dasharray: 5, 20;
         stroke-linecap: round;
         stroke-linejoin: round;
         pointer-events: none;
@@ -55,8 +56,8 @@
     }
 
     #map-overlay polygon.highlight {
-        fill: rgba(255, 255, 255, 0.2);
-        /* stroke: rgba(0, 0, 0, 0.5); */
+        /* fill: rgba(255, 255, 255, 0.2); */
+        /* stroke: rgba(255, 255, 255, 0.5); */
         stroke-width: 5;
         filter: drop-shadow(0 0 20px rgba(0, 0, 0, 0.3));
     }
@@ -72,26 +73,37 @@
     }
 
     .landmark-button:hover .landmark-icon {
-        transform: scale(1.1);
+        /* transform: scale(1.5);
+        box-shadow: 0px 11px 19px rgba(255, 255, 255, 0.6); */
+
+        transform: scale(1.5);
+        /* Use filter: drop-shadow instead of box-shadow */
+        filter: drop-shadow(0px 8px 8px rgba(242, 242, 242, 0.9));
+        /* You may need to add transition to the filter property as well */
+        transition: transform 0.3s ease, filter 0.3s ease;
     }
 
     .landmark-icon {
         width: 48px;
         height: 48px;
         border-radius: 50%;
-        background: rgba(255, 255, 255, 0.9);
-        backdrop-filter: blur(10px);
+        background: transparent;
+        /* backdrop-filter: blur(10px); */
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        /* box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2); */
         cursor: pointer;
         position: relative;
         z-index: 2;
-        transition: transform 0.3s ease;
+        /* transition: transform 0.3s ease; */
+
+        filter: drop-shadow(0 4px 12px rgba(255, 255, 255, 0.2));
+        transition: transform 0.3s ease, filter 0.3s ease;
     }
 
     .landmark-tail {
+        display: none;
         width: 2px;
         height: 60px;
         z-index: 1;
@@ -116,7 +128,7 @@
             centerY: 2300,
             image: "/images/photos/DJI_0660.jpg",
             description: "A small rocky island accessible by foot during low tide. Known for its colorful parrots and stunning sunset views.",
-            icon: "🏝️"
+            icon: '<svg class="w-full h-full" fill="none" stroke="white" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>'
         },
         "Saylors Mirissa": {
             coords: "3293,1965,3562,1972,3541,2205,3279,2198",
@@ -124,7 +136,7 @@
             centerY: 2090,
             image: "/images/photos/DJI_0712.jpg",
             description: "Your home base in paradise. Perfectly located in the heart of Mirissa with easy access to all major attractions.",
-            icon: "🏠"
+            icon: '<svg class="w-full h-full" fill="none" stroke="white" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>'
         },
         "Coconut Tree Hill": {
             coords: "5767,4558,5710,4912,6530,5286,7300,6000,7979,6000,7979,4678,7519,4735,7032,4742,6191,4502",
@@ -132,7 +144,7 @@
             centerY: 5250,
             image: "/images/photos/DJI_0660.jpg",
             description: "Instagram-famous viewpoint with iconic coconut trees overlooking the ocean. Best visited at sunrise or sunset.",
-            icon: "🌴"
+            icon: '<svg class="w-full h-full" fill="none" stroke="white" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path></svg>'
         },
         "Sandy Beach": {
             coords: "1223,1760,2057,1852,2247,1958,2163,2177,1823,2226,1449,2141,827,2332,106,1795,530,1774",
@@ -140,7 +152,7 @@
             centerY: 2050,
             image: "/images/photos/DJI_0660.jpg",
             description: "A pristine stretch of golden sand perfect for sunbathing and swimming. One of Mirissa's most beautiful beaches with calm waters.",
-            icon: "🏖️"
+            icon: '<svg class="w-full h-full" fill="none" stroke="white" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>'
         },
         "Surf Beach": {
             coords: "2052,2177,3187,2261,3392,2375,3371,2601,2466,2664,1753,2254",
@@ -148,7 +160,7 @@
             centerY: 2420,
             image: "/images/photos/DJI_0660.jpg",
             description: "Popular surf spot with consistent waves perfect for beginners and intermediate surfers. Surf lessons available.",
-            icon: "🏄"
+            icon: '<svg class="w-full h-full" fill="none" stroke="white" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>'
         },
         "Turtle Beach": {
             coords: "3367,2650,4155,2756,5428,3102,6170,3413,7011,3951,7265,4410,6876,4650,2580,2721",
@@ -156,7 +168,7 @@
             centerY: 3650,
             image: "/images/photos/DJI_0660.jpg",
             description: "Protected nesting ground for sea turtles. Visit during nesting season to witness baby turtles making their way to the ocean.",
-            icon: "🐢"
+            icon: '<svg class="w-full h-full" fill="none" stroke="white" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>'
         }
     };
 
@@ -227,7 +239,7 @@
 
             button.innerHTML = `
                 <div class="landmark-icon">
-                    <span style="font-size: 24px;">${data.icon}</span>
+                    ${data.icon}
                 </div>
                 <div class="landmark-tail">
                     <svg viewBox="0 0 2 60" xmlns="http://www.w3.org/2000/svg">
