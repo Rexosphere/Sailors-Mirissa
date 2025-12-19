@@ -2,9 +2,9 @@
 <section id="featured_header" class="relative min-h-screen overflow-hidden">
     <!-- Hero Image -->
     <div class="absolute inset-0">
-        <img src="/images/photos/DJI_0660.jpg"
+        <img src="/images/photos/hero-background.avif"
              alt="Saylors Mirissa"
-             class="w-full h-full object-cover">
+             class="w-full h-full object-cover animate-ken-burns">
     </div>
 
     <!-- Dark overlay -->

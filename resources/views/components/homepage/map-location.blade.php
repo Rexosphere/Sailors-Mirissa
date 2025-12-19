@@ -48,7 +48,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         pannellum.viewer('viewer360', {
             "type": "equirectangular",
-            "panorama": "/images/photos/DJI_0712.jpg",
+            "panorama": "/images/photos/360-panaroma.avif",
             "autoLoad": true,
             "autoRotate": 0,
             "showControls": false,
