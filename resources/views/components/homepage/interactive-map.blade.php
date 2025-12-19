@@ -15,32 +15,32 @@
         </div>
     </div>
 
-    <!-- Popup Modal -->
-    <div id="landmark-popup"
-        class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
-        <div class="bg-white rounded-lg max-w-2xl w-full mx-4 transform scale-95 transition-transform duration-300 relative"
-            id="popup-content">
-            <!-- Close Button -->
-            <button onclick="closeLandmarkPopup()"
-                class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-10">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
-                    </path>
-                </svg>
-            </button>
-
-            <!-- Popup Image -->
-            <div class="h-64 overflow-hidden rounded-t-lg">
-                <img id="popup-image" src="" alt="" class="w-full h-full object-cover">
+    <!-- Floating Card Popup -->
+    <div id="floating-card" class="fixed pointer-events-none z-40 opacity-0 transition-all duration-500">
+        <div id="card-content" class="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl max-w-sm overflow-hidden pointer-events-all transform scale-90">
+            <div class="h-48 relative overflow-hidden">
+                <img id="card-image" src="" alt="" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                <button id="close-card" class="absolute top-3 right-3 bg-white/20 backdrop-blur p-2 rounded-full hover:bg-white/40 transition">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
             </div>
-
-            <!-- Popup Content -->
             <div class="p-6">
-                <h3 id="popup-title" class="text-3xl font-['STIX_Two_Text'] text-stone-700 mb-4"></h3>
-                <p id="popup-description" class="text-lg text-stone-600 leading-relaxed"></p>
+                <h3 id="card-title" class="text-2xl font-bold text-stone-800 mb-3 font-['STIX_Two_Text']"></h3>
+                <p id="card-description" class="text-stone-600 leading-relaxed"></p>
             </div>
         </div>
     </div>
+
+    <!-- Curved Connection Line -->
+    <svg id="connection-line" class="fixed inset-0 pointer-events-none z-30" width="100%" height="100%">
+        <path id="curved-path" fill="none" stroke="#ffffff" stroke-width="3" stroke-dasharray="8,6" opacity="0.9"
+            filter="drop-shadow(0 4px 6px rgba(0,0,0,0.3))">
+            <animate attributeName="stroke-dashoffset" from="1000" to="0" dur="1.5s" fill="freeze"/>
+        </path>
+    </svg>
 </section>
 
 <style>
@@ -60,6 +60,28 @@
         /* stroke: rgba(255, 255, 255, 0.5); */
         stroke-width: 5;
         filter: drop-shadow(0 0 20px rgba(0, 0, 0, 0.3));
+    }
+
+    #map-overlay polygon.active {
+        /* fill: rgba(255, 255, 255, 0.25) !important; */
+        /* stroke: #ffffff !important; */
+        stroke-width: 6;
+        filter: drop-shadow(0 0 25px rgba(255, 255, 255, 0.6));
+        transition: all 0.4s ease;
+    }
+
+    .landmark-button.active .landmark-icon {
+        opacity: 0 !important;
+        transform: scale(0) !important;
+        transition: opacity 0.3s ease, transform 0.3s ease !important;
+    }
+
+    #floating-card.visible {
+        opacity: 1;
+    }
+
+    #floating-card.visible #card-content {
+        transform: scale(1);
     }
 
     .landmark-button {
@@ -184,6 +206,8 @@
         return scaledCoords.join(',');
     }
 
+    let scale, offsetX, offsetY; // Make these global for popup positioning
+
     function updateMapAreas() {
         const img = document.getElementById('map-image');
         const svg = document.getElementById('map-overlay');
@@ -196,8 +220,6 @@
         // Calculate how object-cover scales and positions the image
         const imageAspect = ORIGINAL_WIDTH / ORIGINAL_HEIGHT;
         const containerAspect = containerRect.width / containerRect.height;
-
-        let scale, offsetX, offsetY;
 
         if (containerAspect > imageAspect) {
             // Container is wider - image fills width, crops top/bottom
@@ -236,6 +258,7 @@
             button.className = 'landmark-button';
             button.style.left = `${buttonX}px`;
             button.style.top = `${buttonY}px`;
+            button.setAttribute('data-landmark', name);
 
             button.innerHTML = `
                 <div class="landmark-icon">
@@ -263,43 +286,140 @@
         });
     }
 
+    let activeLandmark = null;
+    const floatingCard = document.getElementById('floating-card');
+    const cardContent = document.getElementById('card-content');
+    const cardImage = document.getElementById('card-image');
+    const cardTitle = document.getElementById('card-title');
+    const cardDescription = document.getElementById('card-description');
+    const curvedPath = document.getElementById('curved-path');
+
     function openLandmarkPopup(landmarkName) {
+        if (activeLandmark === landmarkName) return;
+        closeLandmarkPopup(); // Close any previous
+
         const landmark = landmarkData[landmarkName];
         if (!landmark) return;
 
-        const popup = document.getElementById('landmark-popup');
-        const popupContent = document.getElementById('popup-content');
+        activeLandmark = landmarkName;
 
-        document.getElementById('popup-title').textContent = landmarkName;
-        document.getElementById('popup-description').textContent = landmark.description;
-        document.getElementById('popup-image').src = landmark.image;
-        document.getElementById('popup-image').alt = landmarkName;
+        // Update card content
+        cardTitle.textContent = landmarkName;
+        cardDescription.textContent = landmark.description;
+        cardImage.src = landmark.image;
+        cardImage.alt = landmarkName;
 
-        popup.classList.remove('hidden');
+        // Find the button and polygon
+        const button = document.querySelector(`.landmark-button[data-landmark="${landmarkName}"]`);
+        const polygon = document.getElementById(`polygon-${landmarkName.replace(/\s+/g, '-')}`);
 
-        setTimeout(() => {
-            popup.classList.remove('opacity-0');
-            popupContent.classList.remove('scale-95');
-            popupContent.classList.add('scale-100');
-        }, 10);
+        if (!button) return;
 
-        document.body.style.overflow = 'hidden';
+        // Highlight polygon and button
+        polygon.classList.add('active');
+        button.classList.add('active');
+
+        // Position the popup
+        positionPopup();
+
+        floatingCard.classList.add('visible');
+    }
+
+    function positionPopup() {
+        if (!activeLandmark) return;
+
+        const button = document.querySelector(`.landmark-button[data-landmark="${activeLandmark}"]`);
+        if (!button) return;
+
+        // Get button position relative to viewport
+        const buttonRect = button.getBoundingClientRect();
+        const markerX = buttonRect.left + buttonRect.width / 2;
+        const markerY = buttonRect.top;
+
+        // Card dimensions (approx)
+        const cardWidth = 384;
+        const cardHeight = 500;
+
+        // Decide card position (prefer right, fallback left/top/bottom)
+        let cardX = markerX + 80;
+        let cardY = markerY - cardHeight / 2;
+
+        if (cardX + cardWidth > window.innerWidth - 20) {
+            cardX = markerX - cardWidth - 80;
+        }
+        if (cardY < 20) cardY = 20;
+        if (cardY + cardHeight > window.innerHeight - 20) {
+            cardY = window.innerHeight - cardHeight - 20;
+        }
+
+        // Position card
+        floatingCard.style.left = `${cardX}px`;
+        floatingCard.style.top = `${cardY}px`;
+
+        // Draw curved connection line
+        const startX = markerX;
+        const startY = markerY; // top of icon
+        const endX = cardX + (cardX > markerX ? 0 : cardWidth);
+        const endY = cardY + cardHeight / 2;
+
+        const ctrl1X = startX + (endX - startX) * 0.5;
+        const ctrl1Y = startY - 100;
+        const ctrl2X = endX;
+        const ctrl2Y = endY - 80;
+
+        const pathData = `M ${startX} ${startY}
+                        C ${ctrl1X} ${ctrl1Y}, ${ctrl2X} ${ctrl2Y}, ${endX} ${endY}`;
+
+        curvedPath.setAttribute('d', pathData);
+
+        // Reset dash animation only on initial open
+        if (!floatingCard.classList.contains('visible')) {
+            curvedPath.querySelector('animate')?.beginElement();
+        }
     }
 
     function closeLandmarkPopup() {
-        const popup = document.getElementById('landmark-popup');
-        const popupContent = document.getElementById('popup-content');
+        if (!activeLandmark) return;
 
-        popup.classList.add('opacity-0');
-        popupContent.classList.remove('scale-100');
-        popupContent.classList.add('scale-95');
+        const polygon = document.getElementById(`polygon-${activeLandmark.replace(/\s+/g, '-')}`);
+        const button = document.querySelector('.landmark-button.active');
 
-        setTimeout(() => {
-            popup.classList.add('hidden');
-        }, 300);
+        polygon?.classList.remove('active');
+        button?.classList.remove('active');
 
-        document.body.style.overflow = '';
+        floatingCard.classList.remove('visible');
+        curvedPath.setAttribute('d', '');
+        activeLandmark = null;
     }
+
+    // Close on button click
+    document.getElementById('close-card')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeLandmarkPopup();
+    });
+
+    // Close on escape
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') closeLandmarkPopup();
+    });
+
+    // Close when clicking outside the card
+    document.addEventListener('click', (e) => {
+        if (!activeLandmark) return;
+
+        const cardContent = document.getElementById('card-content');
+        const landmarkButtons = document.querySelectorAll('.landmark-button');
+
+        // Check if click is outside card and not on any landmark button
+        let clickedButton = false;
+        landmarkButtons.forEach(button => {
+            if (button.contains(e.target)) clickedButton = true;
+        });
+
+        if (!cardContent.contains(e.target) && !clickedButton) {
+            closeLandmarkPopup();
+        }
+    });
 
     // Initialize map areas when image loads
     const img = document.getElementById('map-image');
@@ -309,22 +429,16 @@
     let resizeTimeout;
     window.addEventListener('resize', () => {
         clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(updateMapAreas, 100);
+        resizeTimeout = setTimeout(() => {
+            updateMapAreas();
+            positionPopup(); // Reposition popup if open
+        }, 100);
     });
 
-    // Close popup when clicking outside
-    document.getElementById('landmark-popup')?.addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeLandmarkPopup();
-        }
-    });
-
-    // Close popup with Escape key
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            closeLandmarkPopup();
-        }
-    });
+    // Update popup position on scroll
+    window.addEventListener('scroll', () => {
+        positionPopup();
+    }, { passive: true });
 
     // Initial update if image is already loaded
     if (img.complete) {
