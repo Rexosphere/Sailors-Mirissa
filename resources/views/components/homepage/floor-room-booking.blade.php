@@ -9,10 +9,10 @@
             view: 'Garden View',
             image: '{{ asset('images/floors/floor1.jpg') }}',
             rooms: [
-                { id: 101, name: 'Room 101', images: ['{{ asset('images/rooms/single.png') }}', '{{ asset('images/rooms/double.jpg') }}'] },
-                { id: 102, name: 'Room 102', images: ['{{ asset('images/rooms/family.jpg') }}', '{{ asset('images/rooms/single.png') }}'] },
-                { id: 103, name: 'Room 103', images: ['{{ asset('images/rooms/double.jpg') }}', '{{ asset('images/rooms/family.jpg') }}'] },
-                { id: 104, name: 'Room 104', images: ['{{ asset('images/rooms/single.png') }}', '{{ asset('images/rooms/double.jpg') }}'] }
+                { id: 101, name: 'Room 101', images: ['{{ asset('images/rooms/ground_floor_1.png') }}', '{{ asset('images/rooms/ground_floor_2.png') }}', '{{ asset('images/rooms/bathroom_1.png') }}'] },
+                { id: 102, name: 'Room 102', images: ['{{ asset('images/rooms/ground_floor_2.png') }}', '{{ asset('images/rooms/ground_floor_1.png') }}', '{{ asset('images/rooms/balcony_1.png') }}'] },
+                { id: 103, name: 'Room 103', images: ['{{ asset('images/rooms/ground_floor_1.png') }}', '{{ asset('images/rooms/bathroom_1.png') }}', '{{ asset('images/rooms/ground_floor_2.png') }}'] },
+                { id: 104, name: 'Room 104', images: ['{{ asset('images/rooms/ground_floor_2.png') }}', '{{ asset('images/rooms/balcony_1.png') }}', '{{ asset('images/rooms/ground_floor_1.png') }}'] }
             ]
         },
         {
@@ -21,10 +21,10 @@
             view: 'Partial Ocean View',
             image: '{{ asset('images/floors/floor2.jpg') }}',
             rooms: [
-                { id: 201, name: 'Room 201', images: ['{{ asset('images/rooms/double.jpg') }}', '{{ asset('images/rooms/single.png') }}'] },
-                { id: 202, name: 'Room 202', images: ['{{ asset('images/rooms/family.jpg') }}', '{{ asset('images/rooms/double.jpg') }}'] },
-                { id: 203, name: 'Room 203', images: ['{{ asset('images/rooms/single.png') }}', '{{ asset('images/rooms/family.jpg') }}'] },
-                { id: 204, name: 'Room 204', images: ['{{ asset('images/rooms/double.jpg') }}', '{{ asset('images/rooms/single.png') }}'] }
+                { id: 201, name: 'Room 201', images: ['{{ asset('images/rooms/first_floor_1.png') }}', '{{ asset('images/rooms/first_floor_2.png') }}', '{{ asset('images/rooms/bathroom_1.png') }}'] },
+                { id: 202, name: 'Room 202', images: ['{{ asset('images/rooms/first_floor_2.png') }}', '{{ asset('images/rooms/first_floor_1.png') }}', '{{ asset('images/rooms/balcony_1.png') }}'] },
+                { id: 203, name: 'Room 203', images: ['{{ asset('images/rooms/first_floor_1.png') }}', '{{ asset('images/rooms/bathroom_1.png') }}', '{{ asset('images/rooms/first_floor_2.png') }}'] },
+                { id: 204, name: 'Room 204', images: ['{{ asset('images/rooms/first_floor_2.png') }}', '{{ asset('images/rooms/balcony_1.png') }}', '{{ asset('images/rooms/first_floor_1.png') }}'] }
             ]
         },
         {
@@ -33,10 +33,10 @@
             view: 'Ocean View',
             image: '{{ asset('images/floors/floor3.jpg') }}',
             rooms: [
-                { id: 301, name: 'Room 301', images: ['{{ asset('images/rooms/family.jpg') }}', '{{ asset('images/rooms/double.jpg') }}'] },
-                { id: 302, name: 'Room 302', images: ['{{ asset('images/rooms/single.png') }}', '{{ asset('images/rooms/family.jpg') }}'] },
-                { id: 303, name: 'Room 303', images: ['{{ asset('images/rooms/double.jpg') }}', '{{ asset('images/rooms/single.png') }}'] },
-                { id: 304, name: 'Room 304', images: ['{{ asset('images/rooms/family.jpg') }}', '{{ asset('images/rooms/double.jpg') }}'] }
+                { id: 301, name: 'Room 301', images: ['{{ asset('images/rooms/first_floor_1.png') }}', '{{ asset('images/rooms/balcony_1.png') }}', '{{ asset('images/rooms/bathroom_1.png') }}'] },
+                { id: 302, name: 'Room 302', images: ['{{ asset('images/rooms/first_floor_2.png') }}', '{{ asset('images/rooms/bathroom_1.png') }}', '{{ asset('images/rooms/balcony_1.png') }}'] },
+                { id: 303, name: 'Room 303', images: ['{{ asset('images/rooms/first_floor_1.png') }}', '{{ asset('images/rooms/first_floor_2.png') }}', '{{ asset('images/rooms/bathroom_1.png') }}'] },
+                { id: 304, name: 'Room 304', images: ['{{ asset('images/rooms/first_floor_2.png') }}', '{{ asset('images/rooms/balcony_1.png') }}', '{{ asset('images/rooms/first_floor_1.png') }}'] }
             ]
         },
         {
@@ -45,10 +45,10 @@
             view: 'Panoramic Ocean View',
             image: '{{ asset('images/floors/floor4.jpg') }}',
             rooms: [
-                { id: 401, name: 'Room 401', images: ['{{ asset('images/rooms/double.jpg') }}', '{{ asset('images/rooms/family.jpg') }}'] },
-                { id: 402, name: 'Room 402', images: ['{{ asset('images/rooms/single.png') }}', '{{ asset('images/rooms/double.jpg') }}'] },
-                { id: 403, name: 'Room 403', images: ['{{ asset('images/rooms/family.jpg') }}', '{{ asset('images/rooms/single.png') }}'] },
-                { id: 404, name: 'Room 404', images: ['{{ asset('images/rooms/double.jpg') }}', '{{ asset('images/rooms/family.jpg') }}'] }
+                { id: 401, name: 'Room 401', images: ['{{ asset('images/rooms/top_floor_1.png') }}', '{{ asset('images/rooms/balcony_1.png') }}', '{{ asset('images/rooms/bathroom_1.png') }}'] },
+                { id: 402, name: 'Room 402', images: ['{{ asset('images/rooms/top_floor_1.png') }}', '{{ asset('images/rooms/bathroom_1.png') }}', '{{ asset('images/rooms/balcony_1.png') }}'] },
+                { id: 403, name: 'Room 403', images: ['{{ asset('images/rooms/top_floor_1.png') }}', '{{ asset('images/rooms/balcony_1.png') }}', '{{ asset('images/rooms/bathroom_1.png') }}'] },
+                { id: 404, name: 'Room 404', images: ['{{ asset('images/rooms/top_floor_1.png') }}', '{{ asset('images/rooms/bathroom_1.png') }}', '{{ asset('images/rooms/balcony_1.png') }}'] }
             ]
         }
     ]
