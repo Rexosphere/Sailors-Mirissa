@@ -73,7 +73,8 @@
             ]
         }
     ]
-}" class="relative py-20 bg-gradient-to-br from-blue-50 via-white to-amber-50 overflow-hidden">
+}" @click.away="selectedFloor = null; selectedRoom = null;"
+    class="relative py-20 bg-gradient-to-br from-blue-50 via-white to-amber-50 overflow-hidden">
     <!-- Decorative Background Elements -->
     <div class="absolute inset-0 opacity-20">
         <div
@@ -112,20 +113,22 @@
                 </div>
 
                 <!-- 3D Building Container - Exact copy from book/floorSelection.html scaled down -->
-                <div class="relative w-full flex items-center justify-center" style="height: 700px; overflow: visible;">
+                <div class="relative w-full flex items-start justify-start"
+                    style="height: 1100px; overflow: visible; padding-left: 2rem;"
+                    @click.self="selectedFloor = null; selectedRoom = null;">
                     <style>
                         .building-wrapper {
                             position: relative;
-                            width: 270px;
-                            height: 675px;
+                            width: 450px;
+                            height: 1050px;
                         }
 
                         .building-container {
                             position: relative;
                             width: 600px;
                             height: 1100px;
-                            transform: scale(0.45);
-                            transform-origin: top center;
+                            transform: scale(0.75);
+                            transform-origin: top left;
                         }
 
                         .building-container a {
@@ -198,9 +201,17 @@
 
                         .base {
                             top: 515px;
-                            left: -112px;
+                            left: 40px;
                             z-index: 0;
                             pointer-events: none;
+                        }
+
+                        /* Base should never scale or transform */
+                        .base,
+                        .base.selected {
+                            transform: none !important;
+                            filter: none !important;
+                            animation: none !important;
                         }
 
                         /* Selected state adjustments */
@@ -230,7 +241,7 @@
                         }
                     </style>
 
-                    <div class="building-wrapper">
+                    <div class="building-wrapper" @click.self="selectedFloor = null; selectedRoom = null;">
                         <div class="building-container">
                             <a @click.prevent="selectFloor(5)" :class="selectedFloor === 5 ? 'selected' : ''"
                                 class="floor-5">
@@ -259,23 +270,7 @@
                     </div>
                 </div>
 
-                <!-- Selected Floor Info -->
-                <div x-show="selectedFloor !== null" x-transition class="mt-8 text-center">
-                    <template x-for="floor in floors.filter(f => f.id === selectedFloor)" :key="floor.id">
-                        <div class="bg-white rounded-2xl p-6 shadow-xl max-w-md mx-auto">
-                            <h4 class="text-2xl font-bold text-stone-800 mb-2" x-text="floor.name"></h4>
-                            <p class="text-stone-600 flex items-center justify-center gap-2">
-                                <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                                    <path fill-rule="evenodd"
-                                        d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                                <span x-text="floor.view"></span>
-                            </p>
-                        </div>
-                    </template>
-                </div>
+
             </div>
 
             <!-- RIGHT COLUMN: Room Selection & Gallery -->
@@ -329,97 +324,26 @@
                             </template>
                         </template>
                     </div>
+
+                    <!-- Book Now Button -->
+                    <div x-show="selectedRoom !== null" x-transition class="text-center mt-8">
+                        <button
+                            class="group relative inline-flex items-center gap-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-12 py-5 rounded-full text-lg font-bold transition-all hover:scale-105 shadow-2xl hover:shadow-blue-500/50">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5 13l4 4L19 7" />
+                            </svg>
+                            Book This Room Now
+                            <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                            </svg>
+                        </button>
+                        <p class="text-stone-500 mt-3 text-sm">✨ Best rates guaranteed • Free cancellation</p>
+                    </div>
                 </div>
 
-                <!-- Room Image Gallery -->
-                <div x-show="selectedRoom !== null" x-transition:enter="transition ease-out duration-500"
-                    x-transition:enter-start="opacity-0 transform translate-y-8"
-                    x-transition:enter-end="opacity-100 transform translate-y-0">
-                    <template x-for="floor in floors.filter(f => f.id === selectedFloor)" :key="floor.id">
-                        <template x-for="room in floor.rooms.filter(r => r.id === selectedRoom)" :key="room.id">
-                            <div>
-                                <div class="text-center mb-8">
-                                    <h3 class="text-2xl md:text-3xl font-['STIX_Two_Text'] text-stone-800 mb-2">
-                                        <span x-text="room.name"></span> Gallery
-                                    </h3>
-                                    <p class="text-stone-500">Explore every detail of your future stay</p>
-                                </div>
-
-                                <div class="relative rounded-2xl overflow-hidden shadow-2xl bg-white p-2">
-                                    <!-- Main Image -->
-                                    <div class="relative h-[400px] bg-stone-100 rounded-xl overflow-hidden">
-                                        <template x-for="(image, index) in room.images" :key="index">
-                                            <img x-show="currentImageIndex === index" :src="image"
-                                                :alt="room.name + ' - Image ' + (index + 1)"
-                                                x-transition:enter="transition ease-out duration-300"
-                                                x-transition:enter-start="opacity-0"
-                                                x-transition:enter-end="opacity-100"
-                                                class="w-full h-full object-cover absolute inset-0">
-                                        </template>
-
-                                        <!-- Navigation Arrows -->
-                                        <button
-                                            @click="currentImageIndex = (currentImageIndex - 1 + room.images.length) % room.images.length"
-                                            class="absolute left-4 top-1/2 -translate-y-1/2 bg-white/95 hover:bg-white rounded-full p-3 shadow-xl transition-all hover:scale-110 group">
-                                            <svg class="w-6 h-6 text-stone-900 group-hover:text-blue-600 transition-colors"
-                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                                    d="M15 19l-7-7 7-7" />
-                                            </svg>
-                                        </button>
-                                        <button
-                                            @click="currentImageIndex = (currentImageIndex + 1) % room.images.length"
-                                            class="absolute right-4 top-1/2 -translate-y-1/2 bg-white/95 hover:bg-white rounded-full p-3 shadow-xl transition-all hover:scale-110 group">
-                                            <svg class="w-6 h-6 text-stone-900 group-hover:text-blue-600 transition-colors"
-                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                                    d="M9 5l7 7-7 7" />
-                                            </svg>
-                                        </button>
-
-                                        <!-- Image Counter -->
-                                        <div
-                                            class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 backdrop-blur-sm text-white px-5 py-2 rounded-full text-sm font-medium">
-                                            <span x-text="currentImageIndex + 1"></span> / <span
-                                                x-text="room.images.length"></span>
-                                        </div>
-                                    </div>
-
-                                    <!-- Thumbnail Strip -->
-                                    <div class="flex gap-2 p-4 bg-stone-50 overflow-x-auto rounded-b-xl">
-                                        <template x-for="(image, index) in room.images" :key="index">
-                                            <button @click="currentImageIndex = index"
-                                                :class="currentImageIndex === index ? 'ring-3 ring-blue-600 scale-105' : 'opacity-60 hover:opacity-100'"
-                                                class="flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden transition-all shadow-md hover:shadow-lg">
-                                                <img :src="image" :alt="'Thumbnail ' + (index + 1)"
-                                                    class="w-full h-full object-cover">
-                                            </button>
-                                        </template>
-                                    </div>
-                                </div>
-
-                                <!-- Book Now Button -->
-                                <div class="text-center mt-8">
-                                    <button
-                                        class="group relative inline-flex items-center gap-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-12 py-5 rounded-full text-lg font-bold transition-all hover:scale-105 shadow-2xl hover:shadow-blue-500/50">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M5 13l4 4L19 7" />
-                                        </svg>
-                                        Book This Room Now
-                                        <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none"
-                                            stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                                        </svg>
-                                    </button>
-                                    <p class="text-stone-500 mt-3 text-sm">✨ Best rates guaranteed • Free cancellation
-                                    </p>
-                                </div>
-                            </div>
-                        </template>
-                    </template>
-                </div>
 
                 <!-- Placeholder when no floor selected -->
                 <div x-show="selectedFloor === null" x-transition class="text-center py-24">
