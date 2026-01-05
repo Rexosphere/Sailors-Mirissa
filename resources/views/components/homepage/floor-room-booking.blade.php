@@ -165,7 +165,7 @@
                             height: auto;
                         }
 
-                        /* Floor positions - 0px gaps between floors */
+                        /* Floor positions - TRUE 0px gaps (measured heights) */
                         .floor-5 {
                             top: 0;
                             left: 150px;
@@ -173,31 +173,31 @@
                         }
 
                         .floor-4 {
-                            top: 140px;
+                            top: 115px;
                             left: 128.5px;
                             z-index: 4;
                         }
 
                         .floor-3 {
-                            top: 280px;
+                            top: 199px;
                             left: 101.5px;
                             z-index: 3;
                         }
 
                         .floor-2 {
-                            top: 420px;
+                            top: 297px;
                             left: 75px;
                             z-index: 2;
                         }
 
                         .floor-1 {
-                            top: 560px;
+                            top: 409px;
                             left: 87px;
                             z-index: 1;
                         }
 
                         .base {
-                            top: 700px;
+                            top: 515px;
                             left: -112px;
                             z-index: 0;
                             pointer-events: none;
@@ -210,22 +210,22 @@
                         }
 
                         .floor-4.selected {
-                            top: 110px;
+                            top: 85px;
                             left: 6px;
                         }
 
                         .floor-3.selected {
-                            top: 250px;
+                            top: 169px;
                             left: -30px;
                         }
 
                         .floor-2.selected {
-                            top: 390px;
+                            top: 267px;
                             left: -60px;
                         }
 
                         .floor-1.selected {
-                            top: 530px;
+                            top: 379px;
                             left: -60px;
                         }
                     </style>
