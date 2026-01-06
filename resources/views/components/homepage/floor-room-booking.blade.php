@@ -98,11 +98,11 @@
         </div>
 
         <!-- Two Column Layout: Floor Selection (Left) + Room/Gallery (Right) -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 ">
 
             <!-- LEFT COLUMN: 3D Building Stack Visualization -->
             <div class="lg:sticky lg:top-24 lg:self-start">
-                <div class="text-center mb-8">
+                <div class="text-center mb-16">
                     <h3
                         class="text-3xl md:text-4xl font-['STIX_Two_Text'] text-stone-800 mb-3 flex items-center justify-center gap-3">
                         <span
@@ -124,30 +124,116 @@
                         }
 
                         .building-container {
-                            position: relative;
-                            width: 600px;
-                            height: 1100px;
-                            transform: scale(0.75);
+                            scale: 0.3;
+
                             transform-origin: top left;
                         }
 
-                        .building-container a {
-                            position: absolute;
+                        .building-container img {
+                            width: auto;
+                            /* Keep original width */
+                            height: auto;
+                            /* Keep original height */
+                            max-width: none;
+                            /* Override any Tailwind width defaults */
+                            max-height: none;
                             display: block;
-                            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-                            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
-                            transform-origin: center center;
+                            /* Prevent inline spacing issues */
                         }
 
-                        .building-container a:hover {
+                        .base {
+                            position: absolute;
+                            top: 1349px;
+                            left: -112px;
+                            z-index: -10;
+                        }
+
+                        .c1 {
+                            position: absolute;
+                            top: 1163px;
+                            left: 87px;
+                        }
+
+                        .c4 {
+                            position: absolute;
+                            top: 333px;
+                            left: 128.5px;
+                        }
+
+                        .c3 {
+                            position: absolute;
+                            top: 574.5px;
+                            left: 101.5px;
+                        }
+
+                        .c2 {
+                            position: absolute;
+                            top: 848px;
+                            left: 75px;
+                        }
+
+                        .c5 {
+                            position: absolute;
+                            top: 0;
+                            left: 150px;
+                        }
+
+                        /* .c5:focus {}
+
+                        .c4:focus {
+                            top: 315px;
+                            left: 6px;
+                        }
+
+                        .c3:focus {
+                            top: 574.5px;
+                            left: -30px;
+                        }
+
+                        .c2:focus {
+                            top: 848px;
+                            left: -60px;
+                        }
+
+                        .c1:focus {
+                            top: 1153px;
+                            left: -60px;
+                        } */
+
+                        .floor-link {
+                            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.4s;
+                            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+                            transform-origin: center;
+                        }
+
+                        .floor-link:hover {
                             filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.2)) drop-shadow(0 0 15px rgba(255, 255, 255, 0.3));
                         }
 
-                        .building-container a.selected {
+                        .floor-link.focus {
                             transform: scale(1.2) translateY(-8px);
                             z-index: 10;
                             filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.3)) drop-shadow(0 0 25px rgba(100, 150, 255, 0.4));
                             animation: pulse-glow 2s ease-in-out infinite;
+                        }
+
+
+
+
+                        @keyframes floor-hover {
+                            0% {
+                                z-index: 1;
+                                scale: 1;
+                                filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+                                transform: translateY(0);
+                            }
+
+                            100% {
+                                z-index: 10;
+                                scale: 1.2;
+                                filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.3)) drop-shadow(0 0 20px rgba(255, 255, 255, 0.2));
+                                transform: translateY(-8px);
+                            }
                         }
 
                         @keyframes pulse-glow {
@@ -161,112 +247,42 @@
                                 filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.3)) drop-shadow(0 0 35px rgba(100, 150, 255, 0.6));
                             }
                         }
-
-                        .building-container img {
-                            display: block;
-                            width: auto;
-                            height: auto;
-                        }
-
-                        /* Floor positions - TRUE 0px gaps (measured heights) */
-                        .floor-5 {
-                            top: 0;
-                            left: 150px;
-                            z-index: 5;
-                        }
-
-                        .floor-4 {
-                            top: 115px;
-                            left: 128.5px;
-                            z-index: 4;
-                        }
-
-                        .floor-3 {
-                            top: 199px;
-                            left: 101.5px;
-                            z-index: 3;
-                        }
-
-                        .floor-2 {
-                            top: 297px;
-                            left: 75px;
-                            z-index: 2;
-                        }
-
-                        .floor-1 {
-                            top: 409px;
-                            left: 87px;
-                            z-index: 1;
-                        }
-
-                        .base {
-                            top: 515px;
-                            left: 40px;
-                            z-index: 0;
-                            pointer-events: none;
-                        }
-
-                        /* Base should never scale or transform */
-                        .base,
-                        .base.selected {
-                            transform: none !important;
-                            filter: none !important;
-                            animation: none !important;
-                        }
-
-                        /* Selected state adjustments */
-                        .floor-5.selected {
-                            top: -30px;
-                            left: 30px;
-                        }
-
-                        .floor-4.selected {
-                            top: 85px;
-                            left: 6px;
-                        }
-
-                        .floor-3.selected {
-                            top: 169px;
-                            left: -30px;
-                        }
-
-                        .floor-2.selected {
-                            top: 267px;
-                            left: -60px;
-                        }
-
-                        .floor-1.selected {
-                            top: 379px;
-                            left: -60px;
-                        }
                     </style>
 
                     <div class="building-wrapper" @click.self="selectedFloor = null; selectedRoom = null;">
                         <div class="building-container">
-                            <a @click.prevent="selectFloor(5)" :class="selectedFloor === 5 ? 'selected' : ''"
-                                class="floor-5">
+                            <a href="#" tabindex="0" @click.prevent="selectFloor(5)"
+                                :class="`floor-5 c5 floor-link ${selectedFloor === 5 ? 'focus' : ''}`">
                                 <img src="{{ asset('book/Images/5.png') }}" alt="Floor 5">
                             </a>
-                            <a @click.prevent="selectFloor(4)" :class="selectedFloor === 4 ? 'selected' : ''"
-                                class="floor-4">
+
+                            <a href="#" tabindex="0" @click.prevent="selectFloor(4)"
+                                :class="`floor-4 c4 floor-link ${selectedFloor === 4 ? 'focus' : ''}`">
                                 <img src="{{ asset('book/Images/4.png') }}" alt="Floor 4">
                             </a>
-                            <a @click.prevent="selectFloor(3)" :class="selectedFloor === 3 ? 'selected' : ''"
-                                class="floor-3">
+
+                            <a href="#" tabindex="0" @click.prevent="selectFloor(3)"
+                                :class="`floor-3 c3 floor-link ${selectedFloor === 3 ? 'focus' : ''}`">
                                 <img src="{{ asset('book/Images/3.png') }}" alt="Floor 3">
                             </a>
-                            <a @click.prevent="selectFloor(2)" :class="selectedFloor === 2 ? 'selected' : ''"
-                                class="floor-2">
+
+                            <a href="#" tabindex="0" @click.prevent="selectFloor(2)"
+                                :class="`floor-2 c2 floor-link ${selectedFloor === 2 ? 'focus' : ''}`">
                                 <img src="{{ asset('book/Images/2.png') }}" alt="Floor 2">
                             </a>
-                            <a @click.prevent="selectFloor(1)" :class="selectedFloor === 1 ? 'selected' : ''"
-                                class="floor-1">
+
+                            <a href="#" tabindex="0" @click.prevent="selectFloor(1)"
+                                :class="`floor-1 c1 floor-link ${selectedFloor === 1 ? 'focus' : ''}`">
                                 <img src="{{ asset('book/Images/1.png') }}" alt="Floor 1">
                             </a>
-                            <a href="#" class="base">
+
+                            <!-- Base -->
+                            <a class="base">
                                 <img src="{{ asset('book/Images/Base.png') }}" alt="Base">
                             </a>
                         </div>
+
+
                     </div>
                 </div>
 
