@@ -9,11 +9,13 @@
 
     <x-homepage.map-location />
 
+    <x-homepage.floor-room-booking />
     <x-homepage.accommodation-header />
 
     <x-homepage.coastal-living />
 
     <x-homepage.room-tabs />
+
 
     <x-homepage.gallery />
 
