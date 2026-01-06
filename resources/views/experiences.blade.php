@@ -1,4 +1,5 @@
 <x-layout>
+    <x-slot:pageKey>experiences</x-slot:pageKey>
     <x-slot:title>Experiences - Saylor's Mirissa</x-slot:title>
 
     <!-- Hero Section -->

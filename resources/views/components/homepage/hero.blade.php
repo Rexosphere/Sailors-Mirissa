@@ -3,7 +3,7 @@
     <!-- Hero Image -->
     <div class="absolute inset-0">
         <img src="/images/photos/hero-background.avif"
-             alt="Saylors Mirissa"
+             alt="Sailor's Mirissa beachfront hotel with ocean view in Mirissa, Sri Lanka"
              class="w-full h-full object-cover animate-ken-burns">
     </div>
 
@@ -14,20 +14,20 @@
     <div class="relative z-20 flex flex-col min-h-screen pointer-events-none">
         <!-- Hero text (vertically centered) -->
         <div class="text-white px-8 py-8 w-full flex flex-col justify-center flex-1" style="margin-top: 10vh;">
-            {{-- <h1 class="text-4xl md:text-7xl font-bold font-display leading-tight w-full whitespace-nowrap">
+            <h1 class="sr-only text-4xl md:text-7xl font-bold font-display leading-tight w-full">
                 Your Chill Spot in Paradise
             </h1>
 
-            <p class="text-xl md:text-2xl font-light mb-8 leading-relaxed whitespace-pre-line">
-                Wake up in the heart of Mirissa, roll out of bed.
-                and you're already living your best life.
+            <p class="sr-only text-xl md:text-2xl font-light mb-8 mt-6 leading-relaxed">
+                Wake up in the heart of Mirissa, roll out of bed,<br>
+                and you're already living your best life.<br>
                 Everything you want is within a wave's reach.
             </p>
 
-            <div class="flex flex-col items-start gap-4">
-                <div class="text-2xl font-bold tracking-widest">CHECK AVAILABILITY</div>
+            <div class="sr-only flex flex-col items-start gap-4 pointer-events-auto">
+                <a href="#availability" class="text-2xl font-bold tracking-widest hover:text-gray-200 transition-colors">CHECK AVAILABILITY</a>
                 <div class="w-48 h-0.5 bg-white"></div>
-            </div> --}}
+            </div>
         </div>
 
         <!-- Location Features -->

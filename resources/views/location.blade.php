@@ -1,4 +1,5 @@
 <x-layout>
+    <x-slot:pageKey>location</x-slot:pageKey>
     <x-slot:title>Location - Saylor's Mirissa</x-slot:title>
 
     <!-- Hero Section -->
@@ -143,25 +144,25 @@
                 <!-- Tall Image (Left Side) -->
                 <div class="md:row-span-2">
                     <img class="w-full h-full object-cover rounded-3xl shadow-lg"
-                        src="{{ asset('images/location/galle1.png') }}" alt="Galle Fort Aerial View" />
+                        src="{{ asset('images/location/galle1.png') }}" alt="Galle Fort Aerial View" loading="lazy" />
                 </div>
 
                 <!-- Top Right (Wide) -->
                 <div class="lg:col-span-2">
                     <img class="w-full h-60 md:h-72 object-cover rounded-3xl shadow-lg"
-                        src="{{ asset('images/location/galle2.png') }}" alt="Galle Fort Architecture" />
+                        src="{{ asset('images/location/galle2.png') }}" alt="Galle Fort Architecture" loading="lazy" />
                 </div>
 
                 <!-- Bottom Right 1 -->
                 <div>
                     <img class="w-full h-80  object-cover rounded-3xl shadow-lg"
-                        src="{{ asset('images/location/galle3.png') }}" alt="Galle Lighthouse" />
+                        src="{{ asset('images/location/galle3.png') }}" alt="Galle Lighthouse" loading="lazy" />
                 </div>
 
                 <!-- Bottom Right 2 -->
                 <div>
                     <img class="w-full h-80 object-cover rounded-3xl shadow-lg"
-                        src="{{ asset('images/location/galle4.png') }}" alt="Galle Fort Streets" />
+                        src="{{ asset('images/location/galle4.png') }}" alt="Galle Fort Streets" loading="lazy" />
                 </div>
             </div>
         </div>

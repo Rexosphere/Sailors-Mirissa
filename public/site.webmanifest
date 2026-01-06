@@ -1,0 +1,22 @@
+{
+    "name": "Sailor's Mirissa",
+    "short_name": "Sailor's",
+    "description": "Cozy beach hotel in Mirissa, Sri Lanka. Steps from the beach with free WiFi, parking, and sea views.",
+    "icons": [
+        {
+            "src": "/android-chrome-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/android-chrome-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "theme_color": "#72B6B9",
+    "background_color": "#ffffff",
+    "display": "standalone",
+    "start_url": "/",
+    "scope": "/"
+}
