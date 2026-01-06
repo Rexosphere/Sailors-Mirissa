@@ -93,14 +93,36 @@
         align-items: center;
     }
 
-    .landmark-button:hover .landmark-icon {
-        /* transform: scale(1.5);
-        box-shadow: 0px 11px 19px rgba(255, 255, 255, 0.6); */
+    /* Ripple effect container */
+    .landmark-button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translate(-50%, 0);
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        border: 2px solid rgba(255, 255, 255, 0.6);
+        z-index: 1;
+        animation: ripple 2s ease-out infinite;
+    }
 
+    @media (max-width: 768px) {
+        .landmark-button::before {
+            width: 50px;
+            height: 50px;
+            border: 2px solid rgba(255, 255, 255, 0.7);
+        }
+    }
+
+    .landmark-button:hover .landmark-icon {
         transform: scale(1.5);
-        /* Use filter: drop-shadow instead of box-shadow */
-        filter: drop-shadow(0px 8px 8px rgba(242, 242, 242, 0.9));
-        /* You may need to add transition to the filter property as well */
+        filter: drop-shadow(0px 10px 20px rgba(0, 0, 0, 1))
+                drop-shadow(0 0 25px rgba(255, 255, 255, 1))
+                drop-shadow(0 0 40px rgba(255, 255, 255, 0.8))
+                drop-shadow(0 0 60px rgba(255, 255, 255, 0.5));
+        animation: none;
         transition: transform 0.3s ease, filter 0.3s ease;
     }
 
@@ -109,18 +131,74 @@
         height: 48px;
         border-radius: 50%;
         background: transparent;
-        /* backdrop-filter: blur(10px); */
+        border: none;
         display: flex;
         align-items: center;
         justify-content: center;
-        /* box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2); */
         cursor: pointer;
         position: relative;
         z-index: 2;
-        /* transition: transform 0.3s ease; */
-
-        filter: drop-shadow(0 4px 12px rgba(255, 255, 255, 0.2));
+        filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.8))
+                drop-shadow(0 0 12px rgba(255, 255, 255, 0.6))
+                drop-shadow(0 0 20px rgba(255, 255, 255, 0.4));
         transition: transform 0.3s ease, filter 0.3s ease;
+        animation: gentle-pulse 2.5s ease-in-out infinite;
+    }
+
+    /* Mobile: Larger icons for better visibility */
+    @media (max-width: 768px) {
+        .landmark-icon {
+            width: 50px;
+            height: 50px;
+            filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.9))
+                    drop-shadow(0 0 15px rgba(255, 255, 255, 0.7))
+                    drop-shadow(0 0 25px rgba(255, 255, 255, 0.5));
+        }
+    }
+
+    /* Pulsing animation for icons */
+    @keyframes gentle-pulse {
+        0%, 100% {
+            transform: scale(1);
+            filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.8))
+                    drop-shadow(0 0 12px rgba(255, 255, 255, 0.6))
+                    drop-shadow(0 0 20px rgba(255, 255, 255, 0.4));
+        }
+        50% {
+            transform: scale(1.05);
+            filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.9))
+                    drop-shadow(0 0 18px rgba(255, 255, 255, 0.8))
+                    drop-shadow(0 0 30px rgba(255, 255, 255, 0.6));
+        }
+    }
+
+    @media (max-width: 768px) {
+        @keyframes gentle-pulse {
+            0%, 100% {
+                transform: scale(1);
+                filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.9))
+                        drop-shadow(0 0 15px rgba(255, 255, 255, 0.7))
+                        drop-shadow(0 0 25px rgba(255, 255, 255, 0.5));
+            }
+            50% {
+                transform: scale(1.08);
+                filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 1))
+                        drop-shadow(0 0 20px rgba(255, 255, 255, 0.9))
+                        drop-shadow(0 0 35px rgba(255, 255, 255, 0.7));
+            }
+        }
+    }
+
+    /* Ripple animation - expanding ring effect */
+    @keyframes ripple {
+        0% {
+            transform: translate(-50%, 0) scale(1);
+            opacity: 0.6;
+        }
+        100% {
+            transform: translate(-50%, 0) scale(2.5);
+            opacity: 0;
+        }
     }
 
     .landmark-tail {
@@ -161,8 +239,8 @@
         },
         "Coconut Tree Hill": {
             coords: "5767,4558,5710,4912,6530,5286,7300,6000,7979,6000,7979,4678,7519,4735,7032,4742,6191,4502",
-            centerX: 6870,
-            centerY: 5250,
+            centerX: 6500,
+            centerY: 4700,
             image: "/images/photos/hero-background.avif",
             description: "Instagram-famous viewpoint with iconic coconut trees overlooking the ocean. Best visited at sunrise or sunset.",
             icon: '<img src="/images/icons/hawaii/white-coconut-tree.avif" class="w-full h-full object-contain" alt="Coconut Tree">'
