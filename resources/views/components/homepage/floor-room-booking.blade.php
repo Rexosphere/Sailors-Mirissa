@@ -39,7 +39,7 @@
         <!-- Header -->
         <div class="bg-slate-900 text-white p-6 flex justify-between items-center shrink-0">
             <div>
-                <h2 id="card-floor-title" class="text-3xl font-bold font-['STIX_Two_Text'] tracking-wide"></h2>
+                <h2 id="card-floor-title" class="text-3xl font-bold font-serif tracking-wide"></h2>
                 <p id="card-floor-view" class="text-slate-400 text-base mt-1"></p>
             </div>
             <button onclick="floorBookingCloseCard()" class="text-slate-400 hover:text-white transition p-2 hover:bg-white/10 rounded-full">
@@ -187,7 +187,7 @@
                 id: 'ground',
                 name: 'Ground Floor',
                 view: 'Garden View',
-                originalCoords: [1274, 905, 1975, 905, 1975, 1054, 1274, 1054],
+                originalCoords: [1282, 913, 1983, 913, 1983, 1054, 1282, 1054],
                 rooms: [
                     { id: 101, name: 'Room 101', price: '$120 [Mock]', image: '{{ asset('images/rooms/ground_floor_1.png') }}', description: 'Experience the serenity of our garden view rooms. Direct access to our lush tropical gardens.' },
                     { id: 102, name: 'Room 102', price: '$120 [Mock]', image: '{{ asset('images/rooms/ground_floor_2.png') }}', description: 'A spacious haven with detailed amenities and a private patio opening to the garden.' },

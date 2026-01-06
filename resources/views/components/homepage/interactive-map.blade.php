@@ -28,7 +28,7 @@
                 </button>
             </div>
             <div class="p-6">
-                <h3 id="card-title" class="text-2xl font-bold text-stone-800 mb-3 font-['STIX_Two_Text']"></h3>
+                <h3 id="card-title" class="text-2xl font-bold text-stone-800 mb-3 font-serif"></h3>
                 <p id="card-description" class="text-stone-600 leading-relaxed"></p>
             </div>
         </div>

@@ -17,16 +17,16 @@
                     <div
                         class="relative bg-transparent rounded-r-xl shadow-md p-10 lg:p-14 w-full border border-black">
                         <h2
-                            class="text-3xl lg:text-4xl font-medium font-['Sorts_Mill_Goudy'] mb-6 leading-tight text-black">
+                            class="text-3xl lg:text-4xl font-medium font-serif mb-6 leading-tight text-black">
                             Coastal Living in Comfort
                         </h2>
-                        <p class="text-base lg:text-lg font-['NATS'] leading-relaxed mb-10 text-black">
+                        <p class="font-sans text-lg md:text-xl text-stone-700 max-w-2xl mx-auto leading-relaxed mb-10">
                             Unwind in cozy, stylish rooms designed as your perfect base in Mirissa. Whether you're
                             here to surf, explore, or simply relax, our spaces offer the comfort you need after a
                             day by the sea.
                         </p>
                         <div>
-                            <div class="text-sm lg:text-base font-normal font-['NATS'] text-black tracking-[0.2em]">
+                            <div class="text-sm lg:text-base font-normal font-sans text-black tracking-[0.2em]">
                                 EXPLORE OUR ROOMS
                             </div>
                             <div class="w-40 h-px bg-black mt-2"></div>

@@ -9,7 +9,7 @@
 
         <!-- Content at bottom-left -->
         <div class="absolute bottom-4 left-8 md:bottom-8 md:left-20 z-10 text-neutral-50 max-w-4xl ">
-            <h1 class="text-5xl  md:text-6xl font-['STIX_Two_Text'] leading-tight">
+            <h1 class="text-5xl  md:text-6xl font-display leading-tight">
                 Accommodation
             </h1>
         </div>
@@ -76,7 +76,7 @@
                     <!-- Single -->
                     <template x-if="tab === 'single'">
                         <div>
-                            <h2 class="text-3xl font-bold font-['STIX_Two_Text'] mb-4">Single Rooms</h2>
+                            <h2 class="text-3xl font-bold font-display mb-4">Single Rooms</h2>
                             <ul class="space-y-2 text-stone-700">
                                 <li>👤 3 Guests</li>
                                 <li>🛏 2 Beds - 1 Double, 1 Single</li>
@@ -96,7 +96,7 @@
                     <!-- Double -->
                     <template x-if="tab === 'double'">
                         <div>
-                            <h2 class="text-3xl font-bold font-['STIX_Two_Text'] mb-4">Double Rooms</h2>
+                            <h2 class="text-3xl font-bold font-display mb-4">Double Rooms</h2>
                             <ul class="space-y-2 text-stone-700">
                                 <li>👥 4 Guests</li>
                                 <li>🛏 2 Double Beds</li>
@@ -115,7 +115,7 @@
                     <!-- Triple -->
                     <template x-if="tab === 'triple'">
                         <div>
-                            <h2 class="text-3xl font-bold font-['STIX_Two_Text'] mb-4">Triple Rooms</h2>
+                            <h2 class="text-3xl font-bold font-display mb-4">Triple Rooms</h2>
                             <ul class="space-y-2 text-stone-700">
                                 <li>👥 5 Guests</li>
                                 <li>🛏 1 Double Bed, 2 Single Beds</li>
@@ -134,7 +134,7 @@
                     <!-- Family -->
                     <template x-if="tab === 'family'">
                         <div>
-                            <h2 class="text-3xl font-bold font-['STIX_Two_Text'] mb-4">Family Rooms</h2>
+                            <h2 class="text-3xl font-bold font-display mb-4">Family Rooms</h2>
                             <ul class="space-y-2 text-stone-700">
                                 <li>👨‍👩‍👧‍👦 6 Guests</li>
                                 <li>🛏 2 Double Beds, 2 Single Beds</li>

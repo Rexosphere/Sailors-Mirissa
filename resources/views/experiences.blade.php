@@ -9,7 +9,7 @@
 
         <!-- Content at bottom-left -->
         <div class="absolute bottom-4 left-8 md:bottom-8 md:left-20 z-10 text-neutral-50 max-w-4xl ">
-            <h1 class="text-5xl  md:text-6xl font-['STIX_Two_Text'] leading-tight">
+            <h1 class="text-5xl  md:text-6xl font-display leading-tight">
                 Experiences
             </h1>
         </div>

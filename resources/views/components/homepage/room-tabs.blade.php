@@ -59,7 +59,7 @@
                 <!-- Single -->
                 <template x-if="tab === 'single'">
                     <div>
-                        <h2 class="text-3xl font-bold font-['STIX_Two_Text'] mb-4">Single Rooms</h2>
+                        <h2 class="text-3xl font-bold font-serif mb-4">Single Rooms</h2>
                         <ul class="space-y-2 text-stone-700">
                             <li>👤 3 Guests</li>
                             <li>🛏 2 Beds - 1 Double, 1 Single</li>
@@ -79,7 +79,7 @@
                 <!-- Double -->
                 <template x-if="tab === 'double'">
                     <div>
-                        <h2 class="text-3xl font-bold font-['STIX_Two_Text'] mb-4">Double Rooms</h2>
+                        <h2 class="text-3xl font-bold font-serif mb-4">Double Rooms</h2>
                         <ul class="space-y-2 text-stone-700">
                             <li>👥 4 Guests</li>
                             <li>🛏 2 Double Beds</li>
@@ -98,7 +98,7 @@
                 <!-- Triple -->
                 <template x-if="tab === 'triple'">
                     <div>
-                        <h2 class="text-3xl font-bold font-['STIX_Two_Text'] mb-4">Triple Rooms</h2>
+                        <h2 class="text-3xl font-bold font-serif mb-4">Triple Rooms</h2>
                         <ul class="space-y-2 text-stone-700">
                             <li>👥 5 Guests</li>
                             <li>🛏 1 Double Bed, 2 Single Beds</li>
@@ -117,7 +117,7 @@
                 <!-- Family -->
                 <template x-if="tab === 'family'">
                     <div>
-                        <h2 class="text-3xl font-bold font-['STIX_Two_Text'] mb-4">Family Rooms</h2>
+                        <h2 class="text-3xl font-bold font-serif mb-4">Family Rooms</h2>
                         <ul class="space-y-2 text-stone-700">
                             <li>👨‍👩‍👧‍👦 6 Guests</li>
                             <li>🛏 2 Double Beds, 2 Single Beds</li>

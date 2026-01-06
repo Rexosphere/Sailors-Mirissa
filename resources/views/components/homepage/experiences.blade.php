@@ -39,7 +39,7 @@
     <div class="container mx-auto px-4 md:px-10">
         <div class="flex justify-between items-end mb-12">
             <div>
-                <h2 class="text-3xl md:text-5xl font-bold font-['STIX_Two_Text'] text-slate-800 dark:text-white">Must-Visit Attractions</h2>
+                <h2 class="text-3xl md:text-5xl font-bold font-serif text-slate-800 dark:text-white">Must-Visit Attractions</h2>
                 <p class="text-slate-500 dark:text-slate-400 mt-3 text-lg font-light tracking-wide">Swipe to explore the coast</p>
             </div>
             <div class="flex gap-3">
@@ -76,7 +76,7 @@
                         @endif
                     </div>
                     <div>
-                        <h3 class="text-2xl font-bold font-['STIX_Two_Text'] text-slate-800 dark:text-white group-hover:text-amber-500 dark:group-hover:text-blue-400 transition-colors">{{ $attraction['title'] }}</h3>
+                        <h3 class="text-2xl font-bold font-serif text-slate-800 dark:text-white group-hover:text-amber-500 dark:group-hover:text-blue-400 transition-colors">{{ $attraction['title'] }}</h3>
                         <p class="text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">{{ $attraction['description'] }}</p>
                     </div>
                 </div>

@@ -11,7 +11,7 @@
 
             <!-- Content -->
             <div class="order-1 lg:order-2 space-y-8 ">
-                <h2 class="text-4xl lg:text-5xl font-['STIX_Two_Text'] text-stone-700 leading-tight">
+                <h2 class="text-4xl lg:text-5xl font-display text-stone-700 leading-tight">
                     In the Heart of It All
                 </h2>
                 <p class="text-lg lg:text-xl text-stone-700 leading-relaxed mr-5">
