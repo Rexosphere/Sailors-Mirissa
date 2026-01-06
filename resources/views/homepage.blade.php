@@ -7,10 +7,6 @@
 
     <x-homepage.interactive-map />
 
-    <x-homepage.floor-room-booking />
-
-    <x-homepage.map-location />
-
 
     {{-- <x-homepage.accommodation-header />
 
@@ -22,5 +18,9 @@
     {{-- <x-homepage.gallery /> --}}
 
     <x-homepage.experiences />
+
+    <x-homepage.floor-room-booking />
+
+    <x-homepage.map-location />
 
 </x-layout>
