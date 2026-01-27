@@ -1,8 +1,7 @@
 <section class="relative h-screen overflow-hidden bg-gray-100">
     <!-- Hotel Floor Image (Fullscreen Background) -->
-    <div class="relative w-full h-full">
-        <img id="hotel-image" src="{{ asset('images/hotel_floors.avif') }}" alt="Hotel Building" 
-             class="w-full h-full object-cover">
+    <div id="hotel-container" class="relative w-full h-full" style="background-color: ivory;">
+        <img src="{{ asset('images/building_transparent.png') }}" alt="Hotel Floors" class="absolute right-0 top-1/2 -translate-y-1/2 w-1/2 h-3/4 object-contain" />
         
         <!-- SVG Overlay for Lines -->
         <svg id="svg-overlay" viewBox="0 0 100 100" preserveAspectRatio="none" class="absolute inset-0 w-full h-full pointer-events-none" style="z-index: 10;">
@@ -12,6 +11,7 @@
                 </marker>
             </defs>
             <!-- Clickable floor indicators (dashed boxes) -->
+
             <!-- Note: pointer-events="auto" allows clicking these polygons even if parent config is none -->
             <polygon id="floor-box-ground" points="" stroke="white" stroke-width="3" stroke-dasharray="8,6" stroke-linecap="round" stroke-linejoin="round"
                 fill="transparent" class="floor-box cursor-pointer" style="pointer-events: auto; opacity: 0.9; filter: drop-shadow(0px 0px 1px rgba(0,0,0,0.8)); vector-effect: non-scaling-stroke;" />
@@ -237,7 +237,7 @@
         let activeRoomIndex = 0;
 
         // --- DOM Elements ---
-        const imgEl = document.getElementById('hotel-image');
+        const containerEl = document.getElementById('hotel-container');
         const cardEl = document.getElementById('info-card');
         const instructionEl = document.getElementById('instruction-text');
         
@@ -259,11 +259,7 @@
             window.addEventListener('scroll', handleScroll, { passive: true });
             
             // Render map areas and attach listeners to SVG polygons
-            if (imgEl.complete) {
-                handleResize();
-            } else {
-                imgEl.onload = handleResize;
-            }
+            handleResize();
 
             // Attach listeners to SVG polygons
             attachPolygonListeners();
@@ -316,10 +312,8 @@
         }
 
         function renderCoordinates() {
-            if (imgEl.naturalWidth === 0) return;
-
-            const width = imgEl.clientWidth;
-            const height = imgEl.clientHeight;
+            const width = containerEl.clientWidth;
+            const height = containerEl.clientHeight;
             
             // Calculate how object-cover scales and positions the image
             // We use the new constant dimensions as the source of truth for the coordinate system
@@ -437,8 +431,8 @@
         function drawLines(floor) {
             if (!floor) return;
 
-            const width = imgEl.clientWidth;
-            const height = imgEl.clientHeight;
+            const width = containerEl.clientWidth;
+            const height = containerEl.clientHeight;
             
             // Find coordinates again (would be better to cache, but cheap to recalc)
             // ... (Duping calculation logic for conciseness or accessing updated DOM)
@@ -467,7 +461,7 @@
 
             // Get Card Position
             const cardRect = cardEl.getBoundingClientRect();
-            const imgRect = imgEl.getBoundingClientRect();
+            const imgRect = containerEl.getBoundingClientRect();
             
             // Connection Point on Card (Middle Right?)
             // If card is on left half, we want the connection to come from its Right edge.
