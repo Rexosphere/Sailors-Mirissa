@@ -1,4 +1,10 @@
 <section class="relative h-screen overflow-hidden bg-gray-100">
+    <!-- Page Title -->
+    <div class="absolute top-0 left-0 right-0 z-30 text-center py-8">
+        <h1 class="text-3xl md:text-5xl font-bold font-serif text-black">Explore Our Rooms</h1>
+        <p class="text-black mt-3 text-lg font-light tracking-wide">Select a floor to discover available accommodations</p>
+    </div>
+
     <!-- Hotel Floor Image (Fullscreen Background) -->
     <div id="hotel-container" class="relative w-full h-full" style="background-color: ivory;">
         <img src="{{ asset('images/building_transparent.png') }}" alt="Hotel Floors" class="absolute right-0 top-1/2 -translate-y-1/2 w-1/2 h-3/4 object-contain" />
@@ -118,8 +124,8 @@
         </div>
     </div>
 
-    <!-- Instruction Overlay (Center Bottom) -->
-    <div id="instruction-text" class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 text-center pointer-events-none">
+    <!-- Instruction Overlay (More Left of Building Image) -->
+    <div id="instruction-text" class="absolute left-1/4 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 text-center pointer-events-none">
         <div class="bg-black/40 backdrop-blur-md px-8 py-4 rounded-full border border-white/20 shadow-2xl">
             <p class="text-white text-lg font-medium tracking-wide flex items-center gap-2">
                 <span class="animate-bounce">👆</span> Select a floor to explore rooms
