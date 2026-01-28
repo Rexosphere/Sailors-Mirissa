@@ -5,9 +5,9 @@
         <div id="imageSlider" class="w-screen h-screen relative overflow-hidden">
             <!-- Images -->
             <div class="slider-images w-screen h-screen relative">
-                <img src="/images/matara.png" alt="Matara" class="slider-image absolute inset-0 w-full h-full object-cover object-center opacity-0 transition-opacity duration-500" data-index="0">
-                <img src="/images/road.png" alt="Road" class="slider-image absolute inset-0 w-full h-full object-cover object-center opacity-100 transition-opacity duration-500" data-index="1">
-                <img src="/images/galle.png" alt="Galle" class="slider-image absolute inset-0 w-full h-full object-cover object-center opacity-0 transition-opacity duration-500" data-index="2">
+                <img src="/images/matara.avif" alt="Matara" class="slider-image absolute inset-0 w-full h-full object-cover object-center opacity-0 transition-opacity duration-500" data-index="0">
+                <img src="/images/road.avif" alt="Road" class="slider-image absolute inset-0 w-full h-full object-cover object-center opacity-100 transition-opacity duration-500" data-index="1">
+                <img src="/images/galle.avif" alt="Galle" class="slider-image absolute inset-0 w-full h-full object-cover object-center opacity-0 transition-opacity duration-500" data-index="2">
             </div>
 
             <!-- Left Arrow -->
@@ -40,7 +40,7 @@
         const dots = document.querySelectorAll('.slider-dot');
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
-        let currentIndex = 1; // Start with road.png (middle image)
+        let currentIndex = 1; // Start with road.avif (middle image)
         const totalImages = images.length;
 
         function showImage(index) {
