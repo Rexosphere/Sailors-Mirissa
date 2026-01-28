@@ -16,6 +16,7 @@
 
     <x-homepage.room-tabs /> --}}
 
+    
 
     {{-- <x-homepage.gallery /> --}}
 
