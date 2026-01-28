@@ -187,57 +187,25 @@
         (function() {
             'use strict';
             
-            // --- Configuration ---
-        const floors = [
-            {
-                id: 'ground',
-                name: 'Ground Floor',
-                view: 'Garden View',
-                originalCoords: [1282, 913, 1983, 913, 1983, 1054, 1282, 1054],
-                rooms: [
-                    { id: 101, name: 'Room 101', price: '$120 [Mock]', image: '{{ asset('images/rooms/ground_floor_1.png') }}', description: 'Experience the serenity of our garden view rooms. Direct access to our lush tropical gardens.' },
-                    { id: 102, name: 'Room 102', price: '$120 [Mock]', image: '{{ asset('images/rooms/ground_floor_2.png') }}', description: 'A spacious haven with detailed amenities and a private patio opening to the garden.' },
-                    { id: 103, name: 'Room 103', price: '$125 [Mock]', image: '{{ asset('images/rooms/ground_floor_1.png') }}', description: 'Perfect for families, this room offers extra space and easy access to the pooling area.' },
-                    { id: 104, name: 'Room 104', price: '$125 [Mock]', image: '{{ asset('images/rooms/ground_floor_2.png') }}', description: 'Enjoy the quiet corner of the ground floor with premium bedding and garden vistas.' }
-                ]
-            },
-            {
-                id: 'first',
-                name: 'First Floor',
-                view: 'Partial Ocean View',
-                originalCoords: [1278, 778, 1980, 778, 1980, 912, 1278, 912],
-                rooms: [
-                    { id: 201, name: 'Room 201', price: '$150 [Mock]', image: '{{ asset('images/rooms/first_floor_1.png') }}', description: 'Elevated views of the coastline mixed with garden greenery. A balanced retreat.' },
-                    { id: 202, name: 'Room 202', price: '$150 [Mock]', image: '{{ asset('images/rooms/first_floor_2.png') }}', description: 'Modern interiors meet tropical breeze. Features a private balcony for morning coffee.' },
-                    { id: 203, name: 'Room 203', price: '$155 [Mock]', image: '{{ asset('images/rooms/first_floor_1.png') }}', description: 'Spacious double room with partial sea views and enhanced privacy.' },
-                    { id: 204, name: 'Room 204', price: '$155 [Mock]', image: '{{ asset('images/rooms/first_floor_2.png') }}', description: 'Our most popular partial view room, featuring a large balcony and king-sized bed.' }
-                ]
-            },
-            {
-                id: 'second',
-                name: 'Second Floor',
-                view: 'Ocean View',
-                originalCoords: [1278, 654, 1984, 654, 1984, 776, 1278, 776],
-                rooms: [
-                    { id: 301, name: 'Room 301', price: '$180 [Mock]', image: '{{ asset('images/rooms/first_floor_1.png') }}', description: 'Unobstructed ocean views from the second floor. Listen to the waves from your room.' },
-                    { id: 302, name: 'Room 302', price: '$180 [Mock]', image: '{{ asset('images/rooms/first_floor_2.png') }}', description: 'Luxury living with a full sea view balcony. Perfect for couples.' },
-                    { id: 303, name: 'Room 303', price: '$185 [Mock]', image: '{{ asset('images/rooms/first_floor_1.png') }}', description: 'Corner room offering dual-aspect views of the ocean and the town.' },
-                    { id: 304, name: 'Room 304', price: '$185 [Mock]', image: '{{ asset('images/rooms/first_floor_2.png') }}', description: 'Premium ocean view room with upgraded amenities and spacious bath.' }
-                ]
-            },
-            {
-                id: 'third',
-                name: 'Third Floor',
-                view: 'Panoramic Ocean View',
-                originalCoords: [1282, 528, 1986, 528, 1986, 654, 1282, 654],
-                rooms: [
-                    { id: 401, name: 'Room 401', price: '$220 [Mock]', image: '{{ asset('images/rooms/top_floor_1.png') }}', description: 'Top of the world. Our penthouse level offers breathtaking panoramic views.' },
-                    { id: 402, name: 'Room 402', price: '$220 [Mock]', image: '{{ asset('images/rooms/top_floor_1.png') }}', description: 'Exclusive access and privacy. The ultimate luxury experience at Saylors.' },
-                    { id: 403, name: 'Room 403', price: '$230 [Mock]', image: '{{ asset('images/rooms/top_floor_1.png') }}', description: 'Master suite with expansive living area and the best sunset views.' },
-                    { id: 404, name: 'Room 404', price: '$230 [Mock]', image: '{{ asset('images/rooms/top_floor_1.png') }}', description: 'The Royal Suite. Unmatched luxury, space, and panoramic Indian Ocean vistas.' }
-                ]
-            }
-        ];
+        // --- Configuration ---
+        const floors = {!! json_encode(\App\Models\Room::all()->groupBy('floor_id')->map(function($rooms, $floorId) {
+            $firstRoom = $rooms->first();
+            return [
+                'id' => $floorId,
+                'name' => $firstRoom->floor_name,
+                'view' => $firstRoom->floor_view,
+                'originalCoords' => array_map('intval', explode(',', $firstRoom->floor_coords)),
+                'rooms' => $rooms->map(function($room) {
+                    return [
+                        'id' => $room->room_number,
+                        'name' => $room->room_name,
+                        'price' => $room->price,
+                        'image' => asset($room->image_url),
+                        'description' => $room->description,
+                    ];
+                })->values()->toArray(),
+            ];
+        })->values()->toArray()) !!};
 
         let activeFloor = null;
         let activeRoomIndex = 0;
