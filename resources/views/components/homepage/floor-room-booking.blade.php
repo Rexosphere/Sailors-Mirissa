@@ -1,4 +1,4 @@
-<section class="relative h-screen overflow-hidden bg-gray-100">
+<section id="floor-booking" class="relative h-screen overflow-hidden bg-gray-100">
     <!-- Page Title -->
     <div class="absolute top-0 left-0 right-0 z-30 text-center py-8">
         <h1 class="text-3xl md:text-5xl font-bold font-serif text-black">Explore Our Rooms</h1>

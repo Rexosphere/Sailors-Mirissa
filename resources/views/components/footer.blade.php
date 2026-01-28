@@ -8,7 +8,7 @@
       <div>
         <div class="mb-6">
           <div class="text-3xl font-normal font-sans text-neutral-50 mb-4">
-            Saylor's Mirissa
+            Sailors Mirissa
           </div>
           <div class="text-stone-400 text-sm font-normal font-sans leading-relaxed">
             Follow Us
@@ -33,11 +33,10 @@
       <div>
         <h3 class="text-lg font-medium font-serif text-neutral-50 mb-4">Quick Links</h3>
         <ul class="space-y-2">
-          <li><a href="#" class="text-stone-400 text-sm font-normal font-sans hover:text-neutral-50 transition-colors">Home</a></li>
-          <li><a href="#" class="text-stone-400 text-sm font-normal font-sans hover:text-neutral-50 transition-colors">Accommodation</a></li>
-          <li><a href="/location" class="text-stone-400 text-sm font-normal font-sans hover:text-neutral-50 transition-colors">Location</a></li>
-          <li><a href="/experiences" class="text-stone-400 text-sm font-normal font-sans hover:text-neutral-50 transition-colors">Experiences</a></li>
-          <li><a href="#" class="text-stone-400 text-sm font-normal font-sans hover:text-neutral-50 transition-colors">About</a></li>
+          <li><a href="#featured_header" class="text-stone-400 text-sm font-normal font-sans hover:text-neutral-50 transition-colors">Home</a></li>
+          <li><a href="#interactive-map" class="text-stone-400 text-sm font-normal font-sans hover:text-neutral-50 transition-colors">Explore</a></li>
+          <li><a href="#floor-booking" class="text-stone-400 text-sm font-normal font-sans hover:text-neutral-50 transition-colors">Rooms</a></li>
+          <li><a href="#attractions" class="text-stone-400 text-sm font-normal font-sans hover:text-neutral-50 transition-colors">Attractions</a></li>
         </ul>
       </div>
 
@@ -114,7 +113,7 @@
 
     <!-- Bottom Section -->
 <div class="mt-16 pt-8 border-t border-[#846F5E] flex justify-center items-center">
-    © 2025 Saylor's Mirissa. All rights reserved.
+    © 2025 Sailors Mirissa. All rights reserved.
 </div>
 
 
