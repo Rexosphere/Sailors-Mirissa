@@ -7,8 +7,8 @@ state('rooms', fn() => Room::all()->groupBy('floor_id')->toArray());
 
 $confirmDelete = function ($id) {
     Room::find($id)->delete();
-    $this->rooms = Room::all()->groupBy('floor_id')->toArray();
     session()->flash('success', 'Room deleted successfully.');
+    return redirect()->route('admin.rooms.index');
 };
 
 ?>
@@ -56,7 +56,7 @@ $confirmDelete = function ($id) {
                             <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ is_array($roomData) ? $roomData['order'] : $roomData->order }}</td>
                             <td class="px-6 py-4 text-right text-sm font-medium">
                                 <a href="{{ route('admin.rooms.edit', is_array($roomData) ? $roomData['id'] : $roomData->id) }}" class="text-blue-600 hover:text-blue-900 mr-3">Edit</a>
-                                <button wire:click="confirmDelete({{ is_array($roomData) ? $roomData['id'] : $roomData->id }})" class="text-red-600 hover:text-red-900">Delete</button>
+                                <button type="button" wire:click="confirmDelete({{ is_array($roomData) ? $roomData['id'] : $roomData->id }})" class="text-red-600 hover:text-red-900 cursor-pointer">Delete</button>
                             </td>
                         </tr>
                     @endforeach
