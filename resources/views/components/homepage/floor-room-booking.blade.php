@@ -60,7 +60,7 @@
             <!-- Carousel Container -->
             <div class="relative group shrink-0">
                 <!-- Left Arrow -->
-                <button onclick="floorBookingScrollCarousel(-1)" 
+                <button onclick="floorBookingNavigate(-1)" 
                     class="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-slate-800 p-3 rounded-full shadow-lg z-10 opacity-0 group-hover:opacity-100 transition-opacity">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -73,7 +73,7 @@
                 </div>
     
                 <!-- Right Arrow -->
-                <button onclick="floorBookingScrollCarousel(1)" 
+                <button onclick="floorBookingNavigate(1)" 
                     class="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-slate-800 p-3 rounded-full shadow-lg z-10 opacity-0 group-hover:opacity-100 transition-opacity">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -356,7 +356,7 @@
             
             // Generate Carousel Items
             carouselEl.innerHTML = floor.rooms.map((room, index) => `
-                <div class="min-w-[40%] h-full relative snap-start cursor-pointer border-r border-white/10" onclick="floorBookingSelectRoom(${index})">
+                <div class="carousel-item min-w-[40%] h-full relative snap-start cursor-pointer border-r border-white/10" data-index="${index}">
                     <img src="${room.image}" class="w-full h-full object-cover transition hover:opacity-90" alt="${room.name}">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent pointer-events-none"></div>
                     <div class="absolute bottom-2 left-2 text-white font-bold text-sm pointer-events-none drop-shadow-md">
@@ -368,9 +368,14 @@
             updateRoomDetails(0);
         }
 
+        
         function selectRoom(index) {
+            // Bounds check
+            if (!activeFloor || index < 0 || index >= activeFloor.rooms.length) return;
+            
             activeRoomIndex = index;
             updateRoomDetails(index);
+            updateCarouselHighlight(index);
             
             const items = carouselEl.children;
             if (items[index]) {
@@ -378,17 +383,49 @@
             }
         }
 
+        // Add event delegation for carousel items
+        carouselEl.addEventListener('click', (e) => {
+            const item = e.target.closest('.carousel-item');
+            if (item) {
+                const index = parseInt(item.dataset.index, 10);
+                if (!isNaN(index)) {
+                    selectRoom(index);
+                }
+            }
+        });
+
         function updateRoomDetails(index) {
             if (!activeFloor) return;
             const room = activeFloor.rooms[index];
+            if (!room) return;
+            
             roomTypeEl.textContent = room.name;
             roomDescEl.textContent = room.description;
             roomPriceEl.textContent = room.price;
         }
 
-        function scrollCarousel(direction) {
-            const width = carouselEl.clientWidth / 2; // Scroll half view
-            carouselEl.scrollBy({ left: width * direction, behavior: 'smooth' });
+        function updateCarouselHighlight(activeIndex) {
+            const items = Array.from(carouselEl.children);
+            items.forEach((item, index) => {
+                if (index === activeIndex) {
+                    item.classList.add('ring-4', 'ring-blue-500', 'z-10');
+                    item.classList.remove('opacity-50');
+                } else {
+                    item.classList.remove('ring-4', 'ring-blue-500', 'z-10');
+                    // Optional: fade others
+                }
+            });
+        }
+
+        function navigateRoom(direction) {
+            if (!activeFloor) return;
+            let newIndex = activeRoomIndex + direction;
+            
+            // Loop navigation or clamp? Let's clamp.
+            if (newIndex < 0) newIndex = 0;
+            if (newIndex >= activeFloor.rooms.length) newIndex = activeFloor.rooms.length - 1;
+            
+            selectRoom(newIndex);
         }
 
         function closeCard() {
@@ -406,7 +443,9 @@
             if (!floor) return;
 
             const width = containerEl.clientWidth;
-            const height = containerEl.clientHeight;
+            const height = containerEl.clientHeight; 
+            
+            // ... (rest of logic)
             
             // Find coordinates again (would be better to cache, but cheap to recalc)
             // ... (Duping calculation logic for conciseness or accessing updated DOM)
@@ -494,7 +533,7 @@
         
         // Expose functions
         window.floorBookingCloseCard = closeCard;
-        window.floorBookingScrollCarousel = scrollCarousel;
+        window.floorBookingNavigate = navigateRoom; // Changed from scrollCarousel
         window.floorBookingSelectRoom = selectRoom;
         
         })(); // End of IIFE
