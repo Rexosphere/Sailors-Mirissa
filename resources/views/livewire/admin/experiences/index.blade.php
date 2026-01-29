@@ -5,12 +5,10 @@ use function Livewire\Volt\{state};
 
 state('experiences', fn() => Experience::all());
 
-$confirmDelete = function ($id) {
-    if (confirm('Are you sure you want to delete this experience?')) {
-        Experience::find($id)->delete();
-        $this->experiences = Experience::all();
-        session()->flash('success', 'Experience deleted successfully.');
-    }
+$delete = function ($id) {
+    Experience::find($id)->delete();
+    session()->flash('success', 'Experience deleted successfully.');
+    return redirect()->route('admin.experiences.index');
 };
 
 ?>
@@ -77,7 +75,7 @@ $confirmDelete = function ($id) {
                             <a href="{{ route('admin.experiences.edit', $experience->id) }}" class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 mr-3">
                                 Edit
                             </a>
-                            <button wire:click="confirmDelete({{ $experience->id }})" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">
+                            <button type="button" wire:click="delete({{ $experience->id }})" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 cursor-pointer">
                                 Delete
                             </button>
                         </td>

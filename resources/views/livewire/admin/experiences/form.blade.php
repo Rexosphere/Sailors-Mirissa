@@ -1,64 +1,17 @@
 <?php
 
 use App\Models\Experience;
-use Livewire\WithFileUploads;
-use Livewire\Attributes\Validate;
-use function Livewire\Volt\{state, uses, mount};
-
-uses([WithFileUploads::class]);
+use function Livewire\Volt\{state, mount};
 
 state(['experience' => null]);
-state(['title' => '']);
-state(['description' => '']);
-state(['image_url' => '']);
-state(['alt_text' => '']);
-state(['badge' => '']);
-state(['icon' => '']);
-state(['order' => 0]);
-state(['image' => null]);
+state(['id' => null]);
 
 mount(function ($id = null) {
+    $this->id = $id;
     if ($id) {
         $this->experience = Experience::findOrFail($id);
-        $this->title = $this->experience->title;
-        $this->description = $this->experience->description;
-        $this->image_url = $this->experience->image_url;
-        $this->alt_text = $this->experience->alt_text;
-        $this->badge = $this->experience->badge ?? '';
-        $this->icon = $this->experience->icon ?? '';
-        $this->order = $this->experience->order;
     }
 });
-
-$save = function () {
-    $this->validate([
-        'title' => 'required|string|max:255',
-        'description' => 'required|string',
-        'image_url' => 'required|string',
-        'alt_text' => 'required|string|max:255',
-        'order' => 'required|integer|min:0',
-    ]);
-
-    $data = [
-        'title' => $this->title,
-        'description' => $this->description,
-        'image_url' => $this->image_url,
-        'alt_text' => $this->alt_text,
-        'badge' => $this->badge,
-        'icon' => $this->icon,
-        'order' => $this->order,
-    ];
-
-    if ($this->experience) {
-        $this->experience->update($data);
-        session()->flash('success', 'Experience updated successfully.');
-    } else {
-        Experience::create($data);
-        session()->flash('success', 'Experience created successfully.');
-    }
-
-    return redirect()->route('admin.experiences.index');
-};
 
 ?>
 
@@ -72,18 +25,32 @@ $save = function () {
         </p>
     </div>
 
+    @if ($errors->any())
+        <div class="mb-4 p-4 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-100 rounded-lg">
+            <ul class="list-disc list-inside">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-        <form wire:submit="save">
+        <form action="{{ $experience ? route('admin.experiences.update', $experience->id) : route('admin.experiences.store') }}" 
+              method="POST" 
+              enctype="multipart/form-data">
+            @csrf
+            
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Title -->
                 <div>
                     <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Title *
                     </label>
-                    <input type="text" id="title" wire:model="title" 
+                    <input type="text" id="title" name="title" 
+                        value="{{ old('title', $experience?->title) }}"
                         class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" 
                         required>
-                    @error('title') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                 </div>
 
                 <!-- Alt Text -->
@@ -91,10 +58,10 @@ $save = function () {
                     <label for="alt_text" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Alt Text *
                     </label>
-                    <input type="text" id="alt_text" wire:model="alt_text" 
+                    <input type="text" id="alt_text" name="alt_text" 
+                        value="{{ old('alt_text', $experience?->alt_text) }}"
                         class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" 
                         required>
-                    @error('alt_text') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                 </div>
 
                 <!-- Description -->
@@ -102,24 +69,50 @@ $save = function () {
                     <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Description *
                     </label>
-                    <textarea id="description" wire:model="description" rows="4"
+                    <textarea id="description" name="description" rows="4"
                         class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" 
-                        required></textarea>
-                    @error('description') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                        required>{{ old('description', $experience?->description) }}</textarea>
                 </div>
 
-                <!-- Image URL -->
+                <!-- Image Upload with Preview -->
                 <div class="md:col-span-2">
-                    <label for="image_url" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Image URL *
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Image {{ $experience ? '(Leave empty to keep current)' : '*' }}
                     </label>
-                    <input type="text" id="image_url" wire:model="image_url" 
-                        class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" 
-                        placeholder="https://example.com/image.jpg"
-                        required>
-                    @error('image_url') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                    @if($image_url)
-                        <img src="{{ $image_url }}" alt="Preview" class="mt-2 h-32 rounded border">
+                    
+                    <!-- Drag and Drop Upload Area -->
+                    <div 
+                        id="upload-area"
+                        class="relative border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center hover:border-blue-400 dark:hover:border-blue-500 transition-colors cursor-pointer"
+                        onclick="document.getElementById('image').click()"
+                    >
+                        <input type="file" id="image" name="image" accept="image/*"
+                            class="hidden"
+                            onchange="previewImage(this)">
+                        
+                        <!-- Default upload prompt (hidden when image is selected) -->
+                        <div id="upload-prompt" class="space-y-2">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            <div class="text-gray-600 dark:text-gray-400">
+                                <span class="font-medium text-blue-600 dark:text-blue-400">Click to upload</span> or drag and drop
+                            </div>
+                            <p class="text-xs text-gray-500">PNG, JPG, AVIF, WEBP up to 5MB</p>
+                        </div>
+                        
+                        <!-- Image preview (hidden by default) -->
+                        <div id="image-preview" class="hidden">
+                            <img id="preview-img" src="" alt="Preview" class="mx-auto h-40 rounded-lg object-cover">
+                            <p id="file-name" class="mt-2 text-sm text-green-600 dark:text-green-400"></p>
+                        </div>
+                    </div>
+                    
+                    @if($experience && $experience->image_url)
+                        <div class="mt-4">
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Current image:</p>
+                            <img src="{{ $experience->image_url }}" alt="Current" class="h-32 rounded border object-cover">
+                        </div>
                     @endif
                 </div>
 
@@ -128,10 +121,10 @@ $save = function () {
                     <label for="badge" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Badge (Optional)
                     </label>
-                    <input type="text" id="badge" wire:model="badge" 
+                    <input type="text" id="badge" name="badge" 
+                        value="{{ old('badge', $experience?->badge) }}"
                         class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" 
                         placeholder="e.g., Top Spot, Hidden Gem">
-                    @error('badge') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                 </div>
 
                 <!-- Order -->
@@ -139,22 +132,10 @@ $save = function () {
                     <label for="order" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Order *
                     </label>
-                    <input type="number" id="order" wire:model="order" min="0"
+                    <input type="number" id="order" name="order" min="0"
+                        value="{{ old('order', $experience?->order ?? 0) }}"
                         class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" 
                         required>
-                    @error('order') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                </div>
-
-                <!-- Icon SVG -->
-                <div class="md:col-span-2">
-                    <label for="icon" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Icon SVG (Optional)
-                    </label>
-                    <textarea id="icon" wire:model="icon" rows="3"
-                        class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white font-mono text-sm"
-                        placeholder="<svg>...</svg>"></textarea>
-                    <p class="mt-1 text-sm text-gray-500">Paste the complete SVG code for the badge icon</p>
-                    @error('icon') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                 </div>
             </div>
 
@@ -170,4 +151,51 @@ $save = function () {
             </div>
         </form>
     </div>
+
+    <script>
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('upload-prompt').classList.add('hidden');
+                    document.getElementById('image-preview').classList.remove('hidden');
+                    document.getElementById('preview-img').src = e.target.result;
+                    document.getElementById('file-name').textContent = input.files[0].name;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // Drag and drop handling
+        const uploadArea = document.getElementById('upload-area');
+        
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, () => {
+                uploadArea.classList.add('border-blue-500', 'bg-blue-50', 'dark:bg-blue-900/20');
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, () => {
+                uploadArea.classList.remove('border-blue-500', 'bg-blue-50', 'dark:bg-blue-900/20');
+            }, false);
+        });
+
+        uploadArea.addEventListener('drop', function(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            const input = document.getElementById('image');
+            input.files = files;
+            previewImage(input);
+        }, false);
+    </script>
 </x-layouts.admin-layout>

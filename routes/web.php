@@ -45,11 +45,15 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Volt::route('/experiences', 'admin.experiences.index')->name('experiences.index');
     Volt::route('/experiences/create', 'admin.experiences.form')->name('experiences.create');
     Volt::route('/experiences/{id}/edit', 'admin.experiences.form')->name('experiences.edit');
+    Route::post('/experiences', [\App\Http\Controllers\Admin\ExperienceController::class, 'store'])->name('experiences.store');
+    Route::post('/experiences/{id}', [\App\Http\Controllers\Admin\ExperienceController::class, 'update'])->name('experiences.update');
     
     // Map Points
     Volt::route('/map-points', 'admin.map-points.index')->name('map-points.index');
     Volt::route('/map-points/create', 'admin.map-points.form')->name('map-points.create');
     Volt::route('/map-points/{id}/edit', 'admin.map-points.form')->name('map-points.edit');
+    Route::post('/map-points', [\App\Http\Controllers\Admin\MapPointController::class, 'store'])->name('map-points.store');
+    Route::post('/map-points/{id}', [\App\Http\Controllers\Admin\MapPointController::class, 'update'])->name('map-points.update');
     
     // Rooms
     Volt::route('/rooms', 'admin.rooms.index')->name('rooms.index');

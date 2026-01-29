@@ -7,8 +7,8 @@ state('mapPoints', fn() => MapPoint::all());
 
 $confirmDelete = function ($id) {
     MapPoint::find($id)->delete();
-    $this->mapPoints = MapPoint::all();
     session()->flash('success', 'Map point deleted successfully.');
+    return redirect()->route('admin.map-points.index');
 };
 
 ?>
@@ -45,7 +45,7 @@ $confirmDelete = function ($id) {
                         </td>
                         <td class="px-6 py-4 text-right text-sm font-medium">
                             <a href="{{ route('admin.map-points.edit', $point->id) }}" class="text-blue-600 hover:text-blue-900 mr-3">Edit</a>
-                            <button wire:click="confirmDelete({{ $point->id }})" class="text-red-600 hover:text-red-900">Delete</button>
+                            <button type="button" wire:click="confirmDelete({{ $point->id }})" class="text-red-600 hover:text-red-900 cursor-pointer">Delete</button>
                         </td>
                     </tr>
                 @empty
