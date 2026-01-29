@@ -40,10 +40,10 @@
 
     <!-- Interactive Card (Fixed Left Half) -->
     <div id="info-card" style="display: none;" 
-        class="fixed left-4 top-28 bottom-28 w-[40vw] z-20 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl overflow-hidden border border-white/20 flex flex-col">
+        class="absolute left-4 top-40 bottom-28 w-[40vw] z-20 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl overflow-hidden border border-white/20 flex flex-col">
         
         <!-- Header -->
-        <div class="bg-slate-900 text-white p-6 flex justify-between items-center shrink-0">
+        <div class="card-header bg-slate-900 text-white p-6 flex justify-between items-center shrink-0 cursor-move select-none">
             <div>
                 <h2 id="card-floor-title" class="text-3xl font-bold font-serif tracking-wide"></h2>
                 <p id="card-floor-view" class="text-slate-400 text-base mt-1"></p>
@@ -237,6 +237,67 @@
 
             // Attach listeners to SVG polygons
             attachPolygonListeners();
+
+            // Make card draggable
+            makeDraggable(document.getElementById('info-card'));
+        }
+
+        function makeDraggable(element) {
+            const header = element.querySelector('.card-header');
+            const dragTarget = header || element;
+            
+            if (header) {
+                header.style.cursor = 'move';
+            }
+
+            let isDragging = false;
+            let startX, startY, initialLeft, initialTop;
+
+            dragTarget.addEventListener('mousedown', dragMouseDown);
+
+            function dragMouseDown(e) {
+                // Ignore if clicking a button (like the close button)
+                if (e.target.closest('button')) return;
+
+                e.preventDefault();
+                
+                // Lock height before releasing bottom constraint to prevent collapse
+                const rect = element.getBoundingClientRect();
+                element.style.height = rect.height + 'px';
+                element.style.bottom = 'auto'; // Release bottom constraint
+                
+                // Get mouse start position
+                startX = e.clientX;
+                startY = e.clientY;
+                
+                // Get element start position
+                initialLeft = element.offsetLeft;
+                initialTop = element.offsetTop;
+                
+                isDragging = true;
+                if (header) header.style.cursor = 'grabbing';
+                
+                document.addEventListener('mousemove', elementDrag);
+                document.addEventListener('mouseup', closeDragElement);
+            }
+
+            function elementDrag(e) {
+                if (!isDragging) return;
+                e.preventDefault();
+                
+                const dx = e.clientX - startX;
+                const dy = e.clientY - startY;
+                
+                element.style.left = (initialLeft + dx) + "px";
+                element.style.top = (initialTop + dy) + "px";
+            }
+
+            function closeDragElement() {
+                isDragging = false;
+                if (header) header.style.cursor = 'move';
+                document.removeEventListener('mousemove', elementDrag);
+                document.removeEventListener('mouseup', closeDragElement);
+            }
         }
 
         function attachPolygonListeners() {

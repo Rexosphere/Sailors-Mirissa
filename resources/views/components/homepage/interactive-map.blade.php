@@ -16,7 +16,7 @@
     </div>
 
     <!-- Floating Card Popup -->
-    <div id="floating-card" class="fixed pointer-events-none z-40 opacity-0 transition-all duration-500">
+    <div id="floating-card" class="absolute pointer-events-none z-40 opacity-0 transition-all duration-500">
         <div id="card-content" class="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl max-w-sm overflow-hidden pointer-events-all transform scale-90">
             <div class="h-48 relative overflow-hidden">
                 <img id="card-image" src="" alt="" class="w-full h-full object-cover">
@@ -35,7 +35,7 @@
     </div>
 
     <!-- Curved Connection Line -->
-    <svg id="connection-line" class="fixed inset-0 pointer-events-none z-30" width="100%" height="100%">
+    <svg id="connection-line" class="absolute inset-0 pointer-events-none z-30" width="100%" height="100%">
         <path id="curved-path" fill="none" stroke="#ffffff" stroke-width="3" stroke-dasharray="8,6" opacity="0.9"
             filter="drop-shadow(0 4px 6px rgba(0,0,0,0.3))">
         </path>
@@ -70,9 +70,10 @@
     }
 
     .landmark-button.active .landmark-icon {
-        opacity: 0 !important;
-        transform: scale(0) !important;
+        opacity: 1 !important;
+        transform: scale(1.2) !important;
         transition: opacity 0.3s ease, transform 0.3s ease !important;
+        filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.8));
     }
 
     #floating-card.visible {
@@ -177,8 +178,8 @@
             0%, 100% {
                 transform: scale(1);
                 filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.9))
-                        drop-shadow(0 0 15px rgba(255, 255, 255, 0.7))
-                        drop-shadow(0 0 25px rgba(255, 255, 255, 0.5));
+                    drop-shadow(0 0 15px rgba(255, 255, 255, 0.7))
+                    drop-shadow(0 0 25px rgba(255, 255, 255, 0.5));
             }
             50% {
                 transform: scale(1.08);
@@ -367,11 +368,13 @@
 
         const button = document.querySelector(`.landmark-button[data-landmark="${activeLandmark}"]`);
         if (!button) return;
+        
+        const container = document.getElementById('interactive-map');
+        const containerRect = container.getBoundingClientRect();
 
-        // Get button position relative to viewport
-        const buttonRect = button.getBoundingClientRect();
-        const markerX = buttonRect.left + buttonRect.width / 2;
-        const markerY = buttonRect.top;
+        // Get coordinates relative to container
+        const markerX = button.offsetLeft + button.offsetWidth / 2;
+        const markerY = button.offsetTop;
 
         // Card dimensions (approx)
         const cardWidth = 384;
@@ -381,12 +384,12 @@
         let cardX = markerX + 80;
         let cardY = markerY - cardHeight / 2;
 
-        if (cardX + cardWidth > window.innerWidth - 20) {
+        if (cardX + cardWidth > containerRect.width - 20) {
             cardX = markerX - cardWidth - 80;
         }
         if (cardY < 20) cardY = 20;
-        if (cardY + cardHeight > window.innerHeight - 20) {
-            cardY = window.innerHeight - cardHeight - 20;
+        if (cardY + cardHeight > containerRect.height - 20) {
+            cardY = containerRect.height - cardHeight - 20;
         }
 
         // Position card
@@ -472,10 +475,7 @@
         }, 100);
     });
 
-    // Update popup position on scroll
-    window.addEventListener('scroll', () => {
-        positionPopup();
-    }, { passive: true });
+
 
     // Initial update if image is already loaded
     if (img.complete) {
