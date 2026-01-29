@@ -4,70 +4,14 @@ use App\Models\Room;
 use function Livewire\Volt\{state, mount};
 
 state(['room' => null]);
-state(['floor_id' => 'ground']);
-state(['floor_name' => '']);
-state(['floor_view' => '']);
-state(['floor_coords' => '']);
-state(['room_number' => 0]);
-state(['room_name' => '']);
-state(['price' => '']);
-state(['description' => '']);
-state(['image_url' => '']);
-state(['order' => 0]);
+state(['id' => null]);
 
 mount(function ($id = null) {
+    $this->id = $id;
     if ($id) {
         $this->room = Room::findOrFail($id);
-        $this->floor_id = $this->room->floor_id;
-        $this->floor_name = $this->room->floor_name;
-        $this->floor_view = $this->room->floor_view;
-        $this->floor_coords = $this->room->floor_coords;
-        $this->room_number = $this->room->room_number;
-        $this->room_name = $this->room->room_name;
-        $this->price = $this->room->price;
-        $this->description = $this->room->description;
-        $this->image_url = $this->room->image_url;
-        $this->order = $this->room->order;
     }
 });
-
-$save = function () {
-    $this->validate([
-        'floor_id' => 'required|string',
-        'floor_name' => 'required|string|max:255',
-        'floor_view' => 'required|string|max:255',
-        'floor_coords' => 'required|string',
-        'room_number' => 'required|integer',
-        'room_name' => 'required|string|max:255',
-        'price' => 'required|string|max:255',
-        'description' => 'required|string',
-        'image_url' => 'required|string',
-        'order' => 'required|integer|min:0',
-    ]);
-
-    $data = [
-        'floor_id' => $this->floor_id,
-        'floor_name' => $this->floor_name,
-        'floor_view' => $this->floor_view,
-        'floor_coords' => $this->floor_coords,
-        'room_number' => $this->room_number,
-        'room_name' => $this->room_name,
-        'price' => $this->price,
-        'description' => $this->description,
-        'image_url' => $this->image_url,
-        'order' => $this->order,
-    ];
-
-    if ($this->room) {
-        $this->room->update($data);
-        session()->flash('success', 'Room updated successfully.');
-    } else {
-        Room::create($data);
-        session()->flash('success', 'Room created successfully.');
-    }
-
-    return redirect()->route('admin.rooms.index');
-};
 
 ?>
 
@@ -81,8 +25,22 @@ $save = function () {
         </p>
     </div>
 
+    @if ($errors->any())
+        <div class="mb-4 p-4 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-100 rounded-lg">
+            <ul class="list-disc list-inside">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-        <form wire:submit="save">
+        <form action="{{ $room ? route('admin.rooms.update', $room->id) : route('admin.rooms.store') }}" 
+              method="POST" 
+              enctype="multipart/form-data">
+            @csrf
+            
             <div class="space-y-6">
                 <!-- Floor Information -->
                 <div class="border-b border-gray-200 dark:border-gray-700 pb-6">
@@ -93,50 +51,27 @@ $save = function () {
                             <label for="floor_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 Floor *
                             </label>
-                            <select id="floor_id" wire:model="floor_id"
+                            <select id="floor_id" name="floor_id"
                                 class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
-                                <option value="ground">Ground Floor</option>
-                                <option value="first">First Floor</option>
-                                <option value="second">Second Floor</option>
-                                <option value="third">Third Floor</option>
+                                <option value="ground" {{ ($room?->floor_id ?? '') == 'ground' ? 'selected' : '' }}>Ground Floor</option>
+                                <option value="first" {{ ($room?->floor_id ?? '') == 'first' ? 'selected' : '' }}>First Floor</option>
+                                <option value="second" {{ ($room?->floor_id ?? '') == 'second' ? 'selected' : '' }}>Second Floor</option>
+                                <option value="third" {{ ($room?->floor_id ?? '') == 'third' ? 'selected' : '' }}>Third Floor</option>
                             </select>
-                            @error('floor_id') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                         </div>
 
-                        <!-- Floor Name -->
-                        <div>
-                            <label for="floor_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Floor Name *
-                            </label>
-                            <input type="text" id="floor_name" wire:model="floor_name" 
-                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                                placeholder="e.g., Ground Floor"
-                                required>
-                            @error('floor_name') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                        </div>
+
 
                         <!-- Floor View -->
                         <div>
                             <label for="floor_view" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 Floor View *
                             </label>
-                            <input type="text" id="floor_view" wire:model="floor_view" 
+                            <input type="text" id="floor_view" name="floor_view" 
+                                value="{{ old('floor_view', $room?->floor_view) }}"
                                 class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
                                 placeholder="e.g., Garden View, Ocean View"
                                 required>
-                            @error('floor_view') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                        </div>
-
-                        <!-- Floor Coordinates -->
-                        <div>
-                            <label for="floor_coords" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Floor Coordinates *
-                            </label>
-                            <input type="text" id="floor_coords" wire:model="floor_coords" 
-                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white font-mono text-sm"
-                                placeholder="1282,913,1983,913,1983,1054,1282,1054"
-                                required>
-                            @error('floor_coords') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                         </div>
                     </div>
                 </div>
@@ -150,11 +85,11 @@ $save = function () {
                             <label for="room_number" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 Room Number *
                             </label>
-                            <input type="number" id="room_number" wire:model="room_number"
+                            <input type="number" id="room_number" name="room_number"
+                                value="{{ old('room_number', $room?->room_number) }}"
                                 class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
                                 placeholder="101"
                                 required>
-                            @error('room_number') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                         </div>
 
                         <!-- Room Name -->
@@ -162,11 +97,11 @@ $save = function () {
                             <label for="room_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 Room Name *
                             </label>
-                            <input type="text" id="room_name" wire:model="room_name" 
+                            <input type="text" id="room_name" name="room_name" 
+                                value="{{ old('room_name', $room?->room_name) }}"
                                 class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
                                 placeholder="Room 101"
                                 required>
-                            @error('room_name') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                         </div>
 
                         <!-- Price -->
@@ -174,11 +109,11 @@ $save = function () {
                             <label for="price" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 Price *
                             </label>
-                            <input type="text" id="price" wire:model="price" 
+                            <input type="text" id="price" name="price" 
+                                value="{{ old('price', $room?->price) }}"
                                 class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
                                 placeholder="$120"
                                 required>
-                            @error('price') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                         </div>
 
                         <!-- Order -->
@@ -186,10 +121,10 @@ $save = function () {
                             <label for="order" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 Order *
                             </label>
-                            <input type="number" id="order" wire:model="order" min="0"
+                            <input type="number" id="order" name="order" min="0"
+                                value="{{ old('order', $room?->order ?? 0) }}"
                                 class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
                                 required>
-                            @error('order') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                         </div>
 
                         <!-- Description -->
@@ -197,24 +132,50 @@ $save = function () {
                             <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 Description *
                             </label>
-                            <textarea id="description" wire:model="description" rows="4"
+                            <textarea id="description" name="description" rows="4"
                                 class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                                required></textarea>
-                            @error('description') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                required>{{ old('description', $room?->description) }}</textarea>
                         </div>
 
-                        <!-- Image URL -->
+                        <!-- Image Upload -->
                         <div class="md:col-span-2">
-                            <label for="image_url" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Image URL *
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Room Image {{ $room ? '(Leave empty to keep current)' : '*' }}
                             </label>
-                            <input type="text" id="image_url" wire:model="image_url" 
-                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                                placeholder="/images/rooms/room.png"
-                                required>
-                            @error('image_url') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                            @if($image_url)
-                                <img src="{{ $image_url }}" alt="Preview" class="mt-2 h-32 rounded border">
+                            
+                            <!-- Drag and Drop Upload Area -->
+                            <div 
+                                id="upload-area"
+                                class="relative border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center hover:border-blue-400 dark:hover:border-blue-500 transition-colors cursor-pointer"
+                                onclick="document.getElementById('image').click()"
+                            >
+                                <input type="file" id="image" name="image" accept="image/*"
+                                    class="hidden"
+                                    onchange="previewImage(this)">
+                                
+                                <!-- Default upload prompt -->
+                                <div id="upload-prompt" class="space-y-2">
+                                    <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                                        <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                    <div class="text-gray-600 dark:text-gray-400">
+                                        <span class="font-medium text-blue-600 dark:text-blue-400">Click to upload</span> or drag and drop
+                                    </div>
+                                    <p class="text-xs text-gray-500">PNG, JPG, AVIF, WEBP up to 5MB</p>
+                                </div>
+                                
+                                <!-- Image preview -->
+                                <div id="image-preview" class="hidden">
+                                    <img id="preview-img" src="" alt="Preview" class="mx-auto h-40 rounded-lg object-cover">
+                                    <p id="file-name" class="mt-2 text-sm text-green-600 dark:text-green-400"></p>
+                                </div>
+                            </div>
+                            
+                            @if($room && $room->image_url)
+                                <div class="mt-4">
+                                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Current image:</p>
+                                    <img src="{{ $room->image_url }}" alt="Current" class="h-32 rounded border object-cover">
+                                </div>
                             @endif
                         </div>
                     </div>
@@ -233,4 +194,51 @@ $save = function () {
             </div>
         </form>
     </div>
+
+    <script>
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('upload-prompt').classList.add('hidden');
+                    document.getElementById('image-preview').classList.remove('hidden');
+                    document.getElementById('preview-img').src = e.target.result;
+                    document.getElementById('file-name').textContent = input.files[0].name;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // Drag and drop handling
+        const uploadArea = document.getElementById('upload-area');
+        
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, () => {
+                uploadArea.classList.add('border-blue-500', 'bg-blue-50', 'dark:bg-blue-900/20');
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, () => {
+                uploadArea.classList.remove('border-blue-500', 'bg-blue-50', 'dark:bg-blue-900/20');
+            }, false);
+        });
+
+        uploadArea.addEventListener('drop', function(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            const input = document.getElementById('image');
+            input.files = files;
+            previewImage(input);
+        }, false);
+    </script>
 </x-layouts.admin-layout>

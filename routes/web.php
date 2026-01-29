@@ -59,6 +59,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Volt::route('/rooms', 'admin.rooms.index')->name('rooms.index');
     Volt::route('/rooms/create', 'admin.rooms.form')->name('rooms.create');
     Volt::route('/rooms/{id}/edit', 'admin.rooms.form')->name('rooms.edit');
+    Route::post('/rooms', [\App\Http\Controllers\Admin\RoomController::class, 'store'])->name('rooms.store');
+    Route::post('/rooms/{id}', [\App\Http\Controllers\Admin\RoomController::class, 'update'])->name('rooms.update');
 });
 
 require __DIR__.'/auth.php';
