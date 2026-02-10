@@ -1,4 +1,4 @@
-<!-- Map Section -->
+{{-- Map Section - Hidden
 <section class="py-30 bg-[#FAF6F0]" id= "location">
     <div class="max-w-screen-2xl mx-auto  border-2">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
@@ -29,3 +29,5 @@
         </div>
     </div>
 </section>
+--}}
+

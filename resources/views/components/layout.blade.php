@@ -8,17 +8,17 @@
 <header id="main-header" class="fixed top-0 left-0 w-full h-20 bg-white border-0 flex justify-between items-center shadow-md z-50 transition-all duration-300">
 
     <nav class="flex justify-between items-center w-full pl-8 pr-0">
-        <!-- Left Side: Saylor's Mirissa -->
+        <!-- Left Side: Sailors Mirissa -->
         <div id="header-logo" class="text-2xl font-black font-['Merienda'] text-gray-800 leading-10 transition-colors duration-300">
-            Sailor's Mirissa
+            Sailors Mirissa
         </div>
 
         <!-- Center: Navigation Menu Items -->
         <div class="menu menu-horizontal hidden md:flex justify-center items-center gap-10 mx-auto">
             <x-mary-menu-item title="HOME" link="#featured_header" class="header-nav-item text-gray-700 text-lg font-extrabold hover:text-gray-900 transition-colors" />
-            <x-mary-menu-item title="LOCATION" link="#location" class="header-nav-item text-gray-700 text-lg font-extrabold hover:text-gray-900 transition-colors" />
-            <x-mary-menu-item title="ACCOMMODATION" link="#Accomodation" class="header-nav-item text-gray-700 text-lg font-extrabold hover:text-gray-900 transition-colors" />
-            <x-mary-menu-item title="EXPERIENCES" link="#Experiences" class="header-nav-item text-gray-700 text-lg font-extrabold hover:text-gray-900 transition-colors" />
+            <x-mary-menu-item title="EXPLORE" link="#interactive-map" class="header-nav-item text-gray-700 text-lg font-extrabold hover:text-gray-900 transition-colors" />
+            <x-mary-menu-item title="ROOMS" link="#floor-booking" class="header-nav-item text-gray-700 text-lg font-extrabold hover:text-gray-900 transition-colors" />
+            <x-mary-menu-item title="ATTRACTIONS" link="#attractions" class="header-nav-item text-gray-700 text-lg font-extrabold hover:text-gray-900 transition-colors" />
             
         </div>
 

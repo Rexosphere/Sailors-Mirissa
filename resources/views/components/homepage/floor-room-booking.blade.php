@@ -1,8 +1,13 @@
-<section class="relative h-screen overflow-hidden bg-gray-100">
+<section id="floor-booking" class="relative h-screen overflow-hidden bg-gray-100">
+    <!-- Page Title -->
+    <div class="absolute top-0 left-0 right-0 z-30 text-center py-8">
+        <h1 class="text-3xl md:text-5xl font-bold font-serif text-black">Explore Our Rooms</h1>
+        <p class="text-black mt-3 text-lg font-light tracking-wide">Select a floor to discover available accommodations</p>
+    </div>
+
     <!-- Hotel Floor Image (Fullscreen Background) -->
-    <div class="relative w-full h-full">
-        <img id="hotel-image" src="{{ asset('images/hotel_floors.avif') }}" alt="Hotel Building" 
-             class="w-full h-full object-cover">
+    <div id="hotel-container" class="relative w-full h-full" style="background-color: ivory;">
+        <img src="{{ asset('images/building_transparent.png') }}" alt="Hotel Floors" class="absolute right-0 top-1/2 -translate-y-1/2 w-1/2 h-3/4 object-contain" />
         
         <!-- SVG Overlay for Lines -->
         <svg id="svg-overlay" viewBox="0 0 100 100" preserveAspectRatio="none" class="absolute inset-0 w-full h-full pointer-events-none" style="z-index: 10;">
@@ -12,6 +17,7 @@
                 </marker>
             </defs>
             <!-- Clickable floor indicators (dashed boxes) -->
+
             <!-- Note: pointer-events="auto" allows clicking these polygons even if parent config is none -->
             <polygon id="floor-box-ground" points="" stroke="white" stroke-width="3" stroke-dasharray="8,6" stroke-linecap="round" stroke-linejoin="round"
                 fill="transparent" class="floor-box cursor-pointer" style="pointer-events: auto; opacity: 0.9; filter: drop-shadow(0px 0px 1px rgba(0,0,0,0.8)); vector-effect: non-scaling-stroke;" />
@@ -34,10 +40,10 @@
 
     <!-- Interactive Card (Fixed Left Half) -->
     <div id="info-card" style="display: none;" 
-        class="fixed left-4 top-28 bottom-28 w-[40vw] z-20 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl overflow-hidden border border-white/20 flex flex-col">
+        class="absolute left-4 top-40 bottom-28 w-[40vw] z-20 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl overflow-hidden border border-white/20 flex flex-col">
         
         <!-- Header -->
-        <div class="bg-slate-900 text-white p-6 flex justify-between items-center shrink-0">
+        <div class="card-header bg-slate-900 text-white p-6 flex justify-between items-center shrink-0 cursor-move select-none">
             <div>
                 <h2 id="card-floor-title" class="text-3xl font-bold font-serif tracking-wide"></h2>
                 <p id="card-floor-view" class="text-slate-400 text-base mt-1"></p>
@@ -54,7 +60,7 @@
             <!-- Carousel Container -->
             <div class="relative group shrink-0">
                 <!-- Left Arrow -->
-                <button onclick="floorBookingScrollCarousel(-1)" 
+                <button onclick="floorBookingNavigate(-1)" 
                     class="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-slate-800 p-3 rounded-full shadow-lg z-10 opacity-0 group-hover:opacity-100 transition-opacity">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -67,7 +73,7 @@
                 </div>
     
                 <!-- Right Arrow -->
-                <button onclick="floorBookingScrollCarousel(1)" 
+                <button onclick="floorBookingNavigate(1)" 
                     class="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-slate-800 p-3 rounded-full shadow-lg z-10 opacity-0 group-hover:opacity-100 transition-opacity">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -118,8 +124,8 @@
         </div>
     </div>
 
-    <!-- Instruction Overlay (Center Bottom) -->
-    <div id="instruction-text" class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 text-center pointer-events-none">
+    <!-- Instruction Overlay (More Left of Building Image) -->
+    <div id="instruction-text" class="absolute left-1/4 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 text-center pointer-events-none">
         <div class="bg-black/40 backdrop-blur-md px-8 py-4 rounded-full border border-white/20 shadow-2xl">
             <p class="text-white text-lg font-medium tracking-wide flex items-center gap-2">
                 <span class="animate-bounce">👆</span> Select a floor to explore rooms
@@ -181,63 +187,31 @@
         (function() {
             'use strict';
             
-            // --- Configuration ---
-        const floors = [
-            {
-                id: 'ground',
-                name: 'Ground Floor',
-                view: 'Garden View',
-                originalCoords: [1282, 913, 1983, 913, 1983, 1054, 1282, 1054],
-                rooms: [
-                    { id: 101, name: 'Room 101', price: '$120 [Mock]', image: '{{ asset('images/rooms/ground_floor_1.png') }}', description: 'Experience the serenity of our garden view rooms. Direct access to our lush tropical gardens.' },
-                    { id: 102, name: 'Room 102', price: '$120 [Mock]', image: '{{ asset('images/rooms/ground_floor_2.png') }}', description: 'A spacious haven with detailed amenities and a private patio opening to the garden.' },
-                    { id: 103, name: 'Room 103', price: '$125 [Mock]', image: '{{ asset('images/rooms/ground_floor_1.png') }}', description: 'Perfect for families, this room offers extra space and easy access to the pooling area.' },
-                    { id: 104, name: 'Room 104', price: '$125 [Mock]', image: '{{ asset('images/rooms/ground_floor_2.png') }}', description: 'Enjoy the quiet corner of the ground floor with premium bedding and garden vistas.' }
-                ]
-            },
-            {
-                id: 'first',
-                name: 'First Floor',
-                view: 'Partial Ocean View',
-                originalCoords: [1278, 778, 1980, 778, 1980, 912, 1278, 912],
-                rooms: [
-                    { id: 201, name: 'Room 201', price: '$150 [Mock]', image: '{{ asset('images/rooms/first_floor_1.png') }}', description: 'Elevated views of the coastline mixed with garden greenery. A balanced retreat.' },
-                    { id: 202, name: 'Room 202', price: '$150 [Mock]', image: '{{ asset('images/rooms/first_floor_2.png') }}', description: 'Modern interiors meet tropical breeze. Features a private balcony for morning coffee.' },
-                    { id: 203, name: 'Room 203', price: '$155 [Mock]', image: '{{ asset('images/rooms/first_floor_1.png') }}', description: 'Spacious double room with partial sea views and enhanced privacy.' },
-                    { id: 204, name: 'Room 204', price: '$155 [Mock]', image: '{{ asset('images/rooms/first_floor_2.png') }}', description: 'Our most popular partial view room, featuring a large balcony and king-sized bed.' }
-                ]
-            },
-            {
-                id: 'second',
-                name: 'Second Floor',
-                view: 'Ocean View',
-                originalCoords: [1278, 654, 1984, 654, 1984, 776, 1278, 776],
-                rooms: [
-                    { id: 301, name: 'Room 301', price: '$180 [Mock]', image: '{{ asset('images/rooms/first_floor_1.png') }}', description: 'Unobstructed ocean views from the second floor. Listen to the waves from your room.' },
-                    { id: 302, name: 'Room 302', price: '$180 [Mock]', image: '{{ asset('images/rooms/first_floor_2.png') }}', description: 'Luxury living with a full sea view balcony. Perfect for couples.' },
-                    { id: 303, name: 'Room 303', price: '$185 [Mock]', image: '{{ asset('images/rooms/first_floor_1.png') }}', description: 'Corner room offering dual-aspect views of the ocean and the town.' },
-                    { id: 304, name: 'Room 304', price: '$185 [Mock]', image: '{{ asset('images/rooms/first_floor_2.png') }}', description: 'Premium ocean view room with upgraded amenities and spacious bath.' }
-                ]
-            },
-            {
-                id: 'third',
-                name: 'Third Floor',
-                view: 'Panoramic Ocean View',
-                originalCoords: [1282, 528, 1986, 528, 1986, 654, 1282, 654],
-                rooms: [
-                    { id: 401, name: 'Room 401', price: '$220 [Mock]', image: '{{ asset('images/rooms/top_floor_1.png') }}', description: 'Top of the world. Our penthouse level offers breathtaking panoramic views.' },
-                    { id: 402, name: 'Room 402', price: '$220 [Mock]', image: '{{ asset('images/rooms/top_floor_1.png') }}', description: 'Exclusive access and privacy. The ultimate luxury experience at Saylors.' },
-                    { id: 403, name: 'Room 403', price: '$230 [Mock]', image: '{{ asset('images/rooms/top_floor_1.png') }}', description: 'Master suite with expansive living area and the best sunset views.' },
-                    { id: 404, name: 'Room 404', price: '$230 [Mock]', image: '{{ asset('images/rooms/top_floor_1.png') }}', description: 'The Royal Suite. Unmatched luxury, space, and panoramic Indian Ocean vistas.' }
-                ]
-            }
-        ];
+        // --- Configuration ---
+        const floors = {!! json_encode(\App\Models\Room::all()->groupBy('floor_id')->map(function($rooms, $floorId) {
+            $firstRoom = $rooms->first();
+            return [
+                'id' => $floorId,
+                'name' => $firstRoom->floor_name,
+                'view' => $firstRoom->floor_view,
+                'originalCoords' => array_map('intval', explode(',', $firstRoom->floor_coords)),
+                'rooms' => $rooms->map(function($room) {
+                    return [
+                        'id' => $room->room_number,
+                        'name' => $room->room_name,
+                        'price' => $room->price,
+                        'image' => asset($room->image_url),
+                        'description' => $room->description,
+                    ];
+                })->values()->toArray(),
+            ];
+        })->values()->toArray()) !!};
 
         let activeFloor = null;
         let activeRoomIndex = 0;
 
         // --- DOM Elements ---
-        const imgEl = document.getElementById('hotel-image');
+        const containerEl = document.getElementById('hotel-container');
         const cardEl = document.getElementById('info-card');
         const instructionEl = document.getElementById('instruction-text');
         
@@ -259,14 +233,71 @@
             window.addEventListener('scroll', handleScroll, { passive: true });
             
             // Render map areas and attach listeners to SVG polygons
-            if (imgEl.complete) {
-                handleResize();
-            } else {
-                imgEl.onload = handleResize;
-            }
+            handleResize();
 
             // Attach listeners to SVG polygons
             attachPolygonListeners();
+
+            // Make card draggable
+            makeDraggable(document.getElementById('info-card'));
+        }
+
+        function makeDraggable(element) {
+            const header = element.querySelector('.card-header');
+            const dragTarget = header || element;
+            
+            if (header) {
+                header.style.cursor = 'move';
+            }
+
+            let isDragging = false;
+            let startX, startY, initialLeft, initialTop;
+
+            dragTarget.addEventListener('mousedown', dragMouseDown);
+
+            function dragMouseDown(e) {
+                // Ignore if clicking a button (like the close button)
+                if (e.target.closest('button')) return;
+
+                e.preventDefault();
+                
+                // Lock height before releasing bottom constraint to prevent collapse
+                const rect = element.getBoundingClientRect();
+                element.style.height = rect.height + 'px';
+                element.style.bottom = 'auto'; // Release bottom constraint
+                
+                // Get mouse start position
+                startX = e.clientX;
+                startY = e.clientY;
+                
+                // Get element start position
+                initialLeft = element.offsetLeft;
+                initialTop = element.offsetTop;
+                
+                isDragging = true;
+                if (header) header.style.cursor = 'grabbing';
+                
+                document.addEventListener('mousemove', elementDrag);
+                document.addEventListener('mouseup', closeDragElement);
+            }
+
+            function elementDrag(e) {
+                if (!isDragging) return;
+                e.preventDefault();
+                
+                const dx = e.clientX - startX;
+                const dy = e.clientY - startY;
+                
+                element.style.left = (initialLeft + dx) + "px";
+                element.style.top = (initialTop + dy) + "px";
+            }
+
+            function closeDragElement() {
+                isDragging = false;
+                if (header) header.style.cursor = 'move';
+                document.removeEventListener('mousemove', elementDrag);
+                document.removeEventListener('mouseup', closeDragElement);
+            }
         }
 
         function attachPolygonListeners() {
@@ -316,10 +347,8 @@
         }
 
         function renderCoordinates() {
-            if (imgEl.naturalWidth === 0) return;
-
-            const width = imgEl.clientWidth;
-            const height = imgEl.clientHeight;
+            const width = containerEl.clientWidth;
+            const height = containerEl.clientHeight;
             
             // Calculate how object-cover scales and positions the image
             // We use the new constant dimensions as the source of truth for the coordinate system
@@ -388,7 +417,7 @@
             
             // Generate Carousel Items
             carouselEl.innerHTML = floor.rooms.map((room, index) => `
-                <div class="min-w-[40%] h-full relative snap-start cursor-pointer border-r border-white/10" onclick="floorBookingSelectRoom(${index})">
+                <div class="carousel-item min-w-[40%] h-full relative snap-start cursor-pointer border-r border-white/10" data-index="${index}">
                     <img src="${room.image}" class="w-full h-full object-cover transition hover:opacity-90" alt="${room.name}">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent pointer-events-none"></div>
                     <div class="absolute bottom-2 left-2 text-white font-bold text-sm pointer-events-none drop-shadow-md">
@@ -400,9 +429,14 @@
             updateRoomDetails(0);
         }
 
+        
         function selectRoom(index) {
+            // Bounds check
+            if (!activeFloor || index < 0 || index >= activeFloor.rooms.length) return;
+            
             activeRoomIndex = index;
             updateRoomDetails(index);
+            updateCarouselHighlight(index);
             
             const items = carouselEl.children;
             if (items[index]) {
@@ -410,17 +444,49 @@
             }
         }
 
+        // Add event delegation for carousel items
+        carouselEl.addEventListener('click', (e) => {
+            const item = e.target.closest('.carousel-item');
+            if (item) {
+                const index = parseInt(item.dataset.index, 10);
+                if (!isNaN(index)) {
+                    selectRoom(index);
+                }
+            }
+        });
+
         function updateRoomDetails(index) {
             if (!activeFloor) return;
             const room = activeFloor.rooms[index];
+            if (!room) return;
+            
             roomTypeEl.textContent = room.name;
             roomDescEl.textContent = room.description;
             roomPriceEl.textContent = room.price;
         }
 
-        function scrollCarousel(direction) {
-            const width = carouselEl.clientWidth / 2; // Scroll half view
-            carouselEl.scrollBy({ left: width * direction, behavior: 'smooth' });
+        function updateCarouselHighlight(activeIndex) {
+            const items = Array.from(carouselEl.children);
+            items.forEach((item, index) => {
+                if (index === activeIndex) {
+                    item.classList.add('ring-4', 'ring-blue-500', 'z-10');
+                    item.classList.remove('opacity-50');
+                } else {
+                    item.classList.remove('ring-4', 'ring-blue-500', 'z-10');
+                    // Optional: fade others
+                }
+            });
+        }
+
+        function navigateRoom(direction) {
+            if (!activeFloor) return;
+            let newIndex = activeRoomIndex + direction;
+            
+            // Loop navigation or clamp? Let's clamp.
+            if (newIndex < 0) newIndex = 0;
+            if (newIndex >= activeFloor.rooms.length) newIndex = activeFloor.rooms.length - 1;
+            
+            selectRoom(newIndex);
         }
 
         function closeCard() {
@@ -437,8 +503,10 @@
         function drawLines(floor) {
             if (!floor) return;
 
-            const width = imgEl.clientWidth;
-            const height = imgEl.clientHeight;
+            const width = containerEl.clientWidth;
+            const height = containerEl.clientHeight; 
+            
+            // ... (rest of logic)
             
             // Find coordinates again (would be better to cache, but cheap to recalc)
             // ... (Duping calculation logic for conciseness or accessing updated DOM)
@@ -467,7 +535,7 @@
 
             // Get Card Position
             const cardRect = cardEl.getBoundingClientRect();
-            const imgRect = imgEl.getBoundingClientRect();
+            const imgRect = containerEl.getBoundingClientRect();
             
             // Connection Point on Card (Middle Right?)
             // If card is on left half, we want the connection to come from its Right edge.
@@ -526,7 +594,7 @@
         
         // Expose functions
         window.floorBookingCloseCard = closeCard;
-        window.floorBookingScrollCarousel = scrollCarousel;
+        window.floorBookingNavigate = navigateRoom; // Changed from scrollCarousel
         window.floorBookingSelectRoom = selectRoom;
         
         })(); // End of IIFE

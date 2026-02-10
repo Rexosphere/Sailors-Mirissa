@@ -1,14 +1,14 @@
-<footer class="bg-cover bg-center bg-no-repeat text-white" style="background-image: url('{{ asset('images/footer.avif') }}')">
-  <div class="max-w-screen-2xl mx-auto px-8 py-16">
+<footer class="bg-[#0a1628] text-white">
+  <div class="max-w-screen-2xl mx-auto px-8 py-10">
     
     <!-- Top Section: 4 columns desktop, 1 column mobile -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       
       <!-- Column 1: Logo and Social -->
       <div>
         <div class="mb-6">
           <div class="text-3xl font-normal font-sans text-neutral-50 mb-4">
-            Saylor's Mirissa
+            Sailors Mirissa
           </div>
           <div class="text-stone-400 text-sm font-normal font-sans leading-relaxed">
             Follow Us
@@ -33,11 +33,10 @@
       <div>
         <h3 class="text-lg font-medium font-serif text-neutral-50 mb-4">Quick Links</h3>
         <ul class="space-y-2">
-          <li><a href="#" class="text-stone-400 text-sm font-normal font-sans hover:text-neutral-50 transition-colors">Home</a></li>
-          <li><a href="#" class="text-stone-400 text-sm font-normal font-sans hover:text-neutral-50 transition-colors">Accommodation</a></li>
-          <li><a href="/location" class="text-stone-400 text-sm font-normal font-sans hover:text-neutral-50 transition-colors">Location</a></li>
-          <li><a href="/experiences" class="text-stone-400 text-sm font-normal font-sans hover:text-neutral-50 transition-colors">Experiences</a></li>
-          <li><a href="#" class="text-stone-400 text-sm font-normal font-sans hover:text-neutral-50 transition-colors">About</a></li>
+          <li><a href="#featured_header" class="text-stone-400 text-sm font-normal font-sans hover:text-neutral-50 transition-colors">Home</a></li>
+          <li><a href="#interactive-map" class="text-stone-400 text-sm font-normal font-sans hover:text-neutral-50 transition-colors">Explore</a></li>
+          <li><a href="#floor-booking" class="text-stone-400 text-sm font-normal font-sans hover:text-neutral-50 transition-colors">Rooms</a></li>
+          <li><a href="#attractions" class="text-stone-400 text-sm font-normal font-sans hover:text-neutral-50 transition-colors">Attractions</a></li>
         </ul>
       </div>
 
@@ -67,54 +66,13 @@
         </div>
       </div>
 
-      <!-- Column 4: Amenities -->
-      <div>
-        <h3 class="text-lg font-medium font-serif text-neutral-50 mb-4">Amenities</h3>
-        <ul class="space-y-2 text-stone-400 text-sm font-normal font-sans">
-          <li class="flex items-center">
-            <svg class="w-4 h-4 mr-2 text-neutral-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-            </svg>
-            Free Wi-Fi
-          </li>
-          <li class="flex items-center">
-            <svg class="w-4 h-4 mr-2 text-neutral-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-            </svg>
-            Free parking
-          </li>
-          <li class="flex items-center">
-            <svg class="w-4 h-4 mr-2 text-neutral-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-            </svg>
-            Accessible
-          </li>
-          <li class="flex items-center">
-            <svg class="w-4 h-4 mr-2 text-neutral-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-            </svg>
-            Air-conditioned
-          </li>
-          <li class="flex items-center">
-            <svg class="w-4 h-4 mr-2 text-neutral-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-            </svg>
-            Beach access
-          </li>
-          <li class="flex items-center">
-            <svg class="w-4 h-4 mr-2 text-neutral-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-            </svg>
-            Kid-friendly
-          </li>
-        </ul>
-      </div>
+
 
     </div>
 
     <!-- Bottom Section -->
-<div class="mt-16 pt-8 border-t border-[#846F5E] flex justify-center items-center">
-    © 2025 Saylor's Mirissa. All rights reserved.
+<div class="mt-8 pt-6 border-t border-[#1e3a5f] flex justify-center items-center">
+    © 2025 Sailors Mirissa. All rights reserved.
 </div>
 
 
