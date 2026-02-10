@@ -16,7 +16,7 @@
     </div>
 
     <!-- Floating Card Popup -->
-    <div id="floating-card" class="fixed pointer-events-none z-40 opacity-0 transition-all duration-500">
+    <div id="floating-card" class="absolute pointer-events-none z-40 opacity-0 transition-all duration-500">
         <div id="card-content" class="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl max-w-sm overflow-hidden pointer-events-all transform scale-90">
             <div class="h-48 relative overflow-hidden">
                 <img id="card-image" src="" alt="" class="w-full h-full object-cover">
@@ -35,7 +35,7 @@
     </div>
 
     <!-- Curved Connection Line -->
-    <svg id="connection-line" class="fixed inset-0 pointer-events-none z-30" width="100%" height="100%">
+    <svg id="connection-line" class="absolute inset-0 pointer-events-none z-30" width="100%" height="100%">
         <path id="curved-path" fill="none" stroke="#ffffff" stroke-width="3" stroke-dasharray="8,6" opacity="0.9"
             filter="drop-shadow(0 4px 6px rgba(0,0,0,0.3))">
         </path>
@@ -70,9 +70,10 @@
     }
 
     .landmark-button.active .landmark-icon {
-        opacity: 0 !important;
-        transform: scale(0) !important;
+        opacity: 1 !important;
+        transform: scale(1.2) !important;
         transition: opacity 0.3s ease, transform 0.3s ease !important;
+        filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.8));
     }
 
     #floating-card.visible {
@@ -93,14 +94,36 @@
         align-items: center;
     }
 
-    .landmark-button:hover .landmark-icon {
-        /* transform: scale(1.5);
-        box-shadow: 0px 11px 19px rgba(255, 255, 255, 0.6); */
+    /* Ripple effect container */
+    .landmark-button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translate(-50%, 0);
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        border: 2px solid rgba(255, 255, 255, 0.6);
+        z-index: 1;
+        animation: ripple 2s ease-out infinite;
+    }
 
+    @media (max-width: 768px) {
+        .landmark-button::before {
+            width: 50px;
+            height: 50px;
+            border: 2px solid rgba(255, 255, 255, 0.7);
+        }
+    }
+
+    .landmark-button:hover .landmark-icon {
         transform: scale(1.5);
-        /* Use filter: drop-shadow instead of box-shadow */
-        filter: drop-shadow(0px 8px 8px rgba(242, 242, 242, 0.9));
-        /* You may need to add transition to the filter property as well */
+        filter: drop-shadow(0px 10px 20px rgba(0, 0, 0, 1))
+                drop-shadow(0 0 25px rgba(255, 255, 255, 1))
+                drop-shadow(0 0 40px rgba(255, 255, 255, 0.8))
+                drop-shadow(0 0 60px rgba(255, 255, 255, 0.5));
+        animation: none;
         transition: transform 0.3s ease, filter 0.3s ease;
     }
 
@@ -109,18 +132,74 @@
         height: 48px;
         border-radius: 50%;
         background: transparent;
-        /* backdrop-filter: blur(10px); */
+        border: none;
         display: flex;
         align-items: center;
         justify-content: center;
-        /* box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2); */
         cursor: pointer;
         position: relative;
         z-index: 2;
-        /* transition: transform 0.3s ease; */
-
-        filter: drop-shadow(0 4px 12px rgba(255, 255, 255, 0.2));
+        filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.8))
+                drop-shadow(0 0 12px rgba(255, 255, 255, 0.6))
+                drop-shadow(0 0 20px rgba(255, 255, 255, 0.4));
         transition: transform 0.3s ease, filter 0.3s ease;
+        animation: gentle-pulse 2.5s ease-in-out infinite;
+    }
+
+    /* Mobile: Larger icons for better visibility */
+    @media (max-width: 768px) {
+        .landmark-icon {
+            width: 50px;
+            height: 50px;
+            filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.9))
+                    drop-shadow(0 0 15px rgba(255, 255, 255, 0.7))
+                    drop-shadow(0 0 25px rgba(255, 255, 255, 0.5));
+        }
+    }
+
+    /* Pulsing animation for icons */
+    @keyframes gentle-pulse {
+        0%, 100% {
+            transform: scale(1);
+            filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.8))
+                    drop-shadow(0 0 12px rgba(255, 255, 255, 0.6))
+                    drop-shadow(0 0 20px rgba(255, 255, 255, 0.4));
+        }
+        50% {
+            transform: scale(1.05);
+            filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.9))
+                    drop-shadow(0 0 18px rgba(255, 255, 255, 0.8))
+                    drop-shadow(0 0 30px rgba(255, 255, 255, 0.6));
+        }
+    }
+
+    @media (max-width: 768px) {
+        @keyframes gentle-pulse {
+            0%, 100% {
+                transform: scale(1);
+                filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.9))
+                    drop-shadow(0 0 15px rgba(255, 255, 255, 0.7))
+                    drop-shadow(0 0 25px rgba(255, 255, 255, 0.5));
+            }
+            50% {
+                transform: scale(1.08);
+                filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 1))
+                        drop-shadow(0 0 20px rgba(255, 255, 255, 0.9))
+                        drop-shadow(0 0 35px rgba(255, 255, 255, 0.7));
+            }
+        }
+    }
+
+    /* Ripple animation - expanding ring effect */
+    @keyframes ripple {
+        0% {
+            transform: translate(-50%, 0) scale(1);
+            opacity: 0.6;
+        }
+        100% {
+            transform: translate(-50%, 0) scale(2.5);
+            opacity: 0;
+        }
     }
 
     .landmark-tail {
@@ -142,56 +221,16 @@
     const ORIGINAL_WIDTH = 8000;
     const ORIGINAL_HEIGHT = 6000;
 
-    const landmarkData = {
-        "Parrot Island": {
-            coords: "834,2339,1470,2155,1803,2247,1590,2339,1046,2403",
-            centerX: 1350,
-            centerY: 2300,
-            image: "/images/photos/hero-background.avif",
-            description: "A small rocky island accessible by foot during low tide. Known for its colorful parrots and stunning sunset views.",
-            icon: '<img src="/images/icons/hawaii/white-parrot.avif" class="w-full h-full object-contain" alt="Parrot">'
-        },
-        "Saylors Mirissa": {
-            coords: "3293,1965,3562,1972,3541,2205,3279,2198",
-            centerX: 3420,
-            centerY: 2090,
-            image: "/images/photos/360-panaroma.avif",
-            description: "Your home base in paradise. Perfectly located in the heart of Mirissa with easy access to all major attractions.",
-            icon: '<img src="/images/icons/hawaii/white-hotel.avif" class="w-full h-full object-contain" alt="Hotel">'
-        },
-        "Coconut Tree Hill": {
-            coords: "5767,4558,5710,4912,6530,5286,7300,6000,7979,6000,7979,4678,7519,4735,7032,4742,6191,4502",
-            centerX: 6870,
-            centerY: 5250,
-            image: "/images/photos/hero-background.avif",
-            description: "Instagram-famous viewpoint with iconic coconut trees overlooking the ocean. Best visited at sunrise or sunset.",
-            icon: '<img src="/images/icons/hawaii/white-coconut-tree.avif" class="w-full h-full object-contain" alt="Coconut Tree">'
-        },
-        "Sandy Beach": {
-            coords: "1223,1760,2057,1852,2247,1958,2163,2177,1823,2226,1449,2141,827,2332,106,1795,530,1774",
-            centerX: 1176,
-            centerY: 2050,
-            image: "/images/photos/hero-background.avif",
-            description: "A pristine stretch of golden sand perfect for sunbathing and swimming. One of Mirissa's most beautiful beaches with calm waters.",
-            icon: '<img src="/images/icons/hawaii/white-sun.avif" class="w-full h-full object-contain" alt="Sun">'
-        },
-        "Surf Beach": {
-            coords: "2052,2177,3187,2261,3392,2375,3371,2601,2466,2664,1753,2254",
-            centerX: 2620,
-            centerY: 2420,
-            image: "/images/photos/hero-background.avif",
-            description: "Popular surf spot with consistent waves perfect for beginners and intermediate surfers. Surf lessons available.",
-            icon: '<img src="/images/icons/hawaii/white-surfboard.avif" class="w-full h-full object-contain" alt="Surfboard">'
-        },
-        "Turtle Beach": {
-            coords: "3367,2650,4155,2756,5428,3102,6170,3413,7011,3951,7265,4410,6876,4650,2580,2721",
-            centerX: 4900,
-            centerY: 3650,
-            image: "/images/photos/hero-background.avif",
-            description: "Protected nesting ground for sea turtles. Visit during nesting season to witness baby turtles making their way to the ocean.",
-            icon: '<img src="/images/icons/hawaii/white-turtle.avif" class="w-full h-full object-contain" alt="Turtle">'
-        }
-    };
+    const landmarkData = {!! json_encode(\App\Models\MapPoint::all()->mapWithKeys(function($point) {
+        return [$point->name => [
+            'coords' => $point->coords,
+            'centerX' => $point->center_x,
+            'centerY' => $point->center_y,
+            'image' => $point->image_url,
+            'description' => $point->description,
+            'icon' => $point->icon,
+        ]];
+    })) !!};
 
     function scaleCoordinates(coordsString, scaleX, scaleY, offsetX, offsetY) {
         const coords = coordsString.split(',').map(Number);
@@ -329,11 +368,13 @@
 
         const button = document.querySelector(`.landmark-button[data-landmark="${activeLandmark}"]`);
         if (!button) return;
+        
+        const container = document.getElementById('interactive-map');
+        const containerRect = container.getBoundingClientRect();
 
-        // Get button position relative to viewport
-        const buttonRect = button.getBoundingClientRect();
-        const markerX = buttonRect.left + buttonRect.width / 2;
-        const markerY = buttonRect.top;
+        // Get coordinates relative to container
+        const markerX = button.offsetLeft + button.offsetWidth / 2;
+        const markerY = button.offsetTop;
 
         // Card dimensions (approx)
         const cardWidth = 384;
@@ -343,12 +384,12 @@
         let cardX = markerX + 80;
         let cardY = markerY - cardHeight / 2;
 
-        if (cardX + cardWidth > window.innerWidth - 20) {
+        if (cardX + cardWidth > containerRect.width - 20) {
             cardX = markerX - cardWidth - 80;
         }
         if (cardY < 20) cardY = 20;
-        if (cardY + cardHeight > window.innerHeight - 20) {
-            cardY = window.innerHeight - cardHeight - 20;
+        if (cardY + cardHeight > containerRect.height - 20) {
+            cardY = containerRect.height - cardHeight - 20;
         }
 
         // Position card
@@ -434,10 +475,7 @@
         }, 100);
     });
 
-    // Update popup position on scroll
-    window.addEventListener('scroll', () => {
-        positionPopup();
-    }, { passive: true });
+
 
     // Initial update if image is already loaded
     if (img.complete) {
