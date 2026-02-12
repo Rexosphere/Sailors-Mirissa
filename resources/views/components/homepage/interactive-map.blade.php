@@ -1,8 +1,9 @@
 <!-- Interactive Map Section -->
-<section id="interactive-map" class="relative h-screen overflow-hidden bg-gray-100">
+<section id="interactive-map" class="hidden md:block relative h-screen overflow-hidden bg-gray-100">
     <div class="relative w-full h-full">
         <!-- Image Map -->
-        <img id="map-image" src="/images/photos/interactive-map.avif" alt="Mirissa Area Map" class="w-full h-full object-cover">
+        <img id="map-image" src="/images/photos/interactive-map.avif" alt="Mirissa Area Map"
+            class="w-full h-full object-cover">
 
         <!-- SVG Overlay for clickable areas -->
         <svg id="map-overlay" class="absolute inset-0 w-full h-full pointer-events-none" style="top: 0; left: 0;">
@@ -17,13 +18,16 @@
 
     <!-- Floating Card Popup -->
     <div id="floating-card" class="absolute pointer-events-none z-40 opacity-0 transition-all duration-500">
-        <div id="card-content" class="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl max-w-sm overflow-hidden pointer-events-all transform scale-90">
+        <div id="card-content"
+            class="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl max-w-sm overflow-hidden pointer-events-all transform scale-90">
             <div class="h-48 relative overflow-hidden">
                 <img id="card-image" src="" alt="" class="w-full h-full object-cover">
                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                <button id="close-card" class="absolute top-3 right-3 bg-white/20 backdrop-blur p-2 rounded-full hover:bg-white/40 transition">
+                <button id="close-card"
+                    class="absolute top-3 right-3 bg-white/20 backdrop-blur p-2 rounded-full hover:bg-white/40 transition">
                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12">
+                        </path>
                     </svg>
                 </button>
             </div>
@@ -119,10 +123,7 @@
 
     .landmark-button:hover .landmark-icon {
         transform: scale(1.5);
-        filter: drop-shadow(0px 10px 20px rgba(0, 0, 0, 1))
-                drop-shadow(0 0 25px rgba(255, 255, 255, 1))
-                drop-shadow(0 0 40px rgba(255, 255, 255, 0.8))
-                drop-shadow(0 0 60px rgba(255, 255, 255, 0.5));
+        filter: drop-shadow(0px 10px 20px rgba(0, 0, 0, 1)) drop-shadow(0 0 25px rgba(255, 255, 255, 1)) drop-shadow(0 0 40px rgba(255, 255, 255, 0.8)) drop-shadow(0 0 60px rgba(255, 255, 255, 0.5));
         animation: none;
         transition: transform 0.3s ease, filter 0.3s ease;
     }
@@ -139,9 +140,7 @@
         cursor: pointer;
         position: relative;
         z-index: 2;
-        filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.8))
-                drop-shadow(0 0 12px rgba(255, 255, 255, 0.6))
-                drop-shadow(0 0 20px rgba(255, 255, 255, 0.4));
+        filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 12px rgba(255, 255, 255, 0.6)) drop-shadow(0 0 20px rgba(255, 255, 255, 0.4));
         transition: transform 0.3s ease, filter 0.3s ease;
         animation: gentle-pulse 2.5s ease-in-out infinite;
     }
@@ -151,41 +150,37 @@
         .landmark-icon {
             width: 50px;
             height: 50px;
-            filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.9))
-                    drop-shadow(0 0 15px rgba(255, 255, 255, 0.7))
-                    drop-shadow(0 0 25px rgba(255, 255, 255, 0.5));
+            filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 15px rgba(255, 255, 255, 0.7)) drop-shadow(0 0 25px rgba(255, 255, 255, 0.5));
         }
     }
 
     /* Pulsing animation for icons */
     @keyframes gentle-pulse {
-        0%, 100% {
+
+        0%,
+        100% {
             transform: scale(1);
-            filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.8))
-                    drop-shadow(0 0 12px rgba(255, 255, 255, 0.6))
-                    drop-shadow(0 0 20px rgba(255, 255, 255, 0.4));
+            filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 12px rgba(255, 255, 255, 0.6)) drop-shadow(0 0 20px rgba(255, 255, 255, 0.4));
         }
+
         50% {
             transform: scale(1.05);
-            filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.9))
-                    drop-shadow(0 0 18px rgba(255, 255, 255, 0.8))
-                    drop-shadow(0 0 30px rgba(255, 255, 255, 0.6));
+            filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 18px rgba(255, 255, 255, 0.8)) drop-shadow(0 0 30px rgba(255, 255, 255, 0.6));
         }
     }
 
     @media (max-width: 768px) {
         @keyframes gentle-pulse {
-            0%, 100% {
+
+            0%,
+            100% {
                 transform: scale(1);
-                filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.9))
-                    drop-shadow(0 0 15px rgba(255, 255, 255, 0.7))
-                    drop-shadow(0 0 25px rgba(255, 255, 255, 0.5));
+                filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 15px rgba(255, 255, 255, 0.7)) drop-shadow(0 0 25px rgba(255, 255, 255, 0.5));
             }
+
             50% {
                 transform: scale(1.08);
-                filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 1))
-                        drop-shadow(0 0 20px rgba(255, 255, 255, 0.9))
-                        drop-shadow(0 0 35px rgba(255, 255, 255, 0.7));
+                filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 1)) drop-shadow(0 0 20px rgba(255, 255, 255, 0.9)) drop-shadow(0 0 35px rgba(255, 255, 255, 0.7));
             }
         }
     }
@@ -196,6 +191,7 @@
             transform: translate(-50%, 0) scale(1);
             opacity: 0.6;
         }
+
         100% {
             transform: translate(-50%, 0) scale(2.5);
             opacity: 0;
@@ -221,16 +217,18 @@
     const ORIGINAL_WIDTH = 8000;
     const ORIGINAL_HEIGHT = 6000;
 
-    const landmarkData = {!! json_encode(\App\Models\MapPoint::all()->mapWithKeys(function($point) {
-        return [$point->name => [
+    const landmarkData = {!! json_encode(\App\Models\MapPoint::all()->mapWithKeys(function ($point) {
+    return [
+        $point->name => [
             'coords' => $point->coords,
             'centerX' => $point->center_x,
             'centerY' => $point->center_y,
             'image' => $point->image_url,
             'description' => $point->description,
             'icon' => $point->icon,
-        ]];
-    })) !!};
+        ]
+    ];
+})) !!};
 
     function scaleCoordinates(coordsString, scaleX, scaleY, offsetX, offsetY) {
         const coords = coordsString.split(',').map(Number);
@@ -368,7 +366,7 @@
 
         const button = document.querySelector(`.landmark-button[data-landmark="${activeLandmark}"]`);
         if (!button) return;
-        
+
         const container = document.getElementById('interactive-map');
         const containerRect = container.getBoundingClientRect();
 
