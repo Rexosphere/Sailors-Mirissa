@@ -52,7 +52,7 @@ mount(function ($id = null) {
                                 Floor *
                             </label>
                             <select id="floor_id" name="floor_id"
-                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500">
                                 <option value="ground" {{ ($room?->floor_id ?? '') == 'ground' ? 'selected' : '' }}>Ground Floor</option>
                                 <option value="first" {{ ($room?->floor_id ?? '') == 'first' ? 'selected' : '' }}>First Floor</option>
                                 <option value="second" {{ ($room?->floor_id ?? '') == 'second' ? 'selected' : '' }}>Second Floor</option>
@@ -69,7 +69,7 @@ mount(function ($id = null) {
                             </label>
                             <input type="text" id="floor_view" name="floor_view" 
                                 value="{{ old('floor_view', $room?->floor_view) }}"
-                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500"
                                 placeholder="e.g., Garden View, Ocean View"
                                 required>
                         </div>
@@ -86,7 +86,7 @@ mount(function ($id = null) {
                                 Room Type *
                             </label>
                             <select id="room_type" name="room_type"
-                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500">
                                 <option value="double" {{ ($room?->room_type ?? 'double') == 'double' ? 'selected' : '' }}>Double Room</option>
                                 <option value="twin" {{ ($room?->room_type ?? '') == 'twin' ? 'selected' : '' }}>Twin Room</option>
                             </select>
@@ -99,7 +99,7 @@ mount(function ($id = null) {
                             </label>
                             <input type="text" id="price" name="price" 
                                 value="{{ old('price', $room?->price) }}"
-                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500"
                                 placeholder="$120"
                                 required>
                         </div>
@@ -111,7 +111,7 @@ mount(function ($id = null) {
                             </label>
                             <input type="number" id="order" name="order" min="0"
                                 value="{{ old('order', $room?->order ?? 0) }}"
-                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500"
                                 required>
                         </div>
 
@@ -121,7 +121,7 @@ mount(function ($id = null) {
                                 Description *
                             </label>
                             <textarea id="description" name="description" rows="4"
-                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500"
                                 required>{{ old('description', $room?->description) }}</textarea>
                         </div>
 
@@ -134,7 +134,7 @@ mount(function ($id = null) {
                                     @foreach($room->facilities as $index => $facility)
                                         <div class="flex gap-2 facility-item">
                                             <input type="text" name="facilities[]" value="{{ $facility }}"
-                                                class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                                                class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500"
                                                 placeholder="e.g., Free Wi-Fi">
                                             <button type="button" onclick="removeFacility(this)" 
                                                 class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
@@ -145,7 +145,7 @@ mount(function ($id = null) {
                                 @else
                                     <div class="flex gap-2 facility-item">
                                         <input type="text" name="facilities[]" value="Free Wi-Fi"
-                                            class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                                            class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500"
                                             placeholder="e.g., Free Wi-Fi">
                                         <button type="button" onclick="removeFacility(this)" 
                                             class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
@@ -154,7 +154,7 @@ mount(function ($id = null) {
                                     </div>
                                     <div class="flex gap-2 facility-item">
                                         <input type="text" name="facilities[]" value="Air Conditioning"
-                                            class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                                            class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500"
                                             placeholder="e.g., Air Conditioning">
                                         <button type="button" onclick="removeFacility(this)" 
                                             class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
@@ -163,7 +163,7 @@ mount(function ($id = null) {
                                     </div>
                                     <div class="flex gap-2 facility-item">
                                         <input type="text" name="facilities[]" value="24/7 Room Service"
-                                            class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                                            class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500"
                                             placeholder="e.g., 24/7 Room Service">
                                         <button type="button" onclick="removeFacility(this)" 
                                             class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
@@ -172,7 +172,7 @@ mount(function ($id = null) {
                                     </div>
                                     <div class="flex gap-2 facility-item">
                                         <input type="text" name="facilities[]" value="Premium Amenities"
-                                            class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                                            class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500"
                                             placeholder="e.g., Premium Amenities">
                                         <button type="button" onclick="removeFacility(this)" 
                                             class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
@@ -331,7 +331,7 @@ mount(function ($id = null) {
             div.className = 'flex gap-2 facility-item';
             div.innerHTML = `
                 <input type="text" name="facilities[]" value=""
-                    class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                    class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500"
                     placeholder="e.g., Swimming Pool">
                 <button type="button" onclick="removeFacility(this)" 
                     class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
