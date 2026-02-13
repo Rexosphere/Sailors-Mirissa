@@ -57,16 +57,9 @@ return new class extends Migration
         }
 
         Schema::table('rooms', function (Blueprint $table) {
-            // Drop room_number and room_name columns if they exist
-            if (Schema::hasColumn('rooms', 'room_number')) {
-                $table->dropColumn('room_number');
-            }
-            if (Schema::hasColumn('rooms', 'room_name')) {
-                $table->dropColumn('room_name');
-            }
-            
-            // Add unique constraint on floor_id + room_type combination
-            $table->unique(['floor_id', 'room_type'], 'floor_type_unique');
+            // Keep `room_number` and `room_name` for compatibility with existing seeders and views.
+            // NOTE: Do not add a unique constraint on floor_id + room_type because multiple rooms
+            // can share the same type on the same floor.
         });
     }
 
@@ -76,9 +69,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('rooms', function (Blueprint $table) {
-            // Drop unique constraint
-            $table->dropUnique('floor_type_unique');
-            
             // Re-add room_number and room_name columns
             $table->integer('room_number')->after('floor_coords');
             $table->string('room_name')->after('room_number');
