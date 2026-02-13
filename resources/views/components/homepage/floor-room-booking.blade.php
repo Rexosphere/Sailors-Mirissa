@@ -345,51 +345,113 @@
                 });
             }
 
+
             function renderMobileRoomCards(floor) {
                 if (!mobileRoomsEl || !floor) return;
-                mobileRoomsEl.innerHTML = floor.rooms.map(room => `
-                    <div class="bg-white rounded-xl shadow-md overflow-hidden border border-slate-100">
-                        <!-- Room Image -->
-                        <div class="relative h-48 overflow-hidden">
-                            <img src="${room.image}" alt="${room.name}" class="w-full h-full object-cover">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
-                        </div>
-                        
-                        <!-- Room Details -->
-                        <div class="p-6 space-y-4">
-                            <div class="flex justify-between items-start">
-                                <h3 class="text-xl font-bold text-slate-800">${room.name}</h3>
-                                <div class="text-right">
-                                    <span class="text-2xl font-bold text-slate-900">${room.price}</span>
-                                    <span class="text-xs text-slate-500 block">per night</span>
+                
+                // Group rooms by type
+                const roomTypes = ['double', 'twin'];
+                const cards = [];
+                
+                roomTypes.forEach(type => {
+                    const roomsOfType = floor.rooms.filter(r => r.type === type);
+                    if (roomsOfType.length === 0) return;
+                    
+                    const firstRoom = roomsOfType[0];
+                    const allImages = [];
+                    roomsOfType.forEach(room => {
+                        if (room.images && room.images.length > 0) {
+                            allImages.push(...room.images);
+                        }
+                    });
+                    
+                    if (allImages.length === 0) return;
+                    
+                    const typeName = type.charAt(0).toUpperCase() + type.slice(1) + ' Room';
+                    const carouselId = `mobile-carousel-${floor.id}-${type}`;
+                    
+                    cards.push(`
+                        <div class="bg-white rounded-xl shadow-md overflow-hidden border border-slate-100">
+                            <!-- Image Carousel -->
+                            <div class="relative h-48 overflow-hidden group">
+                                <div id="${carouselId}" class="flex transition-transform duration-300 h-full">
+                                    ${allImages.map(img => `
+                                        <img src="${img}" alt="${typeName}" class="w-full h-full object-cover flex-shrink-0">
+                                    `).join('')}
                                 </div>
+                                ${allImages.length > 1 ? `
+                                    <button onclick="navigateMobileCarousel('${carouselId}', -1)" 
+                                        class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                                        </svg>
+                                    </button>
+                                    <button onclick="navigateMobileCarousel('${carouselId}', 1)" 
+                                        class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                        </svg>
+                                    </button>
+                                    <div class="absolute bottom-2 right-2 bg-black/50 text-white px-2 py-1 rounded text-xs">
+                                        1 / ${allImages.length}
+                                    </div>
+                                ` : ''}
                             </div>
-                            <p class="text-slate-600 leading-relaxed text-sm">${room.description}</p>
-                            <div class="grid grid-cols-2 gap-3 pt-2">
-                                <div class="flex items-center text-slate-600 text-sm">
-                                    <svg class="w-4 h-4 mr-2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                    <span>Free Wi-Fi</span>
+                            
+                            <!-- Room Details -->
+                            <div class="p-6 space-y-4">
+                                <div class="flex justify-between items-start">
+                                    <h3 class="text-xl font-bold text-slate-800">${typeName}</h3>
+                                    <div class="text-right">
+                                        <span class="text-2xl font-bold text-slate-900">${firstRoom.price}</span>
+                                        <span class="text-xs text-slate-500 block">per night</span>
+                                    </div>
                                 </div>
-                                <div class="flex items-center text-slate-600 text-sm">
-                                    <svg class="w-4 h-4 mr-2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                    <span>Air Conditioning</span>
-                                </div>
-                                <div class="flex items-center text-slate-600 text-sm">
-                                    <svg class="w-4 h-4 mr-2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                    <span>24/7 Room Service</span>
-                                </div>
-                                <div class="flex items-center text-slate-600 text-sm">
-                                    <svg class="w-4 h-4 mr-2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                    <span>Premium Amenities</span>
-                                </div>
+                                <p class="text-slate-600 leading-relaxed text-sm">${firstRoom.description}</p>
+                                ${firstRoom.facilities && firstRoom.facilities.length > 0 ? `
+                                    <div class="grid grid-cols-2 gap-3 pt-2">
+                                        ${firstRoom.facilities.map(facility => `
+                                            <div class="flex items-center text-slate-600 text-sm">
+                                                <svg class="w-4 h-4 mr-2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                </svg>
+                                                <span>${facility}</span>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                ` : ''}
+                                <button class="w-full bg-slate-900 hover:bg-slate-800 text-white py-3 rounded-lg font-medium text-sm transition shadow-md hover:shadow-lg mt-4">
+                                    Check Availability & Book
+                                </button>
                             </div>
-                            <button class="w-full bg-slate-900 hover:bg-slate-800 text-white py-3 rounded-lg font-medium text-sm transition shadow-md hover:shadow-lg">
-                                Check Availability & Book
-                            </button>
                         </div>
-                    </div>
-                `).join('');
+                    `);
+                });
+                
+                mobileRoomsEl.innerHTML = cards.join('');
             }
+
+            // Mobile carousel navigation
+            window.navigateMobileCarousel = function(carouselId, direction) {
+                const carousel = document.getElementById(carouselId);
+                if (!carousel) return;
+                
+                const totalImages = carousel.children.length;
+                const currentTransform = carousel.style.transform || 'translateX(0%)';
+                const currentIndex = parseInt(currentTransform.match(/-?\d+/) || 0) / 100;
+                let newIndex = currentIndex + direction;
+                
+                if (newIndex < 0) newIndex = totalImages - 1;
+                if (newIndex >= totalImages) newIndex = 0;
+                
+                carousel.style.transform = `translateX(-${newIndex * 100}%)`;
+                
+                // Update counter
+                const counter = carousel.parentElement.querySelector('.absolute.bottom-2');
+                if (counter) {
+                    counter.textContent = `${newIndex + 1} / ${totalImages}`;
+                }
+            };
 
             // --- Initialization ---
             function init() {
@@ -646,16 +708,9 @@
                 }
             }
 
-            // Add event delegation for carousel items
-            carouselEl.addEventListener('click', (e) => {
-                const item = e.target.closest('.carousel-item');
-                if (item) {
-                    const index = parseInt(item.dataset.index, 10);
-                    if (!isNaN(index)) {
-                        selectRoom(index);
-                    }
-                }
-            });
+            // Carousel click handler removed - we now show aggregated images by room type
+            // Clicking images should only scroll, not select rooms
+            // The Double/Twin toggle is the only way to switch categories
 
             function updateRoomDetails(index) {
                 if (!activeFloor) return;
@@ -677,6 +732,9 @@
                         item.classList.remove('ring-4', 'ring-blue-500', 'z-10');
                         // Optional: fade others
                     }
+                });
+            }
+
             function navigateRoom(direction) {
                 if (!activeFloor) return;
                 
