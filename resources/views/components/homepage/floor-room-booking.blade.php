@@ -1,16 +1,30 @@
-<section id="floor-booking" class="relative h-screen overflow-hidden bg-gray-100">
+<section id="floor-booking" class="relative md:h-screen overflow-hidden bg-gray-100">
     <!-- Page Title -->
-    <div class="absolute top-0 left-0 right-0 z-30 text-center py-8">
+    <div class="relative md:absolute top-0 left-0 right-0 z-30 text-center py-8">
         <h1 class="text-3xl md:text-5xl font-bold font-serif text-black">Explore Our Rooms</h1>
-        <p class="text-black mt-3 text-lg font-light tracking-wide">Select a floor to discover available accommodations</p>
+        <p class="text-black mt-3 text-lg font-light tracking-wide hidden md:block">Select a floor to discover available
+            accommodations</p>
     </div>
 
-    <!-- Hotel Floor Image (Fullscreen Background) -->
-    <div id="hotel-container" class="relative w-full h-full" style="background-color: ivory;">
-        <img src="{{ asset('images/building_transparent.png') }}" alt="Hotel Floors" class="absolute right-0 top-1/2 -translate-y-1/2 w-1/2 h-3/4 object-contain" />
-        
+
+    <!-- Mobile Tab Navigation (Mobile Only) -->
+    <div class="md:hidden px-4 pb-4">
+        <div id="mobile-floor-tabs" class="flex gap-2 overflow-x-auto no-scrollbar"></div>
+    </div>
+
+    <!-- Mobile Room Cards Container (Mobile Only) -->
+    <div id="mobile-rooms-container" class="md:hidden px-4 pb-8 space-y-4">
+        <!-- Room cards will be dynamically generated -->
+    </div>
+
+    <!-- Desktop: Hotel Floor Image (Fullscreen Background) -->
+    <div id="hotel-container" class="hidden md:block relative w-full h-full" style="background-color: ivory;">
+        <img src="{{ asset('images/building_transparent.png') }}" alt="Hotel Floors"
+            class="absolute right-0 top-1/2 -translate-y-1/2 w-1/2 h-3/4 object-contain" />
+
         <!-- SVG Overlay for Lines -->
-        <svg id="svg-overlay" viewBox="0 0 100 100" preserveAspectRatio="none" class="absolute inset-0 w-full h-full pointer-events-none" style="z-index: 10;">
+        <svg id="svg-overlay" viewBox="0 0 100 100" preserveAspectRatio="none"
+            class="absolute inset-0 w-full h-full pointer-events-none" style="z-index: 10;">
             <defs>
                 <marker id="dot-marker" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6">
                     <circle cx="5" cy="5" r="5" fill="#fff" />
@@ -19,55 +33,63 @@
             <!-- Clickable floor indicators (dashed boxes) -->
 
             <!-- Note: pointer-events="auto" allows clicking these polygons even if parent config is none -->
-            <polygon id="floor-box-ground" points="" stroke="white" stroke-width="3" stroke-dasharray="8,6" stroke-linecap="round" stroke-linejoin="round"
-                fill="transparent" class="floor-box cursor-pointer" style="pointer-events: auto; opacity: 0.9; filter: drop-shadow(0px 0px 1px rgba(0,0,0,0.8)); vector-effect: non-scaling-stroke;" />
-            <polygon id="floor-box-first" points="" stroke="white" stroke-width="3" stroke-dasharray="8,6" stroke-linecap="round" stroke-linejoin="round"
-                fill="transparent" class="floor-box cursor-pointer" style="pointer-events: auto; opacity: 0.9; filter: drop-shadow(0px 0px 1px rgba(0,0,0,0.8)); vector-effect: non-scaling-stroke;" />
-            <polygon id="floor-box-second" points="" stroke="white" stroke-width="3" stroke-dasharray="8,6" stroke-linecap="round" stroke-linejoin="round"
-                fill="transparent" class="floor-box cursor-pointer" style="pointer-events: auto; opacity: 0.9; filter: drop-shadow(0px 0px 1px rgba(0,0,0,0.8)); vector-effect: non-scaling-stroke;" />
-            <polygon id="floor-box-third" points="" stroke="white" stroke-width="3" stroke-dasharray="8,6" stroke-linecap="round" stroke-linejoin="round"
-                fill="transparent" class="floor-box cursor-pointer" style="pointer-events: auto; opacity: 0.9; filter: drop-shadow(0px 0px 1px rgba(0,0,0,0.8)); vector-effect: non-scaling-stroke;" />
-            
+            <polygon id="floor-box-ground" points="" stroke="white" stroke-width="3" stroke-dasharray="8,6"
+                stroke-linecap="round" stroke-linejoin="round" fill="transparent" class="floor-box cursor-pointer"
+                style="pointer-events: auto; opacity: 0.9; filter: drop-shadow(0px 0px 1px rgba(0,0,0,0.8)); vector-effect: non-scaling-stroke;" />
+            <polygon id="floor-box-first" points="" stroke="white" stroke-width="3" stroke-dasharray="8,6"
+                stroke-linecap="round" stroke-linejoin="round" fill="transparent" class="floor-box cursor-pointer"
+                style="pointer-events: auto; opacity: 0.9; filter: drop-shadow(0px 0px 1px rgba(0,0,0,0.8)); vector-effect: non-scaling-stroke;" />
+            <polygon id="floor-box-second" points="" stroke="white" stroke-width="3" stroke-dasharray="8,6"
+                stroke-linecap="round" stroke-linejoin="round" fill="transparent" class="floor-box cursor-pointer"
+                style="pointer-events: auto; opacity: 0.9; filter: drop-shadow(0px 0px 1px rgba(0,0,0,0.8)); vector-effect: non-scaling-stroke;" />
+            <polygon id="floor-box-third" points="" stroke="white" stroke-width="3" stroke-dasharray="8,6"
+                stroke-linecap="round" stroke-linejoin="round" fill="transparent" class="floor-box cursor-pointer"
+                style="pointer-events: auto; opacity: 0.9; filter: drop-shadow(0px 0px 1px rgba(0,0,0,0.8)); vector-effect: non-scaling-stroke;" />
+
             <!-- Path connecting card to floor -->
-            <path id="connector-line" d="" stroke="white" stroke-width="3" stroke-dasharray="8,6" stroke-linecap="round" stroke-linejoin="round" fill="none" 
+            <path id="connector-line" d="" stroke="white" stroke-width="3" stroke-dasharray="8,6" stroke-linecap="round"
+                stroke-linejoin="round" fill="none"
                 style="filter: drop-shadow(0px 0px 0.5px rgba(0,0,0,0.8)); vector-effect: non-scaling-stroke;" />
-            
+
             <!-- Polygon highlighting the selected floor -->
-            <polygon id="floor-highlight" points="" stroke="#FCD34D" stroke-width="3" stroke-dasharray="8,6" stroke-linecap="round" stroke-linejoin="round"
-                fill="rgba(255, 255, 255, 0.1)" style="display: none; filter: drop-shadow(0px 0px 1px rgba(0,0,0,0.8)); vector-effect: non-scaling-stroke;" />
+            <polygon id="floor-highlight" points="" stroke="#FCD34D" stroke-width="3" stroke-dasharray="8,6"
+                stroke-linecap="round" stroke-linejoin="round" fill="rgba(255, 255, 255, 0.1)"
+                style="display: none; filter: drop-shadow(0px 0px 1px rgba(0,0,0,0.8)); vector-effect: non-scaling-stroke;" />
         </svg>
     </div>
 
-    <!-- Interactive Card (Fixed Left Half) -->
-    <div id="info-card" style="display: none;" 
-        class="absolute left-4 top-40 bottom-28 w-[40vw] z-20 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl overflow-hidden border border-white/20 flex flex-col">
-        
+    <!-- Desktop: Interactive Card (Fixed Left Half) -->
+    <div id="info-card" style="display: none;"
+        class="hidden md:flex absolute left-4 top-40 bottom-28 w-[40vw] z-20 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl overflow-hidden border border-white/20 flex-col">
+
         <!-- Header -->
-        <div class="card-header bg-slate-900 text-white p-6 flex justify-between items-center shrink-0 cursor-move select-none">
-            <div>
-                <h2 id="card-floor-title" class="text-3xl font-bold font-serif tracking-wide"></h2>
-                <p id="card-floor-view" class="text-slate-400 text-base mt-1"></p>
-            </div>
-            
-            <!-- Room Type Toggle -->
+        <div
+            class="card-header bg-slate-900 text-white p-6 flex justify-between items-center shrink-0 cursor-move select-none">
             <div class="flex items-center gap-4">
-                <div class="flex items-center bg-slate-800 rounded-full p-1">
-                    <button id="toggle-double" onclick="floorBookingToggleRoomType('double')" 
-                        class="room-type-toggle px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 bg-blue-500 text-white">
+                <div>
+                    <h2 id="card-floor-title" class="text-3xl font-bold font-serif tracking-wide"></h2>
+                    <p id="card-floor-view" class="text-slate-400 text-base mt-1"></p>
+                </div>
+                <!-- Room Type Toggle -->
+                <div class="flex gap-2 ml-4">
+                    <button onclick="floorBookingToggleRoomType('double')" 
+                        id="toggle-double"
+                        class="px-4 py-2 rounded-lg font-medium transition-all text-sm bg-white text-slate-900">
                         Double
                     </button>
-                    <button id="toggle-twin" onclick="floorBookingToggleRoomType('twin')" 
-                        class="room-type-toggle px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 text-slate-300 hover:text-white">
+                    <button onclick="floorBookingToggleRoomType('twin')" 
+                        id="toggle-twin"
+                        class="px-4 py-2 rounded-lg font-medium transition-all text-sm bg-slate-700 text-slate-300 hover:bg-slate-600">
                         Twin
                     </button>
                 </div>
-                
-                <button onclick="floorBookingCloseCard()" class="text-slate-400 hover:text-white transition p-2 hover:bg-white/10 rounded-full">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
             </div>
+            <button onclick="floorBookingCloseCard()"
+                class="text-slate-400 hover:text-white transition p-2 hover:bg-white/10 rounded-full">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
         </div>
 
         <!-- Scrollable Content Area -->
@@ -75,27 +97,28 @@
             <!-- Carousel Container -->
             <div class="relative group shrink-0">
                 <!-- Left Arrow -->
-                <button onclick="floorBookingNavigate(-1)" 
+                <button onclick="floorBookingNavigate(-1)"
                     class="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-slate-800 p-3 rounded-full shadow-lg z-10 opacity-0 group-hover:opacity-100 transition-opacity">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                     </svg>
                 </button>
-                
+
                 <!-- Carousel Items -->
-                <div id="room-carousel" class="flex overflow-x-auto snap-x snap-mandatory h-64 no-scrollbar scroll-smooth">
+                <div id="room-carousel"
+                    class="flex overflow-x-auto snap-x snap-mandatory h-64 no-scrollbar scroll-smooth">
                     <!-- Dynamic content will be injected here -->
                 </div>
-    
+
                 <!-- Right Arrow -->
-                <button onclick="floorBookingNavigate(1)" 
+                <button onclick="floorBookingNavigate(1)"
                     class="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-slate-800 p-3 rounded-full shadow-lg z-10 opacity-0 group-hover:opacity-100 transition-opacity">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                     </svg>
                 </button>
             </div>
-    
+
             <!-- Room Details -->
             <div class="p-8 space-y-6 flex-1 bg-white">
                 <div class="border-b border-slate-100 pb-6">
@@ -108,31 +131,42 @@
                     </div>
                     <p id="room-description" class="text-slate-600 leading-relaxed text-lg"></p>
                 </div>
-                
+
                 <!-- Additional Room Features / Mock Content to fill space -->
-                <div id="room-details">
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="flex items-center text-slate-600">
-                            <svg class="w-5 h-5 mr-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                            <span>Free Wi-Fi</span>
-                        </div>
-                        <div class="flex items-center text-slate-600">
-                            <svg class="w-5 h-5 mr-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                            <span>Air Conditioning</span>
-                        </div>
-                        <div class="flex items-center text-slate-600">
-                            <svg class="w-5 h-5 mr-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                            <span>24/7 Room Service</span>
-                        </div>
-                        <div class="flex items-center text-slate-600">
-                            <svg class="w-5 h-5 mr-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                            <span>Premium Amenities</span>
-                        </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="flex items-center text-slate-600">
+                        <svg class="w-5 h-5 mr-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                            </path>
+                        </svg>
+                        <span>Free Wi-Fi</span>
+                    </div>
+                    <div class="flex items-center text-slate-600">
+                        <svg class="w-5 h-5 mr-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                            </path>
+                        </svg>
+                        <span>Air Conditioning</span>
+                    </div>
+                    <div class="flex items-center text-slate-600">
+                        <svg class="w-5 h-5 mr-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                            </path>
+                        </svg>
+                        <span>24/7 Room Service</span>
+                    </div>
+                    <div class="flex items-center text-slate-600">
+                        <svg class="w-5 h-5 mr-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                            </path>
+                        </svg>
+                        <span>Premium Amenities</span>
                     </div>
                 </div>
 
                 <div class="pt-4">
-                    <button class="w-full bg-slate-900 hover:bg-slate-800 text-white py-4 rounded-xl font-medium text-lg transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                    <button
+                        class="w-full bg-slate-900 hover:bg-slate-800 text-white py-4 rounded-xl font-medium text-lg transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
                         Check Availability & Book
                     </button>
                     <p class="text-center text-slate-400 text-sm mt-3">No credit card required for inquiry</p>
@@ -141,8 +175,9 @@
         </div>
     </div>
 
-    <!-- Instruction Overlay (More Left of Building Image) -->
-    <div id="instruction-text" class="absolute left-1/4 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 text-center pointer-events-none">
+    <!-- Desktop: Instruction Overlay (More Left of Building Image) -->
+    <div id="instruction-text"
+        class="hidden md:block absolute left-1/4 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 text-center pointer-events-none">
         <div class="bg-black/40 backdrop-blur-md px-8 py-4 rounded-full border border-white/20 shadow-2xl">
             <p class="text-white text-lg font-medium tracking-wide flex items-center gap-2">
                 <span class="animate-bounce">👆</span> Select a floor to explore rooms
@@ -155,40 +190,51 @@
         .no-scrollbar::-webkit-scrollbar {
             display: none;
         }
+
         .no-scrollbar {
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
-        
+
         .custom-scrollbar::-webkit-scrollbar {
             width: 6px;
         }
+
         .custom-scrollbar::-webkit-scrollbar-track {
-            background: rgba(0,0,0,0.05);
+            background: rgba(0, 0, 0, 0.05);
         }
+
         .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: rgba(0,0,0,0.2);
+            background: rgba(0, 0, 0, 0.2);
             border-radius: 3px;
         }
-        
+
         .fade-in {
             animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        
+
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateX(-20px); }
-            to { opacity: 1; transform: translateX(0); }
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
 
         #svg-overlay {
             /* Handled in HTML now, but verify */
             pointer-events: none;
         }
-        
+
         /* Ensure polygon hovers work */
         .floor-box {
             transition: all 0.3s ease;
         }
+
         .floor-box:hover {
             opacity: 1 !important;
             fill: rgba(255, 255, 255, 0.1) !important;
@@ -201,472 +247,585 @@
     </style>
 
     <script>
-        (function() {
+        (function () {
             'use strict';
-            
-        // --- Configuration ---
-        const floors = {!! json_encode(\App\Models\Room::all()->groupBy('floor_id')->map(function($rooms, $floorId) {
-            $firstRoom = $rooms->first();
-            return [
-                'id' => $floorId,
-                'name' => $firstRoom->floor_name,
-                'view' => $firstRoom->floor_view,
-                'originalCoords' => array_map('intval', explode(',', $firstRoom->floor_coords)),
-                'rooms' => $rooms->map(function($room) {
-                    return [
-                        'id' => $room->id,
-                        'type' => $room->room_type,
-                        'price' => $room->price,
-                        'images' => $room->images ? array_map(function($img) { return asset($img); }, $room->images) : [],
-                        'description' => $room->description,
-                        'facilities' => $room->facilities ?? [],
-                    ];
-                })->values()->toArray(),
-            ];
-        })->values()->toArray()) !!};
 
-        let activeFloor = null;
-        let activeRoomIndex = 0;
-        let selectedRoomType = 'double';
-        let currentImageIndex = 0;
+            // --- Configuration ---
+            const floors = {!! json_encode(\App\Models\Room::all()->groupBy('floor_id')->map(function($rooms, $floorId) {
+                $firstRoom = $rooms->first();
+                return [
+                    'id' => $floorId,
+                    'name' => $firstRoom->floor_name,
+                    'view' => $firstRoom->floor_view,
+                    'originalCoords' => array_map('intval', explode(',', $firstRoom->floor_coords)),
+                    'rooms' => $rooms->map(function($room) {
+                        return [
+                            'id' => $room->id,
+                            'type' => $room->room_type,
+                            'price' => $room->price,
+                            'images' => $room->images ? array_map(function($img) { return asset($img); }, $room->images) : [],
+                            'description' => $room->description,
+                            'facilities' => $room->facilities ?? [],
+                        ];
+                    })->values()->toArray(),
+                ];
+            })->values()->toArray()) !!};
 
-        // --- DOM Elements ---
-        const containerEl = document.getElementById('hotel-container');
-        const cardEl = document.getElementById('info-card');
-        const instructionEl = document.getElementById('instruction-text');
-        
-        // SVG Elements
-        const svgConnector = document.getElementById('connector-line');
-        const svgHighlight = document.getElementById('floor-highlight');
-        
-        // Card Content Elements
-        const cardTitle = document.getElementById('card-floor-title');
-        const cardView = document.getElementById('card-floor-view');
-        const carouselEl = document.getElementById('room-carousel');
-        const roomTypeEl = document.getElementById('room-type');
-        const roomDescEl = document.getElementById('room-description');
-        const roomPriceEl = document.getElementById('room-price');
+            let activeFloor = null;
+            let activeRoomIndex = 0;
+            let selectedRoomType = 'double';
+            let currentImageIndex = 0;
 
-        // --- Initialization ---
-        function init() {
-            window.addEventListener('resize', handleResize);
-            window.addEventListener('scroll', handleScroll, { passive: true });
-            
-            // Render map areas and attach listeners to SVG polygons
-            handleResize();
+            let activeMobileFloor = null;
 
-            // Attach listeners to SVG polygons
-            attachPolygonListeners();
+            // --- DOM Elements ---
+            const containerEl = document.getElementById('hotel-container');
+            const cardEl = document.getElementById('info-card');
+            const instructionEl = document.getElementById('instruction-text');
 
-            // Make card draggable
-            makeDraggable(document.getElementById('info-card'));
-        }
+            // Mobile Elements
+            const mobileTabsEl = document.getElementById('mobile-floor-tabs');
+            const mobileRoomsEl = document.getElementById('mobile-rooms-container');
 
-        function makeDraggable(element) {
-            const header = element.querySelector('.card-header');
-            const dragTarget = header || element;
-            
-            if (header) {
-                header.style.cursor = 'move';
-            }
+            // SVG Elements
+            const svgConnector = document.getElementById('connector-line');
+            const svgHighlight = document.getElementById('floor-highlight');
 
-            let isDragging = false;
-            let startX, startY, initialLeft, initialTop;
+            // Card Content Elements
+            const cardTitle = document.getElementById('card-floor-title');
+            const cardView = document.getElementById('card-floor-view');
+            const carouselEl = document.getElementById('room-carousel');
+            const roomTypeEl = document.getElementById('room-type');
+            const roomDescEl = document.getElementById('room-description');
+            const roomPriceEl = document.getElementById('room-price');
 
-            dragTarget.addEventListener('mousedown', dragMouseDown);
-
-            function dragMouseDown(e) {
-                // Ignore if clicking a button (like the close button)
-                if (e.target.closest('button')) return;
-
-                e.preventDefault();
-                
-                // Lock height before releasing bottom constraint to prevent collapse
-                const rect = element.getBoundingClientRect();
-                element.style.height = rect.height + 'px';
-                element.style.bottom = 'auto'; // Release bottom constraint
-                
-                // Get mouse start position
-                startX = e.clientX;
-                startY = e.clientY;
-                
-                // Get element start position
-                initialLeft = element.offsetLeft;
-                initialTop = element.offsetTop;
-                
-                isDragging = true;
-                if (header) header.style.cursor = 'grabbing';
-                
-                document.addEventListener('mousemove', elementDrag);
-                document.addEventListener('mouseup', closeDragElement);
-            }
-
-            function elementDrag(e) {
-                if (!isDragging) return;
-                e.preventDefault();
-                
-                const dx = e.clientX - startX;
-                const dy = e.clientY - startY;
-                
-                element.style.left = (initialLeft + dx) + "px";
-                element.style.top = (initialTop + dy) + "px";
-            }
-
-            function closeDragElement() {
-                isDragging = false;
-                if (header) header.style.cursor = 'move';
-                document.removeEventListener('mousemove', elementDrag);
-                document.removeEventListener('mouseup', closeDragElement);
-            }
-        }
-
-        function attachPolygonListeners() {
-            floors.forEach(floor => {
-                const el = document.getElementById(`floor-box-${floor.id}`);
-                if (el) {
-                    el.addEventListener('click', (e) => {
-                        e.stopPropagation(); // Prevent document click handler
-                        selectFloor(floor);
-                    });
-                    
-                    // Add hover listeners if needed via JS, though CSS handles visuals
-                    el.addEventListener('mouseenter', () => {
-                         // Optional: could trigger tooltip
-                    });
+            // --- Mobile Functions ---
+            function initMobile() {
+                // Always render mobile tabs - CSS will handle visibility
+                renderMobileTabs();
+                if (floors.length > 0) {
+                    selectMobileFloor(floors[0]);
                 }
-            });
-        }
-
-        // --- Core Logic ---
-        function handleResize() {
-            renderCoordinates();
-            if (activeFloor) {
-                drawLines(activeFloor);
-            }
-        }
-
-        function handleScroll() {
-            if (activeFloor) {
-                drawLines(activeFloor);
-            }
-        }
-
-        // Landmark configuration with original image coordinates
-        const ORIGINAL_WIDTH = 2166;
-        const ORIGINAL_HEIGHT = 1366;
-
-        function scaleCoordinates(coordsArray, scaleX, scaleY, offsetX, offsetY) {
-            const scaledCoords = [];
-
-            for (let i = 0; i < coordsArray.length; i += 2) {
-                scaledCoords.push((coordsArray[i] * scaleX) + offsetX);
-                scaledCoords.push((coordsArray[i + 1] * scaleY) + offsetY);
             }
 
-            return scaledCoords;
-        }
-
-        function renderCoordinates() {
-            const width = containerEl.clientWidth;
-            const height = containerEl.clientHeight;
-            
-            // Calculate how object-cover scales and positions the image
-            // We use the new constant dimensions as the source of truth for the coordinate system
-            const imageAspect = ORIGINAL_WIDTH / ORIGINAL_HEIGHT;
-            const containerAspect = width / height;
-
-            let scale, offsetX, offsetY;
-
-            if (containerAspect > imageAspect) {
-                // Container is wider - image fills width, crops top/bottom
-                scale = width / ORIGINAL_WIDTH;
-                offsetX = 0;
-                offsetY = (height - (ORIGINAL_HEIGHT * scale)) / 2;
-            } else {
-                // Container is taller - image fills height, crops left/right
-                scale = height / ORIGINAL_HEIGHT;
-                offsetX = (width - (ORIGINAL_WIDTH * scale)) / 2;
-                offsetY = 0;
+            function renderMobileTabs() {
+                if (!mobileTabsEl) return;
+                mobileTabsEl.innerHTML = floors.map(floor => `
+                    <button 
+                        class="mobile-floor-tab flex-shrink-0 px-6 py-3 rounded-lg font-medium text-sm transition-all duration-300 whitespace-nowrap text-center"
+                        data-floor-id="${floor.id}"
+                        onclick="window.selectMobileFloorById('${floor.id}')"
+                    >
+                        ${floor.name}
+                    </button>
+                `).join('');
+                updateMobileTabStyles();
             }
 
-            floors.forEach(floor => {
-                // Scale coordinates using the robust logic
-                // Pass scale for both X and Y because object-cover maintains aspect ratio
-                const scaledCoords = scaleCoordinates(floor.originalCoords, scale, scale, offsetX, offsetY);
-                
-                // Update SVG points
-                const floorBox = document.getElementById(`floor-box-${floor.id}`);
-                if (floorBox) {
-                    // SVG uses the same coordinate system as the container (viewBox 0 0 width height in the other file, 
-                    // but here the SVG is viewBox="0 0 100 100" preserveAspectRatio="none".
-                    // WAIT. The target file has `viewBox="0 0 100 100"`.
-                    // The `interactive-map` implementation updates the viewBox to match the container rect:
-                    // `svg.setAttribute('viewBox', 0 0 ${containerRect.width} ${containerRect.height});`
-                    // I should probably switch this SVG to use pixel coordinates to match the robust logic easier, 
-                    // OR convert the robust pixel coords back to percentages for the 100x100 viewBox.
-                    
-                    // Converting to percentages for 100x100 viewbox:
-                    const percentCoords = scaledCoords.map((val, i) => {
-                        return (i % 2 === 0) ? (val / width) * 100 : (val / height) * 100;
-                    });
-                    
-                    floorBox.setAttribute('points', percentCoords.join(' '));
-                }
-            });
-        }
-
-        function selectFloor(floor) {
-            activeFloor = floor;
-            activeRoomIndex = 0;
-            selectedRoomType = 'double';
-            currentImageIndex = 0;
-            
-            updateToggleButtons();
-            updateCard(floor);
-            cardEl.style.display = 'flex'; // Changed to flex for the column layout
-            cardEl.classList.remove('fade-out');
-            cardEl.classList.add('fade-in');
-            
-            if (instructionEl) {
-                instructionEl.style.opacity = '0';
+            function selectMobileFloor(floor) {
+                activeMobileFloor = floor;
+                updateMobileTabStyles();
+                renderMobileRoomCards(floor);
             }
-            
-            drawLines(floor);
-        }
 
-        function toggleRoomType(type) {
-            if (!activeFloor) return;
-            selectedRoomType = type;
-            activeRoomIndex = 0;
-            currentImageIndex = 0;
-            updateToggleButtons();
-            updateCard(activeFloor);
-        }
-
-        function updateToggleButtons() {
-            const doubleBtn = document.getElementById('toggle-double');
-            const twinBtn = document.getElementById('toggle-twin');
-            
-            if (selectedRoomType === 'double') {
-                doubleBtn.classList.add('bg-blue-500', 'text-white');
-                doubleBtn.classList.remove('text-slate-300');
-                twinBtn.classList.remove('bg-blue-500', 'text-white');
-                twinBtn.classList.add('text-slate-300');
-            } else {
-                twinBtn.classList.add('bg-blue-500', 'text-white');
-                twinBtn.classList.remove('text-slate-300');
-                doubleBtn.classList.remove('bg-blue-500', 'text-white');
-                doubleBtn.classList.add('text-slate-300');
+            function selectMobileFloorById(floorId) {
+                const floor = floors.find(f => f.id === floorId);
+                if (floor) selectMobileFloor(floor);
             }
-        }
 
-        function updateCard(floor) {
-            cardTitle.textContent = floor.name;
-            cardView.textContent = floor.view;
-            
-            // Filter rooms by selected type
-            const filteredRooms = floor.rooms.filter(room => room.type === selectedRoomType);
-            
-            if (filteredRooms.length === 0) {
-                carouselEl.innerHTML = '<div class="flex items-center justify-center w-full h-full text-slate-500"><p>No ' + selectedRoomType + ' rooms available on this floor</p></div>';
-                roomTypeEl.textContent = 'No rooms available';
-                roomDescEl.textContent = '';
-                roomPriceEl.textContent = '';
-                return;
+            function updateMobileTabStyles() {
+                const tabs = document.querySelectorAll('.mobile-floor-tab');
+                tabs.forEach(tab => {
+                    const floorId = tab.dataset.floorId;
+                    if (activeMobileFloor && floorId === activeMobileFloor.id) {
+                        tab.className = 'mobile-floor-tab flex-shrink-0 px-6 py-3 rounded-lg font-medium text-sm transition-all duration-300 whitespace-nowrap text-center bg-slate-900 text-white shadow-lg';
+                    } else {
+                        tab.className = 'mobile-floor-tab flex-shrink-0 px-6 py-3 rounded-lg font-medium text-sm transition-all duration-300 whitespace-nowrap text-center bg-white text-slate-700 border border-slate-200 hover:border-slate-300';
+                    }
+                });
             }
-            
-            // Aggregate all images from all rooms of this type
-            const allImages = [];
-            filteredRooms.forEach(room => {
-                if (room.images && room.images.length > 0) {
-                    room.images.forEach(img => allImages.push(img));
-                }
-            });
-            
-            // Generate Carousel with all images
-            carouselEl.innerHTML = allImages.map((img, index) => `
-                <div class="carousel-item min-w-full h-full relative snap-start">
-                    <img src="${img}" class="w-full h-full object-cover" alt="${selectedRoomType} room - Image ${index + 1}">
-                    <div class="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded">
-                        ${index + 1} / ${allImages.length}
+
+            function renderMobileRoomCards(floor) {
+                if (!mobileRoomsEl || !floor) return;
+                mobileRoomsEl.innerHTML = floor.rooms.map(room => `
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden border border-slate-100">
+                        <!-- Room Image -->
+                        <div class="relative h-48 overflow-hidden">
+                            <img src="${room.image}" alt="${room.name}" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+                        </div>
+                        
+                        <!-- Room Details -->
+                        <div class="p-6 space-y-4">
+                            <div class="flex justify-between items-start">
+                                <h3 class="text-xl font-bold text-slate-800">${room.name}</h3>
+                                <div class="text-right">
+                                    <span class="text-2xl font-bold text-slate-900">${room.price}</span>
+                                    <span class="text-xs text-slate-500 block">per night</span>
+                                </div>
+                            </div>
+                            <p class="text-slate-600 leading-relaxed text-sm">${room.description}</p>
+                            <div class="grid grid-cols-2 gap-3 pt-2">
+                                <div class="flex items-center text-slate-600 text-sm">
+                                    <svg class="w-4 h-4 mr-2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    <span>Free Wi-Fi</span>
+                                </div>
+                                <div class="flex items-center text-slate-600 text-sm">
+                                    <svg class="w-4 h-4 mr-2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    <span>Air Conditioning</span>
+                                </div>
+                                <div class="flex items-center text-slate-600 text-sm">
+                                    <svg class="w-4 h-4 mr-2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    <span>24/7 Room Service</span>
+                                </div>
+                                <div class="flex items-center text-slate-600 text-sm">
+                                    <svg class="w-4 h-4 mr-2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    <span>Premium Amenities</span>
+                                </div>
+                            </div>
+                            <button class="w-full bg-slate-900 hover:bg-slate-800 text-white py-3 rounded-lg font-medium text-sm transition shadow-md hover:shadow-lg">
+                                Check Availability & Book
+                            </button>
+                        </div>
                     </div>
-                </div>
-            `).join('');
+                `).join('');
+            }
 
-            // Store filtered rooms and images for later reference
-            activeFloor.filteredRooms = filteredRooms;
-            activeFloor.allImages = allImages;
-            
-            // Update room details with general information about the room type
-            updateRoomTypeDetails(filteredRooms, selectedRoomType);
-        }
+            // --- Initialization ---
+            function init() {
+                window.addEventListener('resize', handleResize);
+                window.addEventListener('scroll', handleScroll, { passive: true });
 
-        function updateRoomTypeDetails(rooms, roomType) {
-            // Display general information about the room type
-            const roomTypeName = roomType.charAt(0).toUpperCase() + roomType.slice(1) + ' Room';
-            roomTypeEl.textContent = roomTypeName;
-            
-            // Use description from first room as general description
-            if (rooms.length > 0) {
-                roomDescEl.textContent = rooms[0].description;
-                roomPriceEl.textContent = rooms[0].price;
+                // Render map areas and attach listeners to SVG polygons
+                handleResize();
+
+                // Attach listeners to SVG polygons
+                attachPolygonListeners();
+
+                // Make card draggable
+                makeDraggable(document.getElementById('info-card'));
+
+                // Initialize mobile
+                initMobile();
+            }
+
+            function makeDraggable(element) {
+                const header = element.querySelector('.card-header');
+                const dragTarget = header || element;
+
+                if (header) {
+                    header.style.cursor = 'move';
+                }
+
+                let isDragging = false;
+                let startX, startY, initialLeft, initialTop;
+
+                dragTarget.addEventListener('mousedown', dragMouseDown);
+
+                function dragMouseDown(e) {
+                    // Ignore if clicking a button (like the close button)
+                    if (e.target.closest('button')) return;
+
+                    e.preventDefault();
+
+                    // Lock height before releasing bottom constraint to prevent collapse
+                    const rect = element.getBoundingClientRect();
+                    element.style.height = rect.height + 'px';
+                    element.style.bottom = 'auto'; // Release bottom constraint
+
+                    // Get mouse start position
+                    startX = e.clientX;
+                    startY = e.clientY;
+
+                    // Get element start position
+                    initialLeft = element.offsetLeft;
+                    initialTop = element.offsetTop;
+
+                    isDragging = true;
+                    if (header) header.style.cursor = 'grabbing';
+
+                    document.addEventListener('mousemove', elementDrag);
+                    document.addEventListener('mouseup', closeDragElement);
+                }
+
+                function elementDrag(e) {
+                    if (!isDragging) return;
+                    e.preventDefault();
+
+                    const dx = e.clientX - startX;
+                    const dy = e.clientY - startY;
+
+                    element.style.left = (initialLeft + dx) + "px";
+                    element.style.top = (initialTop + dy) + "px";
+                }
+
+                function closeDragElement() {
+                    isDragging = false;
+                    if (header) header.style.cursor = 'move';
+                    document.removeEventListener('mousemove', elementDrag);
+                    document.removeEventListener('mouseup', closeDragElement);
+                }
+            }
+
+            function attachPolygonListeners() {
+                floors.forEach(floor => {
+                    const el = document.getElementById(`floor-box-${floor.id}`);
+                    if (el) {
+                        el.addEventListener('click', (e) => {
+                            e.stopPropagation(); // Prevent document click handler
+                            selectFloor(floor);
+                        });
+
+                        // Add hover listeners if needed via JS, though CSS handles visuals
+                        el.addEventListener('mouseenter', () => {
+                            // Optional: could trigger tooltip
+                        });
+                    }
+                });
+            }
+
+            // --- Core Logic ---
+            function handleResize() {
+                renderCoordinates();
+                if (activeFloor) {
+                    drawLines(activeFloor);
+                }
+            }
+
+            function handleScroll() {
+                if (activeFloor) {
+                    drawLines(activeFloor);
+                }
+            }
+
+            // Landmark configuration with original image coordinates
+            const ORIGINAL_WIDTH = 2166;
+            const ORIGINAL_HEIGHT = 1366;
+
+            function scaleCoordinates(coordsArray, scaleX, scaleY, offsetX, offsetY) {
+                const scaledCoords = [];
+
+                for (let i = 0; i < coordsArray.length; i += 2) {
+                    scaledCoords.push((coordsArray[i] * scaleX) + offsetX);
+                    scaledCoords.push((coordsArray[i + 1] * scaleY) + offsetY);
+                }
+
+                return scaledCoords;
+            }
+
+            function renderCoordinates() {
+                const width = containerEl.clientWidth;
+                const height = containerEl.clientHeight;
+
+                // Calculate how object-cover scales and positions the image
+                // We use the new constant dimensions as the source of truth for the coordinate system
+                const imageAspect = ORIGINAL_WIDTH / ORIGINAL_HEIGHT;
+                const containerAspect = width / height;
+
+                let scale, offsetX, offsetY;
+
+                if (containerAspect > imageAspect) {
+                    // Container is wider - image fills width, crops top/bottom
+                    scale = width / ORIGINAL_WIDTH;
+                    offsetX = 0;
+                    offsetY = (height - (ORIGINAL_HEIGHT * scale)) / 2;
+                } else {
+                    // Container is taller - image fills height, crops left/right
+                    scale = height / ORIGINAL_HEIGHT;
+                    offsetX = (width - (ORIGINAL_WIDTH * scale)) / 2;
+                    offsetY = 0;
+                }
+
+                floors.forEach(floor => {
+                    // Scale coordinates using the robust logic
+                    // Pass scale for both X and Y because object-cover maintains aspect ratio
+                    const scaledCoords = scaleCoordinates(floor.originalCoords, scale, scale, offsetX, offsetY);
+
+                    // Update SVG points
+                    const floorBox = document.getElementById(`floor-box-${floor.id}`);
+                    if (floorBox) {
+                        // SVG uses the same coordinate system as the container (viewBox 0 0 width height in the other file, 
+                        // but here the SVG is viewBox="0 0 100 100" preserveAspectRatio="none".
+                        // WAIT. The target file has `viewBox="0 0 100 100"`.
+                        // The `interactive-map` implementation updates the viewBox to match the container rect:
+                        // `svg.setAttribute('viewBox', 0 0 ${containerRect.width} ${containerRect.height});`
+                        // I should probably switch this SVG to use pixel coordinates to match the robust logic easier, 
+                        // OR convert the robust pixel coords back to percentages for the 100x100 viewBox.
+
+                        // Converting to percentages for 100x100 viewbox:
+                        const percentCoords = scaledCoords.map((val, i) => {
+                            return (i % 2 === 0) ? (val / width) * 100 : (val / height) * 100;
+                        });
+
+                        floorBox.setAttribute('points', percentCoords.join(' '));
+                    }
+                });
+            }
+
+            function selectFloor(floor) {
+                activeFloor = floor;
+                activeRoomIndex = 0;
+
+                updateCard(floor);
+                cardEl.style.display = 'flex'; // Changed to flex for the column layout
+                cardEl.classList.remove('fade-out');
+                cardEl.classList.add('fade-in');
+
+                if (instructionEl) {
+                    instructionEl.style.opacity = '0';
+                }
+
+                drawLines(floor);
+            }
+
+            function updateCard(floor) {
+                cardTitle.textContent = floor.name;
+                cardView.textContent = floor.view;
+
+                // Filter rooms by selected room type
+                const filteredRooms = floor.rooms.filter(room => room.type === selectedRoomType);
                 
-                // Update facilities dynamically
+                if (filteredRooms.length === 0) {
+                    carouselEl.innerHTML = '<div class="p-8 text-center text-gray-500">No rooms of this type available</div>';
+                    return;
+                }
+
+                // Aggregate all images from filtered rooms
+                const allImages = [];
+                filteredRooms.forEach(room => {
+                    if (room.images && room.images.length > 0) {
+                        allImages.push(...room.images);
+                    }
+                });
+
+                // Generate Carousel Items from aggregated images
+                carouselEl.innerHTML = allImages.map((imageUrl, index) => `
+                    <div class="carousel-item min-w-[40%] h-full relative snap-start cursor-pointer border-r border-white/10" data-index="${index}">
+                        <img src="${imageUrl}" class="w-full h-full object-cover transition hover:opacity-90" alt="Room image">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent pointer-events-none"></div>
+                    </div>
+                `).join('');
+
+                // Update room details with the first room of this type
+                const firstRoom = filteredRooms[0];
+                const roomTypeName = selectedRoomType.charAt(0).toUpperCase() + selectedRoomType.slice(1) + ' Room';
+                roomTypeEl.textContent = roomTypeName;
+                roomDescEl.textContent = firstRoom.description;
+                roomPriceEl.textContent = firstRoom.price;
+                
+                // Update facilities if present
+                updateFacilities(firstRoom.facilities);
+            }
+
+            function updateFacilities(facilities) {
                 const facilitiesContainer = document.querySelector('#room-details .grid.grid-cols-2');
-                if (facilitiesContainer && rooms[0].facilities) {
-                    facilitiesContainer.innerHTML = rooms[0].facilities.map(facility => `
+                if (facilitiesContainer && facilities && facilities.length > 0) {
+                    facilitiesContainer.innerHTML = facilities.map(facility => `
                         <div class="flex items-center text-slate-600">
-                            <svg class="w-5 h-5 mr-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            <svg class="w-5 h-5 mr-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
                             <span>${facility}</span>
                         </div>
                     `).join('');
                 }
             }
-        }
-        
-        function selectRoom(index) {
-            // Not used anymore since we show aggregated images
-            // Keep for backward compatibility
-        }
 
-        // Add event delegation for carousel items - removed since we don't select individual rooms anymore
-        // Images are just navigated with arrows
 
-        function updateRoomDetails(index) {
-            // Removed - using updateRoomTypeDetails instead
-        }
+            function selectRoom(index) {
+                // Bounds check
+                if (!activeFloor || index < 0 || index >= activeFloor.rooms.length) return;
 
-        function updateCarouselHighlight(activeIndex) {
-            // Not needed anymore since we show aggregated images
-        }
+                activeRoomIndex = index;
+                updateRoomDetails(index);
+                updateCarouselHighlight(index);
 
-        function navigateRoom(direction) {
-            if (!activeFloor || !activeFloor.allImages) return;
-            
-            // Navigate through aggregated images
-            const totalImages = activeFloor.allImages.length;
-            let newImgIndex = currentImageIndex + direction;
-            
-            if (newImgIndex < 0) newImgIndex = 0;
-            if (newImgIndex >= totalImages) newImgIndex = totalImages - 1;
-            
-            currentImageIndex = newImgIndex;
-            
-            const items = carouselEl.children;
-            if (items[newImgIndex]) {
-                items[newImgIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                const items = carouselEl.children;
+                if (items[index]) {
+                    items[index].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                }
             }
-        }
 
-        function closeCard() {
-            cardEl.style.display = 'none';
-            svgConnector.setAttribute('d', '');
-            svgHighlight.style.display = 'none';
-            activeFloor = null;
-            
-            if (instructionEl) {
-                instructionEl.style.opacity = '1';
+            // Add event delegation for carousel items
+            carouselEl.addEventListener('click', (e) => {
+                const item = e.target.closest('.carousel-item');
+                if (item) {
+                    const index = parseInt(item.dataset.index, 10);
+                    if (!isNaN(index)) {
+                        selectRoom(index);
+                    }
+                }
+            });
+
+            function updateRoomDetails(index) {
+                if (!activeFloor) return;
+                const room = activeFloor.rooms[index];
+                if (!room) return;
+
+                roomTypeEl.textContent = room.name;
+                roomDescEl.textContent = room.description;
+                roomPriceEl.textContent = room.price;
             }
-        }
 
-        function drawLines(floor) {
-            if (!floor) return;
-
-            const width = containerEl.clientWidth;
-            const height = containerEl.clientHeight; 
-            
-            // ... (rest of logic)
-            
-            // Find coordinates again (would be better to cache, but cheap to recalc)
-            // ... (Duping calculation logic for conciseness or accessing updated DOM)
-            // Actually, we can just grab the points from the attribute if we trust renderCoordinates ran.
-            const floorBox = document.getElementById(`floor-box-${floor.id}`);
-            if (!floorBox) return;
-            
-            const pointsStr = floorBox.getAttribute('points');
-            if (!pointsStr) return;
-            
-            const coords = pointsStr.split(' ').map(Number);
-            
-            // Calculate Center of Floor
-            let sumX = 0, sumY = 0, count = 0;
-            for (let i = 0; i < coords.length; i += 2) {
-                sumX += coords[i];
-                sumY += coords[i + 1];
-                count++;
+            function updateCarouselHighlight(activeIndex) {
+                const items = Array.from(carouselEl.children);
+                items.forEach((item, index) => {
+                    if (index === activeIndex) {
+                        item.classList.add('ring-4', 'ring-blue-500', 'z-10');
+                        item.classList.remove('opacity-50');
+                    } else {
+                        item.classList.remove('ring-4', 'ring-blue-500', 'z-10');
+                        // Optional: fade others
+                    }
+            function navigateRoom(direction) {
+                if (!activeFloor) return;
+                
+                // Just navigate through carousel images, don't change room type
+                const totalImages = carouselEl.children.length;
+                if (totalImages === 0) return;
+                
+                currentImageIndex = (currentImageIndex + direction + totalImages) % totalImages;
+                
+                // Scroll to the image
+                const targetItem = carouselEl.children[currentImageIndex];
+                if (targetItem) {
+                    targetItem.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                }
             }
-            const centerX = sumX / count;
-            const centerY = sumY / count;
 
-            // Highlight
-            svgHighlight.setAttribute('points', pointsStr);
-            svgHighlight.style.display = 'block';
+            function closeCard() {
+                cardEl.style.display = 'none';
+                svgConnector.setAttribute('d', '');
+                svgHighlight.style.display = 'none';
+                activeFloor = null;
 
-            // Get Card Position
-            const cardRect = cardEl.getBoundingClientRect();
-            const imgRect = containerEl.getBoundingClientRect();
-            
-            // Connection Point on Card (Middle Right?)
-            // If card is on left half, we want the connection to come from its Right edge.
-            const cardRightX = (cardRect.right - imgRect.left) / width * 100;
-            const cardCenterY = ((cardRect.top + cardRect.height / 2) - imgRect.top) / height * 100;
-
-            // START: Card Right Edge
-            const sx = cardRightX;
-            const sy = cardCenterY;
-            
-            // END: Floor Center
-            const ex = centerX;
-            const ey = centerY;
-            
-            // Control Points for Cubic Bezier to make "Curved Dashed Line"
-            // We want it to go out right, then curve to target.
-            // C cp1x cp1y, cp2x cp2y, endx endy
-            
-            // Determine distance
-            const dist = Math.abs(ex - sx);
-            
-            // CP1: Push out to the right from card
-            const cp1x = sx + (dist * 0.5); 
-            const cp1y = sy;
-            
-            // CP2: Approach floor from left? or just smooth curve?
-            // Let's make it S-shaped horizontalish
-            const cp2x = ex - (dist * 0.5);
-            const cp2y = ey;
-            
-            // Alternative: Simply use midpoint x
-            const midX = (sx + ex) / 2;
-            
-            // Use smoother curve
-             const d = `M ${sx} ${sy} C ${midX} ${sy}, ${midX} ${ey}, ${ex} ${ey}`;
-
-            svgConnector.setAttribute('d', d);
-        }
-
-        // Click outside to close
-        document.addEventListener('click', (e) => {
-            if (!activeFloor) return;
-            
-            const clickedBox = e.target.closest('.floor-box');
-            if (clickedBox) return; // Handled by box click
-            
-            const clickedCard = cardEl.contains(e.target);
-            
-            if (!clickedCard) {
-                closeCard();
+                if (instructionEl) {
+                    instructionEl.style.opacity = '1';
+                }
             }
-        });
 
-        // Initialize on load
-        init();
-        
-        // Expose functions
-        window.floorBookingCloseCard = closeCard;
-        window.floorBookingNavigate = navigateRoom;
-        window.floorBookingSelectRoom = selectRoom;
-        window.floorBookingToggleRoomType = toggleRoomType;
-        
+            function drawLines(floor) {
+                if (!floor) return;
+
+                const width = containerEl.clientWidth;
+                const height = containerEl.clientHeight;
+
+                // ... (rest of logic)
+
+                // Find coordinates again (would be better to cache, but cheap to recalc)
+                // ... (Duping calculation logic for conciseness or accessing updated DOM)
+                // Actually, we can just grab the points from the attribute if we trust renderCoordinates ran.
+                const floorBox = document.getElementById(`floor-box-${floor.id}`);
+                if (!floorBox) return;
+
+                const pointsStr = floorBox.getAttribute('points');
+                if (!pointsStr) return;
+
+                const coords = pointsStr.split(' ').map(Number);
+
+                // Calculate Center of Floor
+                let sumX = 0, sumY = 0, count = 0;
+                for (let i = 0; i < coords.length; i += 2) {
+                    sumX += coords[i];
+                    sumY += coords[i + 1];
+                    count++;
+                }
+                const centerX = sumX / count;
+                const centerY = sumY / count;
+
+                // Highlight
+                svgHighlight.setAttribute('points', pointsStr);
+                svgHighlight.style.display = 'block';
+
+                // Get Card Position
+                const cardRect = cardEl.getBoundingClientRect();
+                const imgRect = containerEl.getBoundingClientRect();
+
+                // Connection Point on Card (Middle Right?)
+                // If card is on left half, we want the connection to come from its Right edge.
+                const cardRightX = (cardRect.right - imgRect.left) / width * 100;
+                const cardCenterY = ((cardRect.top + cardRect.height / 2) - imgRect.top) / height * 100;
+
+                // START: Card Right Edge
+                const sx = cardRightX;
+                const sy = cardCenterY;
+
+                // END: Floor Center
+                const ex = centerX;
+                const ey = centerY;
+
+                // Control Points for Cubic Bezier to make "Curved Dashed Line"
+                // We want it to go out right, then curve to target.
+                // C cp1x cp1y, cp2x cp2y, endx endy
+
+                // Determine distance
+                const dist = Math.abs(ex - sx);
+
+                // CP1: Push out to the right from card
+                const cp1x = sx + (dist * 0.5);
+                const cp1y = sy;
+
+                // CP2: Approach floor from left? or just smooth curve?
+                // Let's make it S-shaped horizontalish
+                const cp2x = ex - (dist * 0.5);
+                const cp2y = ey;
+
+                // Alternative: Simply use midpoint x
+                const midX = (sx + ex) / 2;
+
+                // Use smoother curve
+                const d = `M ${sx} ${sy} C ${midX} ${sy}, ${midX} ${ey}, ${ex} ${ey}`;
+
+                svgConnector.setAttribute('d', d);
+            }
+
+            // Click outside to close
+            document.addEventListener('click', (e) => {
+                if (!activeFloor) return;
+
+                const clickedBox = e.target.closest('.floor-box');
+                if (clickedBox) return; // Handled by box click
+
+                const clickedCard = cardEl.contains(e.target);
+
+                if (!clickedCard) {
+                    closeCard();
+                }
+            });
+
+            // Initialize on load
+            init();
+
+            // Room type toggle function
+            function toggleRoomType(type) {
+                if (selectedRoomType === type || !activeFloor) return;
+                
+                selectedRoomType = type;
+                currentImageIndex = 0;
+                
+                // Update toggle buttons
+                const doubleBtn = document.getElementById('toggle-double');
+                const twinBtn = document.getElementById('toggle-twin');
+                
+                if (type === 'double') {
+                    doubleBtn.className = 'px-4 py-2 rounded-lg font-medium transition-all text-sm bg-white text-slate-900';
+                    twinBtn.className = 'px-4 py-2 rounded-lg font-medium transition-all text-sm bg-slate-700 text-slate-300 hover:bg-slate-600';
+                } else {
+                    twinBtn.className = 'px-4 py-2 rounded-lg font-medium transition-all text-sm bg-white text-slate-900';
+                    doubleBtn.className = 'px-4 py-2 rounded-lg font-medium transition-all text-sm bg-slate-700 text-slate-300 hover:bg-slate-600';
+                }
+                
+                // Update card with filtered rooms
+                updateCard(activeFloor);
+            }
+
+            // Expose functions
+            window.floorBookingCloseCard = closeCard;
+            window.floorBookingNavigate = navigateRoom;
+            window.floorBookingSelectRoom = selectRoom;
+            window.floorBookingToggleRoomType = toggleRoomType;
+            window.selectMobileFloorById = selectMobileFloorById;
+
         })(); // End of IIFE
     </script>
 </section>
