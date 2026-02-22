@@ -9,7 +9,7 @@
 
     <!-- Mobile Tab Navigation (Mobile Only) -->
     <div class="md:hidden px-4 pb-4">
-        <div id="mobile-floor-tabs" class="flex gap-2 overflow-x-auto no-scrollbar"></div>
+        <div id="mobile-floor-tabs" class="flex flex-wrap gap-2"></div>
     </div>
 
     <!-- Mobile Room Cards Container (Mobile Only) -->

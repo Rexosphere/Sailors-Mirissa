@@ -4,7 +4,7 @@
     <div class="absolute inset-0">
         <img src="/images/photos/hero-background.avif"
             alt="Sailor's Mirissa beachfront hotel with ocean view in Mirissa, Sri Lanka"
-            class="w-full h-full object-cover animate-ken-burns">
+            class="w-full h-full object-cover object-center md:object-center animate-ken-burns">
     </div>
 
     <!-- Dark overlay -->
