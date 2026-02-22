@@ -92,72 +92,77 @@
             updateHeaderStyle();
         });
 
-        // ── Scroll-snap: hero ↔ interactive-map only ───────────────────────
+        // ── Scroll-snap: hero ↔ interactive-map ────────────────────────────
         (function () {
-            const SNAP_DURATION = 600; // ms
-            let isSnapping = false;
-            let touchStartY = 0;
+            let isSnapping    = false;
+            let heroVisible   = false; // hero is ≥85% on screen
+            let mapVisible    = false; // map  is ≥85% on screen
+            let touchStartY   = 0;
+            let cooldown      = false; // short debounce after snap fires
 
-            function getSnapTargets() {
+            // Watch each section with IntersectionObserver
+            const io = new IntersectionObserver((entries) => {
+                entries.forEach(e => {
+                    if (e.target.id === 'featured_header') heroVisible = e.isIntersecting;
+                    if (e.target.id === 'interactive-map') mapVisible  = e.isIntersecting;
+                });
+            }, { threshold: 0.85 });
+
+            document.addEventListener('DOMContentLoaded', () => {
                 const hero = document.getElementById('featured_header');
-                const map = document.getElementById('interactive-map');
-                if (!hero || !map) return null;
-                return { hero, map };
-            }
+                const map  = document.getElementById('interactive-map');
+                if (hero) io.observe(hero);
+                if (map)  io.observe(map);
+            });
 
             function snapTo(y) {
+                if (cooldown || isSnapping) return;
+                cooldown   = true;
                 isSnapping = true;
                 window.scrollTo({ top: y, behavior: 'smooth' });
-                setTimeout(() => { isSnapping = false; }, SNAP_DURATION + 100);
+                // Release flags once scroll settles
+                const poll = setInterval(() => {
+                    if (Math.abs(window.scrollY - y) < 5) {
+                        clearInterval(poll);
+                        isSnapping = false;
+                        setTimeout(() => { cooldown = false; }, 300);
+                    }
+                }, 50);
+                setTimeout(() => { clearInterval(poll); isSnapping = false; cooldown = false; }, 1200);
             }
 
-            function handleSnap(deltaY) {
-                if (isSnapping) return;
-                const t = getSnapTargets();
-                if (!t) return;
+            function trySnap(deltaY) {
+                const hero = document.getElementById('featured_header');
+                const map  = document.getElementById('interactive-map');
+                if (!hero || !map) return false;
 
-                const heroTop = t.hero.getBoundingClientRect().top + window.scrollY;
-                const mapTop = t.map.getBoundingClientRect().top + window.scrollY;
-                const scrollY = window.scrollY;
-                const vh = window.innerHeight;
-
-                // Only snap while scrolling within the hero–map zone
-                const inZone = scrollY >= heroTop - vh * 0.5 &&
-                    scrollY < mapTop + vh * 0.5;
-                if (!inZone) return;
-
-                // Decide which snap point to jump to
-                const midpoint = (heroTop + mapTop) / 2;
-                if (deltaY > 0 && scrollY < midpoint) {
-                    snapTo(mapTop);
-                } else if (deltaY < 0 && scrollY >= midpoint) {
-                    snapTo(heroTop);
+                if (deltaY > 0 && heroVisible && !mapVisible) {
+                    snapTo(Math.round(map.getBoundingClientRect().top + window.scrollY));
+                    return true;
                 }
+                if (deltaY < 0 && mapVisible && !heroVisible) {
+                    snapTo(Math.round(hero.getBoundingClientRect().top + window.scrollY));
+                    return true;
+                }
+                return false;
             }
 
-            // Wheel
+            // Wheel — passive:false so preventDefault actually works
             window.addEventListener('wheel', (e) => {
                 if (isSnapping) { e.preventDefault(); return; }
-                const t = getSnapTargets();
-                if (!t) return;
-                const heroTop = t.hero.getBoundingClientRect().top + window.scrollY;
-                const mapTop = t.map.getBoundingClientRect().top + window.scrollY;
-                const scrollY = window.scrollY;
-                const vh = window.innerHeight;
-                const inZone = scrollY >= heroTop - vh * 0.5 &&
-                    scrollY < mapTop + vh * 0.5;
-                if (inZone) handleSnap(e.deltaY);
-            }, { passive: true });
+                if (!heroVisible && !mapVisible) return; // outside zone — free scroll
+                if (trySnap(e.deltaY)) e.preventDefault();
+            }, { passive: false });
 
             // Touch
             window.addEventListener('touchstart', (e) => {
                 touchStartY = e.touches[0].clientY;
             }, { passive: true });
-
             window.addEventListener('touchend', (e) => {
-                const deltaY = touchStartY - e.changedTouches[0].clientY;
-                if (Math.abs(deltaY) < 20) return; // ignore tiny swipes
-                handleSnap(deltaY);
+                if (isSnapping || cooldown) return;
+                const delta = touchStartY - e.changedTouches[0].clientY;
+                if (Math.abs(delta) < 30) return;
+                trySnap(delta);
             }, { passive: true });
         })();
     </script>
