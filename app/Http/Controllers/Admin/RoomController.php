@@ -16,20 +16,22 @@ class RoomController extends Controller
         $validated = $request->validate([
             'floor_id' => 'required|string',
             'floor_view' => 'required|string|max:255',
-            // 'floor_coords' => 'required|string', // Removed
-            // 'floor_name' => 'required|string', // Auto-generated
-            'room_number' => 'required|integer',
-            'room_name' => 'required|string|max:255',
+            'room_type' => 'required|string|in:double,twin',
             'price' => 'required|string|max:255',
             'description' => 'required|string',
-            'image' => 'required|image|max:5120',
+            'images.*' => 'required|image|max:5120',
             'order' => 'required|integer|min:0',
         ]);
 
-        // Handle image upload
-        $image = $request->file('image');
-        $imageName = time() . '_room_' . $validated['room_number'] . '.' . $image->getClientOriginalExtension();
-        $image->move(public_path('images/rooms'), $imageName);
+        // Handle multiple image uploads
+        $imagePaths = [];
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $index => $image) {
+                $imageName = time() . '_' . $index . '_' . $validated['floor_id'] . '_' . $validated['room_type'] . '.' . $image->getClientOriginalExtension();
+                $image->move(public_path('images/rooms'), $imageName);
+                $imagePaths[] = '/images/rooms/' . $imageName;
+            }
+        }
         
         // Map floor_id to floor_name
         $floorNames = [
@@ -48,15 +50,16 @@ class RoomController extends Controller
             'floor_name' => $floorName,
             'floor_view' => $validated['floor_view'],
             'floor_coords' => $floorCoords,
-            'room_number' => $validated['room_number'],
-            'room_name' => $validated['room_name'],
+            'room_type' => $validated['room_type'],
             'price' => $validated['price'],
             'description' => $validated['description'],
-            'image_url' => '/images/rooms/' . $imageName,
+            'facilities' => $request->input('facilities', []),
+            'image_url' => $imagePaths[0] ?? '',
+            'images' => $imagePaths,
             'order' => $validated['order'],
         ]);
 
-        return redirect()->route('admin.rooms.index')->with('success', 'Room created successfully.');
+        return redirect()->route('admin.rooms.index')->with('success', 'Room category created successfully.');
     }
 
     /**
@@ -69,15 +72,14 @@ class RoomController extends Controller
         $rules = [
             'floor_id' => 'required|string',
             'floor_view' => 'required|string|max:255',
-            'room_number' => 'required|integer',
-            'room_name' => 'required|string|max:255',
+            'room_type' => 'required|string|in:double,twin',
             'price' => 'required|string|max:255',
             'description' => 'required|string',
             'order' => 'required|integer|min:0',
         ];
         
-        if ($request->hasFile('image')) {
-            $rules['image'] = 'image|max:5120';
+        if ($request->hasFile('images')) {
+            $rules['images.*'] = 'image|max:5120';
         }
 
         $validated = $request->validate($rules);
@@ -95,19 +97,33 @@ class RoomController extends Controller
             'floor_id' => $validated['floor_id'],
             'floor_name' => $floorName,
             'floor_view' => $validated['floor_view'],
-            'room_number' => $validated['room_number'],
-            'room_name' => $validated['room_name'],
+            'room_type' => $validated['room_type'],
             'price' => $validated['price'],
             'description' => $validated['description'],
+            'facilities' => $request->input('facilities', []),
             'order' => $validated['order'],
         ];
 
-        // Handle image upload
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imageName = time() . '_room_' . $validated['room_number'] . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('images/rooms'), $imageName);
-            $data['image_url'] = '/images/rooms/' . $imageName;
+        // Handle removed images
+        $currentImages = $room->images ?? [];
+        if ($request->has('removed_images')) {
+            $removedImages = json_decode($request->input('removed_images'), true) ?? [];
+            $currentImages = array_values(array_diff($currentImages, $removedImages));
+        }
+
+        // Handle new image uploads
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $index => $image) {
+                $imageName = time() . '_' . $index . '_' . $validated['floor_id'] . '_' . $validated['room_type'] . '.' . $image->getClientOriginalExtension();
+                $image->move(public_path('images/rooms'), $imageName);
+                $currentImages[] = '/images/rooms/' . $imageName;
+            }
+        }
+
+        // Update images array
+        if (!empty($currentImages)) {
+            $data['images'] = $currentImages;
+            $data['image_url'] = $currentImages[0]; // Keep first image as primary
         }
 
         $room->update($data);

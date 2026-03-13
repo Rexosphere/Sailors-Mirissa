@@ -11,12 +11,18 @@ class Room extends Model
         'floor_name',
         'floor_view',
         'floor_coords',
-        'room_number',
-        'room_name',
+        'room_type',
         'price',
         'description',
+        'facilities',
         'image_url',
+        'images',
         'order',
+    ];
+
+    protected $casts = [
+        'images' => 'array',
+        'facilities' => 'array',
     ];
 
     protected static function boot()
