@@ -124,3 +124,10 @@ select:focus[data-flux-control] {
 .body {
     font-family: var(--font-body);
 }
+
+/* Force black text on form inputs in the admin panel */
+aside ~ main input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]),
+aside ~ main textarea,
+aside ~ main select {
+    color: #111827 !important;
+}
