@@ -19,42 +19,34 @@
 
     <!-- Desktop: Hotel Floor Image (Fullscreen Background) -->
     <div id="hotel-container" class="hidden md:block relative w-full h-full" style="background-color: ivory;">
-        <img src="{{ asset('images/building_transparent.png') }}" alt="Hotel Floors"
-            class="absolute right-0 top-1/2 -translate-y-1/2 w-1/2 h-3/4 object-contain" />
+        <img id="hotel-image" src="{{ asset('images/hotel_floors_ivory.avif') }}" alt="Hotel Building" 
+             class="w-full h-full object-cover">
 
         <!-- SVG Overlay for Lines -->
-        <svg id="svg-overlay" viewBox="0 0 100 100" preserveAspectRatio="none"
-            class="absolute inset-0 w-full h-full pointer-events-none" style="z-index: 10;">
+        <svg id="svg-overlay" viewBox="0 0 100 100" preserveAspectRatio="none" class="absolute inset-0 w-full h-full pointer-events-none" style="z-index: 10;">
             <defs>
                 <marker id="dot-marker" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6">
                     <circle cx="5" cy="5" r="5" fill="#fff" />
                 </marker>
             </defs>
             <!-- Clickable floor indicators (dashed boxes) -->
-
             <!-- Note: pointer-events="auto" allows clicking these polygons even if parent config is none -->
-            <polygon id="floor-box-ground" points="" stroke="white" stroke-width="3" stroke-dasharray="8,6"
-                stroke-linecap="round" stroke-linejoin="round" fill="transparent" class="floor-box cursor-pointer"
-                style="pointer-events: auto; opacity: 0.9; filter: drop-shadow(0px 0px 1px rgba(0,0,0,0.8)); vector-effect: non-scaling-stroke;" />
-            <polygon id="floor-box-first" points="" stroke="white" stroke-width="3" stroke-dasharray="8,6"
-                stroke-linecap="round" stroke-linejoin="round" fill="transparent" class="floor-box cursor-pointer"
-                style="pointer-events: auto; opacity: 0.9; filter: drop-shadow(0px 0px 1px rgba(0,0,0,0.8)); vector-effect: non-scaling-stroke;" />
-            <polygon id="floor-box-second" points="" stroke="white" stroke-width="3" stroke-dasharray="8,6"
-                stroke-linecap="round" stroke-linejoin="round" fill="transparent" class="floor-box cursor-pointer"
-                style="pointer-events: auto; opacity: 0.9; filter: drop-shadow(0px 0px 1px rgba(0,0,0,0.8)); vector-effect: non-scaling-stroke;" />
-            <polygon id="floor-box-third" points="" stroke="white" stroke-width="3" stroke-dasharray="8,6"
-                stroke-linecap="round" stroke-linejoin="round" fill="transparent" class="floor-box cursor-pointer"
-                style="pointer-events: auto; opacity: 0.9; filter: drop-shadow(0px 0px 1px rgba(0,0,0,0.8)); vector-effect: non-scaling-stroke;" />
-
+            <polygon id="floor-box-ground" points="" stroke="white" stroke-width="3" stroke-dasharray="8,6" stroke-linecap="round" stroke-linejoin="round"
+                fill="transparent" class="floor-box cursor-pointer" style="pointer-events: auto; opacity: 0.9; filter: drop-shadow(0px 0px 1px rgba(0,0,0,0.8)); vector-effect: non-scaling-stroke;" />
+            <polygon id="floor-box-first" points="" stroke="white" stroke-width="3" stroke-dasharray="8,6" stroke-linecap="round" stroke-linejoin="round"
+                fill="transparent" class="floor-box cursor-pointer" style="pointer-events: auto; opacity: 0.9; filter: drop-shadow(0px 0px 1px rgba(0,0,0,0.8)); vector-effect: non-scaling-stroke;" />
+            <polygon id="floor-box-second" points="" stroke="white" stroke-width="3" stroke-dasharray="8,6" stroke-linecap="round" stroke-linejoin="round"
+                fill="transparent" class="floor-box cursor-pointer" style="pointer-events: auto; opacity: 0.9; filter: drop-shadow(0px 0px 1px rgba(0,0,0,0.8)); vector-effect: non-scaling-stroke;" />
+            <polygon id="floor-box-third" points="" stroke="white" stroke-width="3" stroke-dasharray="8,6" stroke-linecap="round" stroke-linejoin="round"
+                fill="transparent" class="floor-box cursor-pointer" style="pointer-events: auto; opacity: 0.9; filter: drop-shadow(0px 0px 1px rgba(0,0,0,0.8)); vector-effect: non-scaling-stroke;" />
+            
             <!-- Path connecting card to floor -->
-            <path id="connector-line" d="" stroke="white" stroke-width="3" stroke-dasharray="8,6" stroke-linecap="round"
-                stroke-linejoin="round" fill="none"
+            <path id="connector-line" d="" stroke="white" stroke-width="3" stroke-dasharray="8,6" stroke-linecap="round" stroke-linejoin="round" fill="none" 
                 style="filter: drop-shadow(0px 0px 0.5px rgba(0,0,0,0.8)); vector-effect: non-scaling-stroke;" />
-
+            
             <!-- Polygon highlighting the selected floor -->
-            <polygon id="floor-highlight" points="" stroke="#FCD34D" stroke-width="3" stroke-dasharray="8,6"
-                stroke-linecap="round" stroke-linejoin="round" fill="rgba(255, 255, 255, 0.1)"
-                style="display: none; filter: drop-shadow(0px 0px 1px rgba(0,0,0,0.8)); vector-effect: non-scaling-stroke;" />
+            <polygon id="floor-highlight" points="" stroke="#FCD34D" stroke-width="3" stroke-dasharray="8,6" stroke-linecap="round" stroke-linejoin="round"
+                fill="rgba(255, 255, 255, 0.1)" style="display: none; filter: drop-shadow(0px 0px 1px rgba(0,0,0,0.8)); vector-effect: non-scaling-stroke;" />
         </svg>
     </div>
 
@@ -280,6 +272,7 @@
 
             // --- DOM Elements ---
             const containerEl = document.getElementById('hotel-container');
+            const imgEl = document.getElementById('hotel-image');
             const cardEl = document.getElementById('info-card');
             const instructionEl = document.getElementById('instruction-text');
 
@@ -576,8 +569,10 @@
             }
 
             function renderCoordinates() {
-                const width = containerEl.clientWidth;
-                const height = containerEl.clientHeight;
+                if (imgEl.naturalWidth === 0) return;
+
+                const width = imgEl.clientWidth;
+                const height = imgEl.clientHeight;
 
                 // Calculate how object-cover scales and positions the image
                 // We use the new constant dimensions as the source of truth for the coordinate system
@@ -644,39 +639,18 @@
                 cardTitle.textContent = floor.name;
                 cardView.textContent = floor.view;
 
-                // Filter rooms by selected room type
-                const filteredRooms = floor.rooms.filter(room => room.type === selectedRoomType);
-                
-                if (filteredRooms.length === 0) {
-                    carouselEl.innerHTML = '<div class="p-8 text-center text-gray-500">No rooms of this type available</div>';
-                    return;
-                }
-
-                // Aggregate all images from filtered rooms
-                const allImages = [];
-                filteredRooms.forEach(room => {
-                    if (room.images && room.images.length > 0) {
-                        allImages.push(...room.images);
-                    }
-                });
-
-                // Generate Carousel Items from aggregated images
-                carouselEl.innerHTML = allImages.map((imageUrl, index) => `
-                    <div class="carousel-item min-w-[40%] h-full relative snap-start cursor-pointer border-r border-white/10" data-index="${index}">
-                        <img src="${imageUrl}" class="w-full h-full object-cover transition hover:opacity-90" alt="Room image">
+                // Generate Carousel Items
+                carouselEl.innerHTML = floor.rooms.map((room, index) => `
+                    <div class="min-w-[40%] h-full relative snap-start cursor-pointer border-r border-white/10" onclick="floorBookingSelectRoom(${index})">
+                        <img src="${room.image}" class="w-full h-full object-cover transition hover:opacity-90" alt="${room.name}">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent pointer-events-none"></div>
+                        <div class="absolute bottom-2 left-2 text-white font-bold text-sm pointer-events-none drop-shadow-md">
+                            ${room.name}
+                        </div>
                     </div>
                 `).join('');
 
-                // Update room details with the first room of this type
-                const firstRoom = filteredRooms[0];
-                const roomTypeName = selectedRoomType.charAt(0).toUpperCase() + selectedRoomType.slice(1) + ' Room';
-                roomTypeEl.textContent = roomTypeName;
-                roomDescEl.textContent = firstRoom.description;
-                roomPriceEl.textContent = firstRoom.price;
-                
-                // Update facilities if present
-                updateFacilities(firstRoom.facilities);
+                updateRoomDetails(0);
             }
 
             function updateFacilities(facilities) {
