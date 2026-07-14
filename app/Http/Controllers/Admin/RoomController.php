@@ -28,8 +28,8 @@ class RoomController extends Controller
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $index => $image) {
                 $imageName = time() . '_' . $index . '_' . $validated['floor_id'] . '_' . $validated['room_type'] . '.' . $image->getClientOriginalExtension();
-                $image->move(public_path('images/rooms'), $imageName);
-                $imagePaths[] = '/images/rooms/' . $imageName;
+                $image->storeAs('images/rooms', $imageName, 'public');
+                $imagePaths[] = '/storage/images/rooms/' . $imageName;
             }
         }
         
@@ -115,8 +115,8 @@ class RoomController extends Controller
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $index => $image) {
                 $imageName = time() . '_' . $index . '_' . $validated['floor_id'] . '_' . $validated['room_type'] . '.' . $image->getClientOriginalExtension();
-                $image->move(public_path('images/rooms'), $imageName);
-                $currentImages[] = '/images/rooms/' . $imageName;
+                $image->storeAs('images/rooms', $imageName, 'public');
+                $currentImages[] = '/storage/images/rooms/' . $imageName;
             }
         }
 

@@ -26,12 +26,12 @@ class ExperienceController extends Controller
         // Handle image upload
         $image = $request->file('image');
         $filename = time() . '_' . preg_replace('/[^a-z0-9_]/', '', str_replace(' ', '_', strtolower($validated['title']))) . '.' . $image->getClientOriginalExtension();
-        $image->move(public_path('images/experiences'), $filename);
-        
+        $image->storeAs('images/experiences', $filename, 'public');
+
         Experience::create([
             'title' => $validated['title'],
             'description' => $validated['description'],
-            'image_url' => '/images/experiences/' . $filename,
+            'image_url' => '/storage/images/experiences/' . $filename,
             'alt_text' => $validated['alt_text'],
             'badge' => $validated['badge'] ?? null,
             'icon' => $validated['icon'] ?? null,
@@ -69,8 +69,8 @@ class ExperienceController extends Controller
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $filename = time() . '_' . preg_replace('/[^a-z0-9_]/', '', str_replace(' ', '_', strtolower($validated['title']))) . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('images/experiences'), $filename);
-            $imageUrl = '/images/experiences/' . $filename;
+            $image->storeAs('images/experiences', $filename, 'public');
+            $imageUrl = '/storage/images/experiences/' . $filename;
         }
         
         $experience->update([

@@ -26,22 +26,22 @@ class MapPointController extends Controller
         // Handle image upload
         $image = $request->file('image');
         $imageName = time() . '_point_' . preg_replace('/[^a-z0-9_]/', '', str_replace(' ', '_', strtolower($validated['name']))) . '.' . $image->getClientOriginalExtension();
-        $image->move(public_path('images/map-points'), $imageName);
-        
+        $image->storeAs('images/map-points', $imageName, 'public');
+
         // Handle icon upload
         $iconHtml = null;
         if ($request->hasFile('icon_file')) {
             $icon = $request->file('icon_file');
             $iconName = time() . '_icon_' . preg_replace('/[^a-z0-9_]/', '', str_replace(' ', '_', strtolower($validated['name']))) . '.' . $icon->getClientOriginalExtension();
-            $icon->move(public_path('images/icons'), $iconName);
+            $icon->storeAs('images/icons', $iconName, 'public');
             // Create the HTML for the icon as expected by the frontend
-            $iconHtml = '<img src="/images/icons/' . $iconName . '" class="w-full h-full object-contain" alt="' . $validated['name'] . ' Icon">';
+            $iconHtml = '<img src="/storage/images/icons/' . $iconName . '" class="w-full h-full object-contain" alt="' . $validated['name'] . ' Icon">';
         }
 
         MapPoint::create([
             'name' => $validated['name'],
             'description' => $validated['description'],
-            'image_url' => '/images/map-points/' . $imageName,
+            'image_url' => '/storage/images/map-points/' . $imageName,
             'coords' => $validated['coords'],
             'center_x' => $validated['center_x'],
             'center_y' => $validated['center_y'],
@@ -88,16 +88,16 @@ class MapPointController extends Controller
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '_point_' . preg_replace('/[^a-z0-9_]/', '', str_replace(' ', '_', strtolower($validated['name']))) . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('images/map-points'), $imageName);
-            $data['image_url'] = '/images/map-points/' . $imageName;
+            $image->storeAs('images/map-points', $imageName, 'public');
+            $data['image_url'] = '/storage/images/map-points/' . $imageName;
         }
 
         // Handle icon upload
         if ($request->hasFile('icon_file')) {
             $icon = $request->file('icon_file');
             $iconName = time() . '_icon_' . preg_replace('/[^a-z0-9_]/', '', str_replace(' ', '_', strtolower($validated['name']))) . '.' . $icon->getClientOriginalExtension();
-            $icon->move(public_path('images/icons'), $iconName);
-            $data['icon'] = '<img src="/images/icons/' . $iconName . '" class="w-full h-full object-contain" alt="' . $validated['name'] . ' Icon">';
+            $icon->storeAs('images/icons', $iconName, 'public');
+            $data['icon'] = '<img src="/storage/images/icons/' . $iconName . '" class="w-full h-full object-contain" alt="' . $validated['name'] . ' Icon">';
         }
         
         $mapPoint->update($data);

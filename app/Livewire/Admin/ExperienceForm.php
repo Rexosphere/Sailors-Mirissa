@@ -61,8 +61,8 @@ class ExperienceForm extends Component
         $imageUrl = $this->image_url;
         if ($this->image) {
             $filename = time() . '_' . preg_replace('/[^a-z0-9_]/', '', str_replace(' ', '_', strtolower($this->title))) . '.' . $this->image->getClientOriginalExtension();
-            $this->image->storeAs('images/experiences', $filename, 'public_uploads');
-            $imageUrl = '/images/experiences/' . $filename;
+            $this->image->storeAs('images/experiences', $filename, 'public');
+            $imageUrl = '/storage/images/experiences/' . $filename;
         }
 
         $data = [
