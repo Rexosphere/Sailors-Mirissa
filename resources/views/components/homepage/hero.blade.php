@@ -2,9 +2,12 @@
 <section id="featured_header" class="relative min-h-screen overflow-hidden">
     <!-- Hero Image -->
     <div class="absolute inset-0">
-        <img src="/images/photos/hero-background.avif"
-            alt="Sailor's Mirissa beachfront hotel with ocean view in Mirissa, Sri Lanka"
-            class="w-full h-full object-cover object-center md:object-center animate-ken-burns">
+        <picture>
+            <source srcset="/images/photos/hero-background-mobile.avif" media="(max-width: 767px)">
+            <img src="/images/photos/hero-background.avif"
+                alt="Sailor's Mirissa beachfront hotel with ocean view in Mirissa, Sri Lanka"
+                class="w-full h-full object-cover object-center md:object-center animate-ken-burns">
+        </picture>
     </div>
 
     <!-- Dark overlay -->
