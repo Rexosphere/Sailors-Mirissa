@@ -1,3 +1,30 @@
+@php
+    $roomsByFloor = \App\Models\Room::all()->groupBy('floor_id');
+
+    $floorData = collect(config('floors'))
+        ->filter(fn ($floor, $floorId) => $roomsByFloor->has($floorId))
+        ->map(function ($floor, $floorId) use ($roomsByFloor) {
+            $rooms = $roomsByFloor[$floorId];
+
+            return [
+                'id' => $floorId,
+                'name' => $floor['name'],
+                'view' => $rooms->first()->floor_view,
+                'originalCoords' => array_map('intval', explode(',', $floor['coords'])),
+                'rooms' => $rooms->map(fn ($room) => [
+                    'id' => $room->id,
+                    'type' => $room->room_type,
+                    'price' => $room->price,
+                    'images' => collect($room->images ?? [])->map(fn ($img) => asset($img))->all(),
+                    'description' => $room->description,
+                    'facilities' => $room->facilities ?? [],
+                ])->values()->all(),
+            ];
+        })
+        ->values()
+        ->all();
+@endphp
+
 <section id="floor-booking" class="relative md:h-screen overflow-hidden bg-gray-100">
     <!-- Page Title -->
     <div class="relative md:absolute top-0 left-0 right-0 z-30 text-center py-8">
@@ -125,7 +152,7 @@
                 </div>
 
                 <!-- Additional Room Features / Mock Content to fill space -->
-                <div class="grid grid-cols-2 gap-4">
+                <div id="room-facilities" class="grid grid-cols-2 gap-4">
                     <div class="flex items-center text-slate-600">
                         <svg class="w-5 h-5 mr-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
@@ -243,28 +270,10 @@
             'use strict';
 
             // --- Configuration ---
-            const floors = {!! json_encode(\App\Models\Room::all()->groupBy('floor_id')->map(function($rooms, $floorId) {
-                $firstRoom = $rooms->first();
-                return [
-                    'id' => $floorId,
-                    'name' => $firstRoom->floor_name,
-                    'view' => $firstRoom->floor_view,
-                    'originalCoords' => array_map('intval', explode(',', $firstRoom->floor_coords)),
-                    'rooms' => $rooms->map(function($room) {
-                        return [
-                            'id' => $room->id,
-                            'type' => $room->room_type,
-                            'price' => $room->price,
-                            'images' => $room->images ? array_map(function($img) { return asset($img); }, $room->images) : [],
-                            'description' => $room->description,
-                            'facilities' => $room->facilities ?? [],
-                        ];
-                    })->values()->toArray(),
-                ];
-            })->values()->toArray()) !!};
+            const floors = @json($floorData);
+            const ROOM_TYPES = ['double', 'twin'];
 
             let activeFloor = null;
-            let activeRoomIndex = 0;
             let selectedRoomType = 'double';
             let currentImageIndex = 0;
 
@@ -291,6 +300,21 @@
             const roomTypeEl = document.getElementById('room-type');
             const roomDescEl = document.getElementById('room-description');
             const roomPriceEl = document.getElementById('room-price');
+            const facilitiesEl = document.getElementById('room-facilities');
+            const defaultFacilitiesMarkup = facilitiesEl ? facilitiesEl.innerHTML : '';
+
+            // --- Shared Helpers ---
+            function roomsOfType(floor, type) {
+                return floor ? floor.rooms.filter(r => r.type === type) : [];
+            }
+
+            function imagesOfType(floor, type) {
+                return roomsOfType(floor, type).flatMap(r => r.images || []);
+            }
+
+            function typeLabel(type) {
+                return type.charAt(0).toUpperCase() + type.slice(1) + ' Room';
+            }
 
             // --- Mobile Functions ---
             function initMobile() {
@@ -343,30 +367,22 @@
                 if (!mobileRoomsEl || !floor) return;
                 
                 // Group rooms by type
-                const roomTypes = ['double', 'twin'];
                 const cards = [];
-                
-                roomTypes.forEach(type => {
-                    const roomsOfType = floor.rooms.filter(r => r.type === type);
-                    if (roomsOfType.length === 0) return;
-                    
-                    const firstRoom = roomsOfType[0];
-                    const allImages = [];
-                    roomsOfType.forEach(room => {
-                        if (room.images && room.images.length > 0) {
-                            allImages.push(...room.images);
-                        }
-                    });
-                    
-                    if (allImages.length === 0) return;
-                    
-                    const typeName = type.charAt(0).toUpperCase() + type.slice(1) + ' Room';
+
+                ROOM_TYPES.forEach(type => {
+                    const rooms = roomsOfType(floor, type);
+                    if (rooms.length === 0) return;
+
+                    const firstRoom = rooms[0];
+                    const allImages = imagesOfType(floor, type);
+
+                    const typeName = typeLabel(type);
                     const carouselId = `mobile-carousel-${floor.id}-${type}`;
-                    
+
                     cards.push(`
                         <div class="bg-white rounded-xl shadow-md overflow-hidden border border-slate-100">
                             <!-- Image Carousel -->
-                            <div class="relative h-48 overflow-hidden group">
+                            <div class="relative h-48 overflow-hidden group ${allImages.length === 0 ? 'hidden' : ''}">
                                 <div id="${carouselId}" class="flex transition-transform duration-300 h-full">
                                     ${allImages.map(img => `
                                         <img src="${img}" alt="${typeName}" class="w-full h-full object-cover flex-shrink-0">
@@ -621,7 +637,12 @@
 
             function selectFloor(floor) {
                 activeFloor = floor;
-                activeRoomIndex = 0;
+
+                // Fall back to a type this floor actually offers
+                if (roomsOfType(floor, selectedRoomType).length === 0) {
+                    const available = ROOM_TYPES.find(t => roomsOfType(floor, t).length > 0);
+                    if (available) selectedRoomType = available;
+                }
 
                 updateCard(floor);
                 cardEl.style.display = 'flex'; // Changed to flex for the column layout
@@ -635,78 +656,77 @@
                 drawLines(floor);
             }
 
+            // Carousel shows every image for the selected room type on this floor.
+            // Clicking an image only scrolls; the Double/Twin toggle switches categories.
             function updateCard(floor) {
                 cardTitle.textContent = floor.name;
                 cardView.textContent = floor.view;
 
-                // Generate Carousel Items
-                carouselEl.innerHTML = floor.rooms.map((room, index) => `
-                    <div class="min-w-[40%] h-full relative snap-start cursor-pointer border-r border-white/10" onclick="floorBookingSelectRoom(${index})">
-                        <img src="${room.image}" class="w-full h-full object-cover transition hover:opacity-90" alt="${room.name}">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent pointer-events-none"></div>
-                        <div class="absolute bottom-2 left-2 text-white font-bold text-sm pointer-events-none drop-shadow-md">
-                            ${room.name}
-                        </div>
-                    </div>
-                `).join('');
+                const rooms = roomsOfType(floor, selectedRoomType);
+                const images = imagesOfType(floor, selectedRoomType);
+                const label = typeLabel(selectedRoomType);
+                currentImageIndex = 0;
 
-                updateRoomDetails(0);
+                carouselEl.innerHTML = images.length
+                    ? images.map(img => `
+                        <div class="min-w-[40%] h-full relative snap-start border-r border-white/10">
+                            <img src="${img}" class="w-full h-full object-cover transition hover:opacity-90" alt="${label}">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent pointer-events-none"></div>
+                        </div>
+                    `).join('')
+                    : `<div class="w-full h-full flex items-center justify-center bg-slate-100 text-slate-400 text-sm">No images available</div>`;
+
+                updateRoomDetails(rooms[0]);
+                updateToggleStyles();
+            }
+
+            function updateToggleStyles() {
+                const active = 'px-4 py-2 rounded-lg font-medium transition-all text-sm bg-white text-slate-900';
+                const inactive = 'px-4 py-2 rounded-lg font-medium transition-all text-sm bg-slate-700 text-slate-300 hover:bg-slate-600';
+                const unavailable = 'px-4 py-2 rounded-lg font-medium transition-all text-sm bg-slate-800 text-slate-500 cursor-not-allowed';
+
+                ROOM_TYPES.forEach(type => {
+                    const btn = document.getElementById(`toggle-${type}`);
+                    if (!btn) return;
+
+                    const available = roomsOfType(activeFloor, type).length > 0;
+                    btn.disabled = !available;
+                    btn.className = !available ? unavailable
+                        : (type === selectedRoomType ? active : inactive);
+                });
             }
 
             function updateFacilities(facilities) {
-                const facilitiesContainer = document.querySelector('#room-details .grid.grid-cols-2');
-                if (facilitiesContainer && facilities && facilities.length > 0) {
-                    facilitiesContainer.innerHTML = facilities.map(facility => `
-                        <div class="flex items-center text-slate-600">
-                            <svg class="w-5 h-5 mr-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            <span>${facility}</span>
-                        </div>
-                    `).join('');
+                if (!facilitiesEl) return;
+
+                if (!facilities || facilities.length === 0) {
+                    facilitiesEl.innerHTML = defaultFacilitiesMarkup;
+                    return;
                 }
+
+                facilitiesEl.innerHTML = facilities.map(facility => `
+                    <div class="flex items-center text-slate-600">
+                        <svg class="w-5 h-5 mr-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        <span>${facility}</span>
+                    </div>
+                `).join('');
             }
 
-
-            function selectRoom(index) {
-                // Bounds check
-                if (!activeFloor || index < 0 || index >= activeFloor.rooms.length) return;
-
-                activeRoomIndex = index;
-                updateRoomDetails(index);
-                updateCarouselHighlight(index);
-
-                const items = carouselEl.children;
-                if (items[index]) {
-                    items[index].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            function updateRoomDetails(room) {
+                if (!room) {
+                    roomTypeEl.textContent = typeLabel(selectedRoomType);
+                    roomDescEl.textContent = 'Not available on this floor.';
+                    roomPriceEl.textContent = '';
+                    updateFacilities([]);
+                    return;
                 }
-            }
 
-            // Carousel click handler removed - we now show aggregated images by room type
-            // Clicking images should only scroll, not select rooms
-            // The Double/Twin toggle is the only way to switch categories
-
-            function updateRoomDetails(index) {
-                if (!activeFloor) return;
-                const room = activeFloor.rooms[index];
-                if (!room) return;
-
-                roomTypeEl.textContent = room.name;
+                roomTypeEl.textContent = typeLabel(room.type);
                 roomDescEl.textContent = room.description;
                 roomPriceEl.textContent = room.price;
-            }
-
-            function updateCarouselHighlight(activeIndex) {
-                const items = Array.from(carouselEl.children);
-                items.forEach((item, index) => {
-                    if (index === activeIndex) {
-                        item.classList.add('ring-4', 'ring-blue-500', 'z-10');
-                        item.classList.remove('opacity-50');
-                    } else {
-                        item.classList.remove('ring-4', 'ring-blue-500', 'z-10');
-                        // Optional: fade others
-                    }
-                });
+                updateFacilities(room.facilities);
             }
 
             function navigateRoom(direction) {
@@ -830,31 +850,16 @@
 
             // Room type toggle function
             function toggleRoomType(type) {
-                if (selectedRoomType === type || !activeFloor) return;
-                
+                if (!activeFloor || selectedRoomType === type) return;
+                if (roomsOfType(activeFloor, type).length === 0) return;
+
                 selectedRoomType = type;
-                currentImageIndex = 0;
-                
-                // Update toggle buttons
-                const doubleBtn = document.getElementById('toggle-double');
-                const twinBtn = document.getElementById('toggle-twin');
-                
-                if (type === 'double') {
-                    doubleBtn.className = 'px-4 py-2 rounded-lg font-medium transition-all text-sm bg-white text-slate-900';
-                    twinBtn.className = 'px-4 py-2 rounded-lg font-medium transition-all text-sm bg-slate-700 text-slate-300 hover:bg-slate-600';
-                } else {
-                    twinBtn.className = 'px-4 py-2 rounded-lg font-medium transition-all text-sm bg-white text-slate-900';
-                    doubleBtn.className = 'px-4 py-2 rounded-lg font-medium transition-all text-sm bg-slate-700 text-slate-300 hover:bg-slate-600';
-                }
-                
-                // Update card with filtered rooms
                 updateCard(activeFloor);
             }
 
             // Expose functions
             window.floorBookingCloseCard = closeCard;
             window.floorBookingNavigate = navigateRoom;
-            window.floorBookingSelectRoom = selectRoom;
             window.floorBookingToggleRoomType = toggleRoomType;
             window.selectMobileFloorById = selectMobileFloorById;
 

@@ -33,23 +33,9 @@ class RoomController extends Controller
             }
         }
         
-        // Map floor_id to floor_name
-        $floorNames = [
-            'ground' => 'Ground Floor',
-            'first' => 'First Floor',
-            'second' => 'Second Floor',
-            'third' => 'Third Floor',
-        ];
-        $floorName = $floorNames[$validated['floor_id']] ?? ucfirst($validated['floor_id']) . ' Floor';
-        
-        // Default empty coords
-        $floorCoords = '';
-
         Room::create([
             'floor_id' => $validated['floor_id'],
-            'floor_name' => $floorName,
             'floor_view' => $validated['floor_view'],
-            'floor_coords' => $floorCoords,
             'room_type' => $validated['room_type'],
             'price' => $validated['price'],
             'description' => $validated['description'],
@@ -84,18 +70,8 @@ class RoomController extends Controller
 
         $validated = $request->validate($rules);
 
-        // Map floor_id to floor_name if needed (though existing might be fine, let's update it to stay synced)
-        $floorNames = [
-            'ground' => 'Ground Floor',
-            'first' => 'First Floor',
-            'second' => 'Second Floor',
-            'third' => 'Third Floor',
-        ];
-        $floorName = $floorNames[$validated['floor_id']] ?? ucfirst($validated['floor_id']) . ' Floor';
-
         $data = [
             'floor_id' => $validated['floor_id'],
-            'floor_name' => $floorName,
             'floor_view' => $validated['floor_view'],
             'room_type' => $validated['room_type'],
             'price' => $validated['price'],

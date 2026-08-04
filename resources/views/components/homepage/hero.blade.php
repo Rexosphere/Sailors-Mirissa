@@ -6,7 +6,7 @@
             <source srcset="/images/photos/hero-background-mobile.avif" media="(max-width: 767px)">
             <img src="/images/photos/hero-background.avif"
                 alt="Sailor's Mirissa beachfront hotel with ocean view in Mirissa, Sri Lanka"
-                class="w-full h-full object-cover object-center md:object-center animate-ken-burns">
+                class="w-full h-full object-cover object-center md:object-center">
         </picture>
     </div>
 

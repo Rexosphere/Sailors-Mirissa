@@ -53,10 +53,11 @@ mount(function ($id = null) {
                             </label>
                             <select id="floor_id" name="floor_id"
                                 class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500">
-                                <option value="ground" {{ ($room?->floor_id ?? '') == 'ground' ? 'selected' : '' }}>Ground Floor</option>
-                                <option value="first" {{ ($room?->floor_id ?? '') == 'first' ? 'selected' : '' }}>First Floor</option>
-                                <option value="second" {{ ($room?->floor_id ?? '') == 'second' ? 'selected' : '' }}>Second Floor</option>
-                                <option value="third" {{ ($room?->floor_id ?? '') == 'third' ? 'selected' : '' }}>Third Floor</option>
+                                @foreach (config('floors') as $floorId => $floor)
+                                    <option value="{{ $floorId }}" {{ ($room?->floor_id ?? '') == $floorId ? 'selected' : '' }}>
+                                        {{ $floor['name'] }}
+                                    </option>
+                                @endforeach
                             </select>
                         </div>
 

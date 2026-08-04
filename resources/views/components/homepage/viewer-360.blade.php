@@ -1,11 +1,11 @@
 <section class="hidden md:block">
     <!-- Image Slider -->
     <div class="order-2 lg:order-1">
-        <div class="bg-black shadow-xl overflow-hidden h-screen w-screen relative">
+        <div class="bg-black shadow-xl overflow-hidden h-screen w-full relative">
             <!-- Slider Container -->
-            <div id="imageSlider" class="w-screen h-screen relative overflow-hidden">
+            <div id="imageSlider" class="w-full h-screen relative overflow-hidden">
                 <!-- Images -->
-                <div class="slider-images w-screen h-screen relative">
+                <div class="slider-images w-full h-screen relative">
                     <img src="/images/matara.avif" alt="Matara"
                         class="slider-image absolute inset-0 w-full h-full object-cover object-center opacity-0 transition-opacity duration-500"
                         data-index="0">
