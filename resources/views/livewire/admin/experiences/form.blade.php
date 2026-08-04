@@ -26,7 +26,9 @@ mount(function ($id = null) {
     </div>
 
     @if ($errors->any())
-        <div class="mb-4 p-4 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-100 rounded-lg">
+        <div role="alert" tabindex="-1" data-error-summary
+            class="mb-4 p-4 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-100 rounded-lg">
+            <p class="font-semibold mb-2">Please fix the following before saving:</p>
             <ul class="list-disc list-inside">
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -50,7 +52,8 @@ mount(function ($id = null) {
                     <input type="text" id="title" name="title" 
                         value="{{ old('title', $experience?->title) }}"
                         class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" 
-                        required>
+                        required @error('title') aria-invalid="true" aria-describedby="title-error" @enderror>
+                    <x-admin.field-error name="title" />
                 </div>
 
                 <!-- Alt Text -->
@@ -61,7 +64,8 @@ mount(function ($id = null) {
                     <input type="text" id="alt_text" name="alt_text" 
                         value="{{ old('alt_text', $experience?->alt_text) }}"
                         class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" 
-                        required>
+                        required @error('alt_text') aria-invalid="true" aria-describedby="alt_text-error" @enderror>
+                    <x-admin.field-error name="alt_text" />
                 </div>
 
                 <!-- Description -->
@@ -71,7 +75,8 @@ mount(function ($id = null) {
                     </label>
                     <textarea id="description" name="description" rows="4"
                         class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" 
-                        required>{{ old('description', $experience?->description) }}</textarea>
+                        required @error('description') aria-invalid="true" aria-describedby="description-error" @enderror>{{ old('description', $experience?->description) }}</textarea>
+                    <x-admin.field-error name="description" />
                 </div>
 
                 <!-- Image Upload with Preview -->
@@ -103,7 +108,7 @@ mount(function ($id = null) {
                         
                         <!-- Image preview (hidden by default) -->
                         <div id="image-preview" class="hidden">
-                            <img id="preview-img" src="" alt="Preview" class="mx-auto h-40 rounded-lg object-cover">
+                            <img id="preview-img" src="" alt="Preview" class="mx-auto h-40 rounded-lg object-cover" loading="lazy" decoding="async">
                             <p id="file-name" class="mt-2 text-sm text-green-600 dark:text-green-400"></p>
                         </div>
                     </div>
@@ -111,7 +116,7 @@ mount(function ($id = null) {
                     @if($experience && $experience->image_url)
                         <div class="mt-4">
                             <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Current image:</p>
-                            <img src="{{ $experience->image_url }}" alt="Current" class="h-32 rounded border object-cover">
+                            <img src="{{ $experience- loading="lazy" decoding="async">image_url }}" alt="Current" class="h-32 rounded border object-cover">
                         </div>
                     @endif
                 </div>
@@ -124,7 +129,8 @@ mount(function ($id = null) {
                     <input type="text" id="badge" name="badge" 
                         value="{{ old('badge', $experience?->badge) }}"
                         class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" 
-                        placeholder="e.g., Top Spot, Hidden Gem">
+                        placeholder="e.g., Top Spot, Hidden Gem" @error('badge') aria-invalid="true" aria-describedby="badge-error" @enderror>
+                    <x-admin.field-error name="badge" />
                 </div>
 
                 <!-- Order -->
@@ -135,7 +141,8 @@ mount(function ($id = null) {
                     <input type="number" id="order" name="order" min="0"
                         value="{{ old('order', $experience?->order ?? 0) }}"
                         class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" 
-                        required>
+                        required @error('order') aria-invalid="true" aria-describedby="order-error" @enderror>
+                    <x-admin.field-error name="order" />
                 </div>
             </div>
 

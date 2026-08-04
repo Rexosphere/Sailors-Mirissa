@@ -49,7 +49,7 @@ $delete = function ($id) {
                 @forelse($experiences as $experience)
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <img src="{{ $experience->image_url }}" alt="{{ $experience->alt_text }}" class="h-16 w-24 object-cover rounded">
+                            <img src="{{ $experience- loading="lazy" decoding="async">image_url }}" alt="{{ $experience->alt_text }}" class="h-16 w-24 object-cover rounded">
                         </td>
                         <td class="px-6 py-4">
                             <div class="text-sm font-medium text-gray-900 dark:text-white">

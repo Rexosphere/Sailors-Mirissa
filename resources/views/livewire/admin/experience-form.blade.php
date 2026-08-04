@@ -51,9 +51,9 @@
                     
                     <x-mary-file wire:model="image" accept="image/png, image/jpeg, image/webp, image/avif">
                         @if($image)
-                            <img src="{{ $image->temporaryUrl() }}" class="h-40 rounded-lg object-cover border-2 border-dashed border-green-400" />
+                            <img src="{{ $image- loading="lazy" decoding="async">temporaryUrl() }}" class="h-40 rounded-lg object-cover border-2 border-dashed border-green-400" />
                         @elseif($experience?->image_url)
-                            <img src="{{ $experience->image_url }}" class="h-40 rounded-lg object-cover border-2 border-dashed border-gray-300" />
+                            <img src="{{ $experience- loading="lazy" decoding="async">image_url }}" class="h-40 rounded-lg object-cover border-2 border-dashed border-gray-300" />
                         @else
                             <div class="h-40 w-64 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-700 cursor-pointer hover:border-blue-500 transition-colors">
                                 <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

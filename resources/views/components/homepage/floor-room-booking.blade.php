@@ -25,10 +25,10 @@
         ->all();
 @endphp
 
-<section id="floor-booking" class="relative md:h-screen overflow-hidden bg-gray-100">
+<section id="floor-booking" class="relative md:h-dvh md:min-h-[600px] overflow-hidden bg-gray-100">
     <!-- Page Title -->
     <div class="relative md:absolute top-0 left-0 right-0 z-30 text-center py-8">
-        <h1 class="text-3xl md:text-5xl font-bold font-serif text-black">Explore Our Rooms</h1>
+        <h1 class="text-3xl md:text-5xl font-bold font-display text-black">Explore Our Rooms</h1>
         <p class="text-black mt-3 text-lg font-light tracking-wide hidden md:block">Select a floor to discover available
             accommodations</p>
     </div>
@@ -47,7 +47,7 @@
     <!-- Desktop: Hotel Floor Image (Fullscreen Background) -->
     <div id="hotel-container" class="hidden md:block relative w-full h-full" style="background-color: ivory;">
         <img id="hotel-image" src="{{ asset('images/hotel_floors_ivory.avif') }}" alt="Hotel Building" 
-             class="w-full h-full object-cover">
+             class="w-full h-full object-cover" loading="lazy" decoding="async">
 
         <!-- SVG Overlay for Lines -->
         <svg id="svg-overlay" viewBox="0 0 100 100" preserveAspectRatio="none" class="absolute inset-0 w-full h-full pointer-events-none" style="z-index: 10;">
@@ -86,26 +86,26 @@
             class="card-header bg-slate-900 text-white p-6 flex justify-between items-center shrink-0 cursor-move select-none">
             <div class="flex items-center gap-4">
                 <div>
-                    <h2 id="card-floor-title" class="text-3xl font-bold font-serif tracking-wide"></h2>
+                    <h2 id="card-floor-title" class="text-3xl font-bold font-display tracking-wide"></h2>
                     <p id="card-floor-view" class="text-slate-400 text-base mt-1"></p>
                 </div>
                 <!-- Room Type Toggle -->
-                <div class="flex gap-2 ml-4">
-                    <button onclick="floorBookingToggleRoomType('double')" 
-                        id="toggle-double"
-                        class="px-4 py-2 rounded-lg font-medium transition-all text-sm bg-white text-slate-900">
+                <div class="flex gap-2 ml-4" role="group" aria-label="Room type">
+                    <button type="button" onclick="floorBookingToggleRoomType('double')"
+                        id="toggle-double" aria-pressed="true"
+                        class="px-4 py-2 min-h-11 rounded-lg font-medium transition-all text-sm bg-white text-slate-900 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
                         Double
                     </button>
-                    <button onclick="floorBookingToggleRoomType('twin')" 
-                        id="toggle-twin"
-                        class="px-4 py-2 rounded-lg font-medium transition-all text-sm bg-slate-700 text-slate-300 hover:bg-slate-600">
+                    <button type="button" onclick="floorBookingToggleRoomType('twin')"
+                        id="toggle-twin" aria-pressed="false"
+                        class="px-4 py-2 min-h-11 rounded-lg font-medium transition-all text-sm bg-slate-700 text-slate-200 hover:bg-slate-600 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
                         Twin
                     </button>
                 </div>
             </div>
-            <button onclick="floorBookingCloseCard()"
-                class="text-slate-400 hover:text-white transition p-2 hover:bg-white/10 rounded-full">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <button type="button" onclick="floorBookingCloseCard()" aria-label="Close room details"
+                class="text-slate-300 hover:text-white transition p-2 min-w-11 min-h-11 flex items-center justify-center hover:bg-white/10 rounded-full cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>
@@ -116,9 +116,9 @@
             <!-- Carousel Container -->
             <div class="relative group shrink-0">
                 <!-- Left Arrow -->
-                <button onclick="floorBookingNavigate(-1)"
-                    class="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-slate-800 p-3 rounded-full shadow-lg z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button type="button" onclick="floorBookingNavigate(-1)" aria-label="Previous room photo"
+                    class="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-slate-800 p-3 rounded-full shadow-lg z-10 cursor-pointer opacity-70 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                     </svg>
                 </button>
@@ -130,9 +130,9 @@
                 </div>
 
                 <!-- Right Arrow -->
-                <button onclick="floorBookingNavigate(1)"
-                    class="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-slate-800 p-3 rounded-full shadow-lg z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button type="button" onclick="floorBookingNavigate(1)" aria-label="Next room photo"
+                    class="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-slate-800 p-3 rounded-full shadow-lg z-10 cursor-pointer opacity-70 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                     </svg>
                 </button>
@@ -254,10 +254,16 @@
             transition: all 0.3s ease;
         }
 
-        .floor-box:hover {
+        .floor-box:hover,
+        .floor-box:focus-visible {
             opacity: 1 !important;
             fill: rgba(255, 255, 255, 0.1) !important;
             stroke-width: 1.2px !important;
+        }
+
+        .floor-box:focus-visible {
+            outline: 3px solid #fff;
+            outline-offset: 2px;
         }
 
         #info-card {
@@ -385,7 +391,7 @@
                             <div class="relative h-48 overflow-hidden group ${allImages.length === 0 ? 'hidden' : ''}">
                                 <div id="${carouselId}" class="flex transition-transform duration-300 h-full">
                                     ${allImages.map(img => `
-                                        <img src="${img}" alt="${typeName}" class="w-full h-full object-cover flex-shrink-0">
+                                        <img src="${img}" alt="${typeName}" class="w-full h-full object-cover flex-shrink-0" loading="lazy" decoding="async">
                                     `).join('')}
                                 </div>
                                 ${allImages.length > 1 ? `
@@ -542,14 +548,23 @@
                 floors.forEach(floor => {
                     const el = document.getElementById(`floor-box-${floor.id}`);
                     if (el) {
+                        // SVG shapes are not focusable or announced by default — make each
+                        // floor a real keyboard-operable control.
+                        el.setAttribute('role', 'button');
+                        el.setAttribute('tabindex', '0');
+                        el.setAttribute('aria-label', `${floor.name} — view rooms`);
+
                         el.addEventListener('click', (e) => {
                             e.stopPropagation(); // Prevent document click handler
                             selectFloor(floor);
                         });
 
-                        // Add hover listeners if needed via JS, though CSS handles visuals
-                        el.addEventListener('mouseenter', () => {
-                            // Optional: could trigger tooltip
+                        el.addEventListener('keydown', (e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                selectFloor(floor);
+                            }
                         });
                     }
                 });
@@ -670,7 +685,7 @@
                 carouselEl.innerHTML = images.length
                     ? images.map(img => `
                         <div class="min-w-[40%] h-full relative snap-start border-r border-white/10">
-                            <img src="${img}" class="w-full h-full object-cover transition hover:opacity-90" alt="${label}">
+                            <img src="${img}" class="w-full h-full object-cover transition hover:opacity-90" alt="${label}" loading="lazy" decoding="async">
                             <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent pointer-events-none"></div>
                         </div>
                     `).join('')

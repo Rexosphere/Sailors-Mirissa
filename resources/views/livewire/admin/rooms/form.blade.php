@@ -26,7 +26,9 @@ mount(function ($id = null) {
     </div>
 
     @if ($errors->any())
-        <div class="mb-4 p-4 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-100 rounded-lg">
+        <div role="alert" tabindex="-1" data-error-summary
+            class="mb-4 p-4 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-100 rounded-lg">
+            <p class="font-semibold mb-2">Please fix the following before saving:</p>
             <ul class="list-disc list-inside">
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -51,14 +53,15 @@ mount(function ($id = null) {
                             <label for="floor_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 Floor *
                             </label>
-                            <select id="floor_id" name="floor_id"
-                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500">
+                            <select id="floor_id" name="floor_id" required
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500" @error('floor_id') aria-invalid="true" aria-describedby="floor_id-error" @enderror>
                                 @foreach (config('floors') as $floorId => $floor)
                                     <option value="{{ $floorId }}" {{ ($room?->floor_id ?? '') == $floorId ? 'selected' : '' }}>
                                         {{ $floor['name'] }}
                                     </option>
                                 @endforeach
                             </select>
+                            <x-admin.field-error name="floor_id" />
                         </div>
 
 
@@ -72,7 +75,8 @@ mount(function ($id = null) {
                                 value="{{ old('floor_view', $room?->floor_view) }}"
                                 class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500"
                                 placeholder="e.g., Garden View, Ocean View"
-                                required>
+                                required @error('floor_view') aria-invalid="true" aria-describedby="floor_view-error" @enderror>
+                            <x-admin.field-error name="floor_view" />
                         </div>
                     </div>
                 </div>
@@ -86,11 +90,12 @@ mount(function ($id = null) {
                             <label for="room_type" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 Room Type *
                             </label>
-                            <select id="room_type" name="room_type"
-                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500">
+                            <select id="room_type" name="room_type" required
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500" @error('room_type') aria-invalid="true" aria-describedby="room_type-error" @enderror>
                                 <option value="double" {{ ($room?->room_type ?? 'double') == 'double' ? 'selected' : '' }}>Double Room</option>
                                 <option value="twin" {{ ($room?->room_type ?? '') == 'twin' ? 'selected' : '' }}>Twin Room</option>
                             </select>
+                            <x-admin.field-error name="room_type" />
                         </div>
 
                         <!-- Price -->
@@ -102,7 +107,8 @@ mount(function ($id = null) {
                                 value="{{ old('price', $room?->price) }}"
                                 class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500"
                                 placeholder="$120"
-                                required>
+                                required @error('price') aria-invalid="true" aria-describedby="price-error" @enderror>
+                            <x-admin.field-error name="price" />
                         </div>
 
                         <!-- Order -->
@@ -113,7 +119,8 @@ mount(function ($id = null) {
                             <input type="number" id="order" name="order" min="0"
                                 value="{{ old('order', $room?->order ?? 0) }}"
                                 class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500"
-                                required>
+                                required @error('order') aria-invalid="true" aria-describedby="order-error" @enderror>
+                            <x-admin.field-error name="order" />
                         </div>
 
                         <!-- Description -->
@@ -123,7 +130,8 @@ mount(function ($id = null) {
                             </label>
                             <textarea id="description" name="description" rows="4"
                                 class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500"
-                                required>{{ old('description', $room?->description) }}</textarea>
+                                required @error('description') aria-invalid="true" aria-describedby="description-error" @enderror>{{ old('description', $room?->description) }}</textarea>
+                            <x-admin.field-error name="description" />
                         </div>
 
                         <!-- Facilities/Amenities -->\n                        <div class="md:col-span-2">
@@ -225,7 +233,7 @@ mount(function ($id = null) {
                                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="current-images-grid">
                                         @foreach($room->images as $index => $image)
                                             <div class="relative group" data-image="{{ $image }}">
-                                                <img src="{{ asset($image) }}" alt="Room image" class="h-32 w-full rounded border object-cover">
+                                                <img src="{{ asset($image) }}" alt="Room image" class="h-32 w-full rounded border object-cover" loading="lazy" decoding="async">
                                                 <button type="button" onclick="removeExistingImage(this, '{{ $image }}')" 
                                                     class="absolute top-1 right-1 bg-red-600 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -270,7 +278,7 @@ mount(function ($id = null) {
                         const div = document.createElement('div');
                         div.className = 'relative';
                         div.innerHTML = `
-                            <img src="${e.target.result}" alt="Preview ${index + 1}" class="h-32 w-full rounded-lg object-cover">
+                            <img src="${e.target.result}" alt="Preview ${index + 1}" class="h-32 w-full rounded-lg object-cover" loading="lazy" decoding="async">
                             <div class="absolute bottom-1 right-1 bg-black/60 text-white text-xs px-2 py-1 rounded">
                                 ${index + 1}
                             </div>

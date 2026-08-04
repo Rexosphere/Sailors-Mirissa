@@ -3,7 +3,7 @@
     <x-slot:title>Experiences - Saylor's Mirissa</x-slot:title>
 
     <!-- Hero Section -->
-    <section id="featured_header" class="relative h-[50vh] bg-cover bg-center bg-fixed"
+    <section id="featured_header" class="relative h-[50vh] bg-cover bg-center"
         style="background-image: url('{{ asset('images/home.png') }}');">
         <!-- Overlay -->
         <div class="absolute inset-0 bg-black/40"></div>

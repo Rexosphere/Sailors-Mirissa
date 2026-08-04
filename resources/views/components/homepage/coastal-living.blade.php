@@ -8,7 +8,7 @@
                 <div class="lg:w-1/2 w-full">
                     <img class="w-full h-[450px] object-cover rounded-l-xl shadow-md"
                         src="https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=800&h=600&fit=crop&crop=center"
-                        alt="Coastal Living Room at Sailors Mirissa" />
+                        alt="Coastal Living Room at Sailors Mirissa" / loading="lazy" decoding="async">
                 </div>
 
                 <!-- Right Content -->
@@ -17,7 +17,7 @@
                     <div
                         class="relative bg-transparent rounded-r-xl shadow-md p-10 lg:p-14 w-full border border-black">
                         <h2
-                            class="text-3xl lg:text-4xl font-medium font-serif mb-6 leading-tight text-black">
+                            class="text-3xl lg:text-4xl font-medium font-display mb-6 leading-tight text-black">
                             Coastal Living in Comfort
                         </h2>
                         <p class="font-sans text-lg md:text-xl text-stone-700 max-w-2xl mx-auto leading-relaxed mb-10">

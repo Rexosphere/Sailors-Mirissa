@@ -1,9 +1,39 @@
-<!-- Interactive Map Section -->
-<section id="interactive-map" class="hidden md:block relative h-screen overflow-hidden bg-gray-100">
+<div id="interactive-map">
+
+<!-- Mobile fallback: the interactive image-map below needs a pointer and a wide
+     viewport, so phones get the same landmarks as a plain scrollable list.
+     Without this the header's EXPLORE anchor has no target on mobile. -->
+<section class="md:hidden bg-gray-100 py-12">
+    <div class="px-4">
+        <h2 class="text-3xl font-bold font-display text-slate-800">Explore Mirissa</h2>
+        <p class="text-slate-600 mt-2 mb-6">Everything worth seeing, within a short walk or tuk-tuk ride.</p>
+
+        <img src="/images/photos/interactive-map.avif" alt="Map of the Mirissa area" loading="lazy" decoding="async"
+            class="w-full rounded-2xl shadow-md mb-8">
+
+        <ul class="space-y-4">
+            @foreach (\App\Models\MapPoint::all() as $point)
+                <li class="bg-white rounded-2xl shadow-sm overflow-hidden">
+                    @if ($point->image_url)
+                        <img src="{{ $point->image_url }}" alt="{{ $point->name }}" loading="lazy" decoding="async"
+                            class="w-full h-40 object-cover">
+                    @endif
+                    <div class="p-4">
+                        <h3 class="text-lg font-bold text-slate-800">{{ $point->name }}</h3>
+                        <p class="text-slate-600 mt-1 leading-relaxed">{{ $point->description }}</p>
+                    </div>
+                </li>
+            @endforeach
+        </ul>
+    </div>
+</section>
+
+<!-- Interactive Map Section (pointer + wide viewport only) -->
+<section aria-label="Explore Mirissa" class="hidden md:block relative h-dvh md:min-h-[600px] overflow-hidden bg-gray-100">
     <div class="relative w-full h-full">
         <!-- Image Map -->
         <img id="map-image" src="/images/photos/interactive-map.avif" alt="Mirissa Area Map"
-            class="w-full h-full object-cover">
+            class="w-full h-full object-cover" loading="lazy" decoding="async">
 
         <!-- SVG Overlay for clickable areas -->
         <svg id="map-overlay" class="absolute inset-0 w-full h-full pointer-events-none" style="top: 0; left: 0;">
@@ -21,18 +51,18 @@
         <div id="card-content"
             class="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl max-w-sm overflow-hidden pointer-events-all transform scale-90">
             <div class="h-48 relative overflow-hidden">
-                <img id="card-image" src="" alt="" class="w-full h-full object-cover">
+                <img id="card-image" src="" alt="" class="w-full h-full object-cover" loading="lazy" decoding="async">
                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                <button id="close-card"
-                    class="absolute top-3 right-3 bg-white/20 backdrop-blur p-2 rounded-full hover:bg-white/40 transition">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button id="close-card" type="button" aria-label="Close landmark details"
+                    class="absolute top-3 right-3 bg-black/40 backdrop-blur p-2 min-w-11 min-h-11 flex items-center justify-center rounded-full hover:bg-black/60 transition cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12">
                         </path>
                     </svg>
                 </button>
             </div>
             <div class="p-6">
-                <h3 id="card-title" class="text-2xl font-bold text-stone-800 mb-3 font-serif"></h3>
+                <h3 id="card-title" class="text-2xl font-bold text-stone-800 mb-3 font-display"></h3>
                 <p id="card-description" class="text-stone-600 leading-relaxed"></p>
             </div>
         </div>
@@ -45,6 +75,8 @@
         </path>
     </svg>
 </section>
+
+</div>
 
 <style>
     #map-overlay polygon {
@@ -96,6 +128,17 @@
         display: flex;
         flex-direction: column;
         align-items: center;
+        /* Rendered as a <button>, so reset UA chrome */
+        background: none;
+        border: 0;
+        padding: 0;
+        cursor: pointer;
+    }
+
+    .landmark-button:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 4px;
+        border-radius: 8px;
     }
 
     /* Ripple effect container */
@@ -290,11 +333,13 @@
             const buttonX = (data.centerX * scale) + offsetX;
             const buttonY = (data.centerY * scale) + offsetY;
 
-            const button = document.createElement('div');
+            const button = document.createElement('button');
+            button.type = 'button';
             button.className = 'landmark-button';
             button.style.left = `${buttonX}px`;
             button.style.top = `${buttonY}px`;
             button.setAttribute('data-landmark', name);
+            button.setAttribute('aria-label', `${name} — show details`);
 
             button.innerHTML = `
                 <div class="landmark-icon">
@@ -307,14 +352,14 @@
                 </div>
             `;
 
-            // Add hover listeners
-            button.addEventListener('mouseenter', () => {
-                polygon.classList.add('highlight');
-            });
+            // Highlight the matching area on hover and on keyboard focus
+            const highlight = () => polygon.classList.add('highlight');
+            const clear = () => polygon.classList.remove('highlight');
 
-            button.addEventListener('mouseleave', () => {
-                polygon.classList.remove('highlight');
-            });
+            button.addEventListener('mouseenter', highlight);
+            button.addEventListener('mouseleave', clear);
+            button.addEventListener('focus', highlight);
+            button.addEventListener('blur', clear);
 
             button.addEventListener('click', () => openLandmarkPopup(name));
 

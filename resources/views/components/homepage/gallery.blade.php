@@ -8,37 +8,37 @@
             <div class="rounded-lg overflow-hidden shadow-lg">
                 <img src="https://images.unsplash.com/photo-1578683010236-d716f9a3f461?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NTQwMjJ8MHwxfHNlYXJjaHwyfHxob3RlbCUyMHJvb20lMjBpbnRlcmlvcnxlbnwwfHx8fDE2OTU3NjMxMzh8MA&ixlib=rb-4.0.3&q=80&w=1080"
                     alt="Luxury hotel room interior with a large bed, a sitting area, and a large window."
-                    class="w-full h-auto object-cover" />
+                    class="w-full h-auto object-cover" / loading="lazy" decoding="async">
             </div>
 
             <div class="rounded-lg overflow-hidden shadow-lg">
                 <img src="https://images.unsplash.com/photo-1578683010236-d716f9a3f461?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NTQwMjJ8MHwxfHNlYXJjaHwyfHxob3RlbCUyMHJvb20lMjBpbnRlcmlvcnxlbnwwfHx8fDE2OTU3NjMxMzh8MA&ixlib=rb-4.0.3&q=80&w=1080"
                     alt="A modern hotel room with a minimalist design, a comfortable bed, and clean lines."
-                    class="w-full h-auto object-cover" />
+                    class="w-full h-auto object-cover" / loading="lazy" decoding="async">
             </div>
 
             <div class="rounded-lg overflow-hidden shadow-lg">
                 <img src="https://images.unsplash.com/photo-1578683010236-d716f9a3f461?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NTQwMjJ8MHwxfHNlYXJjaHwyfHxob3RlbCUyMHJvb20lMjBpbnRlcmlvcnxlbnwwfHx8fDE2OTU3NjMxMzh8MA&ixlib=rb-4.0.3&q=80&w=1080"
                     alt="A stylish hotel room featuring a large bed, a wooden headboard, and warm lighting."
-                    class="w-full h-auto object-cover" />
+                    class="w-full h-auto object-cover" / loading="lazy" decoding="async">
             </div>
 
             <div class="rounded-lg overflow-hidden shadow-lg">
                 <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NTQwMjJ8MHwxfHNlYXJjaHw3fHxob3RlbCUyMHJvb20lMjBpbnRlcmlvcnxlbnwwfHx8fDE2OTU3NjMxMzh8MA&ixlib=rb-4.0.3&q=80&w=1080"
                     alt="An elegant hotel bedroom with a large window, providing a scenic view."
-                    class="w-full h-auto object-cover" />
+                    class="w-full h-auto object-cover" / loading="lazy" decoding="async">
             </div>
 
             <div class="rounded-lg overflow-hidden shadow-lg">
                 <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NTQwMjJ8MHwxfHNlYXJjaHw3fHxob3RlbCUyMHJvb20lMjBpbnRlcmlvcnxlbnwwfHx8fDE2OTU3NjMxMzh8MA&ixlib=rb-4.0.3&q=80&w=1080"
                     alt="A clean and cozy hotel room with a comfortable bed and minimalistic decor."
-                    class="w-full h-auto object-cover" />
+                    class="w-full h-auto object-cover" / loading="lazy" decoding="async">
             </div>
 
             <div class="rounded-lg overflow-hidden shadow-lg">
                 <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NTQwMjJ8MHwxfHNlYXJjaHw3fHxob3RlbCUyMHJvb20lMjBpbnRlcmlvcnxlbnwwfHx8fDE2OTU3NjMxMzh8MA&ixlib=rb-4.0.3&q=80&w=1080"
                     alt="A simple and comfortable hotel room with a large bed and a small desk."
-                    class="w-full h-auto object-cover" />
+                    class="w-full h-auto object-cover" / loading="lazy" decoding="async">
             </div>
         </div>
     </div>

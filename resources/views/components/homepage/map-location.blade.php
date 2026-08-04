@@ -20,7 +20,9 @@
                     spots, and the whale watching harbor. Also right on the main road for easy tuk-tuk rides to
                     Galle and other adventures. </p>
                 <div class="pt-4">
-                    <a href="#" class="text-stone-700 tracking-wide text-base uppercase">
+                    <a href="https://www.google.com/maps/dir/?api=1&destination={{ config('seo.business.geo.latitude') }},{{ config('seo.business.geo.longitude') }}"
+                        target="_blank" rel="noopener noreferrer"
+                        class="text-stone-700 hover:text-stone-900 tracking-wide text-base uppercase inline-flex items-center min-h-11 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900">
                         GET DIRECTIONS
                     </a>
                     <div class="w-32 h-px bg-stone-300 mt-2"></div>

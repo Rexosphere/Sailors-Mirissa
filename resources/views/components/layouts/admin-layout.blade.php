@@ -9,22 +9,60 @@
     <title>{{ $title ?? 'Admin Panel' }} - {{ config('app.name', 'Laravel') }}</title>
 
     <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nata+Sans:wght@100..900&display=swap" rel="stylesheet" />
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="font-sans antialiased bg-gray-100 dark:bg-gray-900">
+<body class="font-sans antialiased bg-gray-100 dark:bg-gray-900"
+    x-data="{
+        sidebarOpen: false,
+        narrow: window.matchMedia('(max-width: 1023px)').matches,
+        init() {
+            window.matchMedia('(max-width: 1023px)').addEventListener('change', (e) => {
+                this.narrow = e.matches;
+                if (!e.matches) this.sidebarOpen = false;
+            });
+        }
+    }">
+    <!-- Mobile top bar -->
+    <div
+        class="lg:hidden sticky top-0 z-40 flex items-center gap-3 h-14 px-4 bg-white dark:bg-gray-800 shadow">
+        <button type="button" @click="sidebarOpen = true" aria-label="Open navigation" :aria-expanded="sidebarOpen"
+            aria-controls="admin-sidebar"
+            class="w-11 h-11 -ml-2 flex items-center justify-center rounded-md text-gray-700 dark:text-gray-200 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-current">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+        </button>
+        <span class="font-bold text-gray-800 dark:text-white">Admin Panel</span>
+    </div>
+
+    <!-- Scrim -->
+    <div x-show="sidebarOpen" x-transition.opacity @click="sidebarOpen = false" x-cloak
+        class="lg:hidden fixed inset-0 z-40 bg-black/50" aria-hidden="true"></div>
+
     <div class="min-h-screen flex">
         <!-- Sidebar -->
-        <aside class="w-64 bg-white dark:bg-gray-800 shadow-lg sticky top-0 h-screen overflow-y-auto">
-            <div class="p-6">
-                <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Admin Panel</h2>
-                <p class="text-sm text-gray-500 dark:text-gray-400">{{ auth()->user()->name }}</p>
+        <aside id="admin-sidebar" @keydown.escape.window="sidebarOpen = false" :inert="narrow && ! sidebarOpen"
+            :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
+            class="fixed lg:sticky inset-y-0 left-0 z-50 w-64 shrink-0 bg-white dark:bg-gray-800 shadow-lg top-0 h-dvh lg:h-screen overflow-y-auto transition-transform duration-300">
+            <div class="p-6 flex items-start justify-between">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Admin Panel</h2>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ auth()->user()->name }}</p>
+                </div>
+                <button type="button" @click="sidebarOpen = false" aria-label="Close navigation"
+                    class="lg:hidden w-11 h-11 -mr-2 -mt-2 flex items-center justify-center rounded-md text-gray-500 dark:text-gray-400 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-current">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
             </div>
-            <nav class="mt-6">
+            <nav class="mt-6" @click="sidebarOpen = false">
                 <a href="{{ route('admin.dashboard') }}"
                     class="flex items-center px-6 py-3 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 {{ request()->routeIs('admin.dashboard') ? 'bg-gray-100 dark:bg-gray-700 border-l-4 border-blue-500' : '' }}">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -76,13 +114,15 @@
             <div class="py-6">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     @if(session('success'))
-                        <div class="mb-4 p-4 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-100 rounded-lg">
+                        <div role="status" aria-live="polite"
+                            class="mb-4 p-4 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-100 rounded-lg">
                             {{ session('success') }}
                         </div>
                     @endif
 
                     @if(session('error'))
-                        <div class="mb-4 p-4 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-100 rounded-lg">
+                        <div role="alert"
+                            class="mb-4 p-4 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-100 rounded-lg">
                             {{ session('error') }}
                         </div>
                     @endif

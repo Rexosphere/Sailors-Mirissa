@@ -26,7 +26,9 @@ mount(function ($id = null) {
     </div>
 
     @if ($errors->any())
-        <div class="mb-4 p-4 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-100 rounded-lg">
+        <div role="alert" tabindex="-1" data-error-summary
+            class="mb-4 p-4 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-100 rounded-lg">
+            <p class="font-semibold mb-2">Please fix the following before saving:</p>
             <ul class="list-disc list-inside">
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -50,7 +52,8 @@ mount(function ($id = null) {
                     <input type="text" id="name" name="name" 
                         value="{{ old('name', $mapPoint?->name) }}"
                         class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" 
-                        required>
+                        required @error('name') aria-invalid="true" aria-describedby="name-error" @enderror>
+                    <x-admin.field-error name="name" />
                 </div>
 
                 <!-- Image Upload (Main Photo) -->
@@ -82,7 +85,8 @@ mount(function ($id = null) {
                     </label>
                     <textarea id="description" name="description" rows="3"
                         class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" 
-                        required>{{ old('description', $mapPoint?->description) }}</textarea>
+                        required @error('description') aria-invalid="true" aria-describedby="description-error" @enderror>{{ old('description', $mapPoint?->description) }}</textarea>
+                    <x-admin.field-error name="description" />
                 </div>
 
                 <!-- Icon Upload -->
@@ -115,7 +119,7 @@ mount(function ($id = null) {
                     </label>
                     <div class="relative w-full aspect-[4/3] bg-gray-200 rounded-lg overflow-hidden cursor-crosshair border-2 border-gray-300 dark:border-gray-600 group"
                          onclick="selectMapLocation(event)">
-                        <img src="/images/photos/interactive-map.avif" alt="Map" class="w-full h-full object-cover pointer-events-none">
+                        <img src="/images/photos/interactive-map.avif" alt="Map" class="w-full h-full object-cover pointer-events-none" loading="lazy" decoding="async">
                         
                         <!-- Marker element -->
                         <div id="map-marker" class="absolute w-4 h-4 bg-red-600 border-2 border-white rounded-full shadow-md transform -translate-x-1/2 -translate-y-1/2 pointer-events-none transition-all duration-200 {{ $mapPoint ? '' : 'hidden' }}"

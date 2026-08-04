@@ -1,12 +1,12 @@
 <!-- Hero Section -->
-<section id="featured_header" class="relative min-h-screen overflow-hidden">
+<section id="featured_header" class="relative min-h-dvh overflow-hidden">
     <!-- Hero Image -->
     <div class="absolute inset-0">
         <picture>
             <source srcset="/images/photos/hero-background-mobile.avif" media="(max-width: 767px)">
             <img src="/images/photos/hero-background.avif"
                 alt="Sailor's Mirissa beachfront hotel with ocean view in Mirissa, Sri Lanka"
-                class="w-full h-full object-cover object-center md:object-center">
+                class="w-full h-full object-cover object-center md:object-center" fetchpriority="high" decoding="async">
         </picture>
     </div>
 
@@ -16,26 +16,8 @@
     </div>
 
     <!-- Content wrapper -->
-    <div class="relative z-20 flex flex-col min-h-screen pointer-events-none">
-        <!-- Hero text (vertically centered) -->
-        <div class="text-white px-8 py-8 w-full flex flex-col justify-center flex-1" style="margin-top: 10vh;">
-            <h1 class="sr-only text-4xl md:text-7xl font-bold font-display leading-tight w-full">
-                Your Chill Spot in Paradise
-            </h1>
-
-            <p class="sr-only text-xl md:text-2xl font-light mb-8 mt-6 leading-relaxed">
-                Wake up in the heart of Mirissa, roll out of bed,<br>
-                and you're already living your best life.<br>
-                Everything you want is within a wave's reach.
-            </p>
-
-            <div class="sr-only flex flex-col items-start gap-4 pointer-events-auto">
-                <a href="#availability"
-                    class="text-2xl font-bold tracking-widest hover:text-gray-200 transition-colors">CHECK
-                    AVAILABILITY</a>
-                <div class="w-48 h-0.5 bg-white"></div>
-            </div>
-        </div>
+    <div class="relative z-20 flex flex-col min-h-dvh pointer-events-none">
+        <div class="flex-1"></div>
 
         <!-- Location Features -->
         <div class="px-8 pb-12 pointer-events-auto">
@@ -55,8 +37,10 @@
 
                 <!-- Item 1 -->
                 <div class="flex items-start lg:items-center gap-4">
-                    <img src="images/icons/departures.avif" alt="Airport Icon"
-                        class="h-12 w-12 md:h-16 md:w-16 flex-shrink-0 object-contain invert">
+                    <svg class="h-12 w-12 md:h-16 md:w-16 flex-shrink-0 text-white" fill="none"
+                        stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 19h12M4.5 12.5l15-4.5m0 0-3.5 6m3.5-6-4.5-3M4.5 12.5 8 15l2.5-.75" />
+                    </svg>
                     <div class="flex flex-col justify-center">
                         <div class="w-8 h-0.5 bg-white mb-2"></div>
                         <p class="text-base md:text-lg text-white font-medium leading-snug">2.5 hours from<br>the
@@ -66,8 +50,10 @@
 
                 <!-- Item 2 -->
                 <div class="flex items-start lg:items-center gap-4">
-                    <img src="images/icons/motorway.avif" alt="Highway Icon"
-                        class="h-12 w-12 md:h-16 md:w-16 flex-shrink-0 object-contain invert">
+                    <svg class="h-12 w-12 md:h-16 md:w-16 flex-shrink-0 text-white" fill="none"
+                        stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v3m0 4.5v3m0 4.5v3M4 20 8 4m12 16L16 4" />
+                    </svg>
                     <div class="flex flex-col justify-center">
                         <div class="w-8 h-0.5 bg-white mb-2"></div>
                         <p class="text-base md:text-lg text-white font-medium leading-snug">Minutes away from
@@ -77,8 +63,10 @@
 
                 <!-- Item 3 -->
                 <div class="flex items-start lg:items-center gap-4">
-                    <img src="images/icons/taxi.avif" alt="Taxi Icon"
-                        class="h-12 w-12 md:h-16 md:w-16 flex-shrink-0 object-contain invert">
+                    <svg class="h-12 w-12 md:h-16 md:w-16 flex-shrink-0 text-white" fill="none"
+                        stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 17h14M5 17a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm14 0a2 2 0 1 0 4 0 2 2 0 0 0-4 0Zm-14 0v-4l2-5h10l2 5v4M9 8v4m6-4v4" />
+                    </svg>
                     <div class="flex flex-col justify-center">
                         <div class="w-8 h-0.5 bg-white mb-2"></div>
                         <p class="text-base md:text-lg text-white font-medium leading-snug">24/7 available<br>Tuk-tuks
@@ -88,8 +76,10 @@
 
                 <!-- Item 4 -->
                 <div class="flex items-start lg:items-center gap-4">
-                    <img src="images/icons/walking.avif" alt="Walking Icon"
-                        class="h-12 w-12 md:h-16 md:w-16 flex-shrink-0 object-contain invert">
+                    <svg class="h-12 w-12 md:h-16 md:w-16 flex-shrink-0 text-white" fill="none"
+                        stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 4.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0ZM11 9l-2.5 4L7 21m4-12 3 2 1.5 4M11 9l-3 1m6 4-1 7" />
+                    </svg>
                     <div class="flex flex-col justify-center">
                         <div class="w-8 h-0.5 bg-white mb-2"></div>
                         <p class="text-base md:text-lg text-white font-medium leading-snug">Walk to most<br>Mirissa

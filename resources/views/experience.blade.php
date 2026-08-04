@@ -21,7 +21,7 @@ $description = $item['description'];
     </section>
 
     <!-- Photo Gallery Section -->
-    <section class="relative overflow-hidden min-h-screen" 
+    <section class="relative overflow-hidden min-h-dvh" 
              x-data="photoGallery()" 
              x-init="init()">
 
@@ -45,7 +45,7 @@ $description = $item['description'];
                             <div class="relative w-auto h-60 md:w-auto md:h-[40rem] bg-white/10 backdrop-blur-sm rounded-3xl overflow-hidden border border-white/20 shadow-2xl group">
                                 <img :src="photo.src" 
                                      :alt="photo.alt" 
-                                     class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 aspect-video">
+                                     class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 aspect-video" loading="lazy" decoding="async">
                             </div>
                         </div>
                     </template>

@@ -50,7 +50,7 @@
 <meta name="twitter:image" content="{{ $ogImage }}" />
 
 {{-- Mobile & PWA Meta Tags --}}
-<meta name="theme-color" content="#72B6B9" />
+<meta name="theme-color" content="#2F6F72" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="{{ $seoConfig['site_name'] }}" />
@@ -63,7 +63,7 @@
 {{-- Preconnect for Performance --}}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Merienda:wght@300..900&family=Nata+Sans:wght@500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Merienda:wght@300..900&family=Nata+Sans:wght@100..900&display=swap" rel="stylesheet">
 
 {{-- Structured Data - LocalBusiness & Hotel Schema --}}
 @php

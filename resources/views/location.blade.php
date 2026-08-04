@@ -3,7 +3,7 @@
     <x-slot:title>Location - Saylor's Mirissa</x-slot:title>
 
     <!-- Hero Section -->
-    <section id="featured_header" class="relative h-[50vh] bg-cover bg-center bg-fixed"
+    <section id="featured_header" class="relative h-[50vh] bg-cover bg-center"
         style="background-image: url('{{ asset('images/home.png') }}');">
         <!-- Overlay -->
         <div class="absolute inset-0 bg-black/40"></div>
@@ -38,7 +38,7 @@
                 <div class="order-2 lg:order-1">
                     <div class="bg-white shadow-xl overflow-hidden h-[60vh]">
                         <img class="w-full h-full object-cover" src="{{ asset('images/location/gallemap.png') }}"
-                            alt="Mirissa Location Map" />
+                            alt="Mirissa Location Map" / loading="lazy" decoding="async">
                     </div>
                 </div>
 
@@ -53,7 +53,9 @@
                         spots, and the whale watching harbor. Also right on the main road for easy tuk-tuk rides to
                         Galle and other adventures. </p>
                     <div class="pt-4">
-                        <a href="#" class="text-stone-700 tracking-wide text-base uppercase">
+                        <a href="https://www.google.com/maps/dir/?api=1&destination={{ config('seo.business.geo.latitude') }},{{ config('seo.business.geo.longitude') }}"
+                        target="_blank" rel="noopener noreferrer"
+                        class="text-stone-700 hover:text-stone-900 tracking-wide text-base uppercase inline-flex items-center min-h-11 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-900">
                             GET DIRECTIONS
                         </a>
                         <div class="w-32 h-px bg-stone-300 mt-2"></div>
@@ -88,28 +90,28 @@
 
                 <!-- Item 1 -->
                 <div class="flex flex-col items-center">
-                    <img src="images/icons/image16.png" alt="Airport Icon" class="h-12 w-12 mb-2 object-contain">
+                    <img src="images/icons/image16.png" alt="Airport Icon" class="h-12 w-12 mb-2 object-contain" loading="lazy" decoding="async">
                     <div class="w-8 h-0.5 bg-gray-800 mb-2"></div>
                     <p class="text-sm text-gray-700">2.5 hours from <br> the airport</p>
                 </div>
 
                 <!-- Item 2 -->
                 <div class="flex flex-col items-center">
-                    <img src="images/icons/image17.png" alt="highwayIcon" class="h-12 w-12 mb-2 object-contain">
+                    <img src="images/icons/image17.png" alt="highwayIcon" class="h-12 w-12 mb-2 object-contain" loading="lazy" decoding="async">
                     <div class="w-8 h-0.5 bg-gray-800 mb-2"></div>
                     <p class="text-sm text-gray-700">Minutes away from the <br> Southern Expressway</p>
                 </div>
 
                 <!-- Item 3 -->
                 <div class="flex flex-col items-center">
-                    <img src="images/icons/image18.png" alt="mobile Icon" class="h-12 w-12 mb-2 object-contain">
+                    <img src="images/icons/image18.png" alt="mobile Icon" class="h-12 w-12 mb-2 object-contain" loading="lazy" decoding="async">
                     <div class="w-8 h-0.5 bg-gray-800 mb-2"></div>
                     <p class="text-sm text-gray-700">24/7 available <br> Tuk-tuks and taxis</p>
                 </div>
 
                 <!-- Item 4 -->
                 <div class="flex flex-col items-center">
-                    <img src="images/icons/image19.png" alt="walk Icon" class="h-12 w-12 mb-2 object-contain">
+                    <img src="images/icons/image19.png" alt="walk Icon" class="h-12 w-12 mb-2 object-contain" loading="lazy" decoding="async">
                     <div class="w-8 h-0.5 bg-gray-800 mb-2"></div>
                     <p class="text-sm text-gray-700">Walk to most <br> Mirissa highlights</p>
                 </div>
@@ -187,7 +189,7 @@
                 <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
                     <img class="w-full h-48 object-cover" 
                          src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400&h=300&fit=crop" 
-                         alt="Mirissa Beach" />
+                         alt="Mirissa Beach" / loading="lazy" decoding="async">
                     <div class="p-6">
                         <h3 class="text-xl font-bold font-display text-stone-700 mb-3">Mirissa Beach</h3>
                         <p class="text-stone-700 mb-4">Golden sand beach perfect for swimming, surfing, and sunset watching. Just 2 minutes walk from the hotel.</p>
@@ -199,7 +201,7 @@
                 <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
                     <img class="w-full h-48 object-cover" 
                          src="https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400&h=300&fit=crop" 
-                         alt="Whale Watching" />
+                         alt="Whale Watching" / loading="lazy" decoding="async">
                     <div class="p-6">
                         <h3 class="text-xl font-bold font-display text-stone-700 mb-3">Whale Watching</h3>
                         <p class="text-stone-700 mb-4">World-class whale watching tours departing from Mirissa harbor. See blue whales and dolphins in their natural habitat.</p>
@@ -211,7 +213,7 @@
                 <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
                     <img class="w-full h-48 object-cover" 
                          src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop" 
-                         alt="Coconut Tree Hill" />
+                         alt="Coconut Tree Hill" / loading="lazy" decoding="async">
                     <div class="p-6">
                         <h3 class="text-xl font-bold font-display text-stone-700 mb-3">Coconut Tree Hill</h3>
                         <p class="text-stone-700 mb-4">Instagram-famous viewpoint offering panoramic views of the coastline and perfect sunset photo opportunities.</p>
@@ -223,7 +225,7 @@
                 <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
                     <img class="w-full h-48 object-cover" 
                          src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400&h=300&fit=crop" 
-                         alt="Secret Beach" />
+                         alt="Secret Beach" / loading="lazy" decoding="async">
                     <div class="p-6">
                         <h3 class="text-xl font-bold font-display text-stone-700 mb-3">Secret Beach</h3>
                         <p class="text-stone-700 mb-4">Hidden cove with crystal clear waters and fewer crowds. Perfect for a peaceful swim and snorkeling.</p>
@@ -235,7 +237,7 @@
                 <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
                     <img class="w-full h-48 object-cover" 
                          src="https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?w=400&h=300&fit=crop" 
-                         alt="Local Restaurants" />
+                         alt="Local Restaurants" / loading="lazy" decoding="async">
                     <div class="p-6">
                         <h3 class="text-xl font-bold font-display text-stone-700 mb-3">Beach Restaurants</h3>
                         <p class="text-stone-700 mb-4">Fresh seafood and Sri Lankan cuisine at beachfront restaurants with sand between your toes.</p>
@@ -247,7 +249,7 @@
                 <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
                     <img class="w-full h-48 object-cover" 
                          src="https://images.unsplash.com/photo-1502933691298-84fc14542831?w=400&h=300&fit=crop" 
-                         alt="Surf Spots" />
+                         alt="Surf Spots" / loading="lazy" decoding="async">
                     <div class="p-6">
                         <h3 class="text-xl font-bold font-display text-stone-700 mb-3">Surf Spots</h3>
                         <p class="text-stone-700 mb-4">Multiple surf breaks suitable for all levels, from beginner-friendly waves to advanced reef breaks.</p>
