@@ -12,8 +12,8 @@ export default defineConfig({
         }),
         tailwindcss(),
     ],
+    assetsInclude: ['**/*.glsl'],
     server: {
         cors: true,
     },
-    assetsInclude: ['**/*.glsl'],
 });

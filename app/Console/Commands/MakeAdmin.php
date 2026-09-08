@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\User;
 use Illuminate\Console\Command;
 
 class MakeAdmin extends Command
@@ -29,17 +30,19 @@ class MakeAdmin extends Command
         $name = $this->argument('name') ?? $this->ask('Enter name');
         $password = $this->argument('password') ?? $this->secret('Enter password');
 
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        if (! filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $this->error('Invalid email address');
+
             return 1;
         }
 
         if (strlen($password) < 8) {
             $this->error('Password must be at least 8 characters');
+
             return 1;
         }
 
-        $user = \App\Models\User::where('email', $email)->first();
+        $user = User::where('email', $email)->first();
 
         if ($user) {
             $user->update([
@@ -49,7 +52,7 @@ class MakeAdmin extends Command
             ]);
             $this->info("User {$email} has been updated and granted admin privileges.");
         } else {
-            \App\Models\User::create([
+            User::create([
                 'name' => $name,
                 'email' => $email,
                 'password' => bcrypt($password),

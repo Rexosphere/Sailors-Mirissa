@@ -1,208 +1,147 @@
 <?php
 
 use App\Models\Experience;
-use function Livewire\Volt\{state, mount};
+use App\Support\PublicImages;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
+use Livewire\Volt\Component;
+use Livewire\WithFileUploads;
+use Mary\Traits\Toast;
 
-state(['experience' => null]);
-state(['id' => null]);
+new #[Layout('components.layouts.admin')] #[Title('Experience')] class extends Component {
+    use Toast, WithFileUploads;
 
-mount(function ($id = null) {
-    $this->id = $id;
-    if ($id) {
-        $this->experience = Experience::findOrFail($id);
+    public ?Experience $experience = null;
+
+    public string $title = '';
+
+    public string $alt_text = '';
+
+    public string $description = '';
+
+    public string $badge = '';
+
+    public string $icon = '';
+
+    public int $sort_order = 0;
+
+    public $image = null;
+
+    public function mount(?int $id = null): void
+    {
+        if ($id) {
+            $this->experience = Experience::findOrFail($id);
+            $this->title = $this->experience->title;
+            $this->alt_text = $this->experience->alt_text;
+            $this->description = $this->experience->description;
+            $this->badge = (string) $this->experience->badge;
+            $this->icon = (string) $this->experience->icon;
+            $this->sort_order = $this->experience->sort_order;
+        } else {
+            $this->sort_order = (int) Experience::max('sort_order') + 1;
+        }
     }
-});
 
-?>
+    public function rules(): array
+    {
+        return [
+            'title' => ['required', 'string', 'max:255'],
+            'alt_text' => ['required', 'string', 'max:255'],
+            'description' => ['required', 'string', 'max:2000'],
+            'badge' => ['nullable', 'string', 'max:40'],
+            'icon' => ['nullable', 'string', 'max:5000'],
+            'sort_order' => ['required', 'integer', 'min:0', 'max:65535'],
+            'image' => [$this->experience ? 'nullable' : 'required', 'file', 'mimes:jpg,jpeg,png,webp,avif', 'max:10240'],
+        ];
+    }
 
-<x-layouts.admin-layout>
-    <div class="mb-6">
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
-            {{ $experience ? 'Edit' : 'Create' }} Experience
-        </h1>
-        <p class="mt-2 text-gray-600 dark:text-gray-400">
-            {{ $experience ? 'Update the experience details below' : 'Add a new attraction to the homepage' }}
-        </p>
-    </div>
+    public function messages(): array
+    {
+        return [
+            'image.required' => 'Add a photo for the card.',
+            'image.mimes' => 'Use a JPG, PNG, WEBP or AVIF photo. iPhone HEIC photos must be converted first.',
+            'image.max' => 'The photo must be 10 MB or smaller.',
+        ];
+    }
 
-    @if ($errors->any())
-        <div role="alert" tabindex="-1" data-error-summary
-            class="mb-4 p-4 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-100 rounded-lg">
-            <p class="font-semibold mb-2">Please fix the following before saving:</p>
-            <ul class="list-disc list-inside">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
+    public function updatedImage(): void
+    {
+        $this->validateOnly('image');
+    }
 
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-        <form action="{{ $experience ? route('admin.experiences.update', $experience->id) : route('admin.experiences.store') }}" 
-              method="POST" 
-              enctype="multipart/form-data">
-            @csrf
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Title -->
-                <div>
-                    <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Title *
-                    </label>
-                    <input type="text" id="title" name="title" 
-                        value="{{ old('title', $experience?->title) }}"
-                        class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" 
-                        required @error('title') aria-invalid="true" aria-describedby="title-error" @enderror>
-                    <x-admin.field-error name="title" />
-                </div>
+    public function save(): void
+    {
+        $data = $this->validate();
+        unset($data['image']);
+        $data['badge'] = $data['badge'] ?: null;
+        $data['icon'] = $data['icon'] ?: null;
 
-                <!-- Alt Text -->
-                <div>
-                    <label for="alt_text" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Alt Text *
-                    </label>
-                    <input type="text" id="alt_text" name="alt_text" 
-                        value="{{ old('alt_text', $experience?->alt_text) }}"
-                        class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" 
-                        required @error('alt_text') aria-invalid="true" aria-describedby="alt_text-error" @enderror>
-                    <x-admin.field-error name="alt_text" />
-                </div>
+        if ($this->image) {
+            $data['image_url'] = PublicImages::store($this->image, 'experiences', $data['title']);
+        }
 
-                <!-- Description -->
-                <div class="md:col-span-2">
-                    <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Description *
-                    </label>
-                    <textarea id="description" name="description" rows="4"
-                        class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" 
-                        required @error('description') aria-invalid="true" aria-describedby="description-error" @enderror>{{ old('description', $experience?->description) }}</textarea>
-                    <x-admin.field-error name="description" />
-                </div>
+        if ($this->experience) {
+            $previous = $this->experience->image_url;
+            $this->experience->update($data);
 
-                <!-- Image Upload with Preview -->
-                <div class="md:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Image {{ $experience ? '(Leave empty to keep current)' : '*' }}
-                    </label>
-                    
-                    <!-- Drag and Drop Upload Area -->
-                    <div 
-                        id="upload-area"
-                        class="relative border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center hover:border-blue-400 dark:hover:border-blue-500 transition-colors cursor-pointer"
-                        onclick="document.getElementById('image').click()"
-                    >
-                        <input type="file" id="image" name="image" accept="image/*"
-                            class="hidden"
-                            onchange="previewImage(this)">
-                        
-                        <!-- Default upload prompt (hidden when image is selected) -->
-                        <div id="upload-prompt" class="space-y-2">
-                            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
-                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                            <div class="text-gray-600 dark:text-gray-400">
-                                <span class="font-medium text-blue-600 dark:text-blue-400">Click to upload</span> or drag and drop
-                            </div>
-                            <p class="text-xs text-gray-500">PNG, JPG, AVIF, WEBP up to 5MB</p>
-                        </div>
-                        
-                        <!-- Image preview (hidden by default) -->
-                        <div id="image-preview" class="hidden">
-                            <img id="preview-img" src="" alt="Preview" class="mx-auto h-40 rounded-lg object-cover" loading="lazy" decoding="async">
-                            <p id="file-name" class="mt-2 text-sm text-green-600 dark:text-green-400"></p>
-                        </div>
-                    </div>
-                    
-                    @if($experience && $experience->image_url)
-                        <div class="mt-4">
-                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Current image:</p>
-                            <img src="{{ $experience- loading="lazy" decoding="async">image_url }}" alt="Current" class="h-32 rounded border object-cover">
-                        </div>
-                    @endif
-                </div>
-
-                <!-- Badge -->
-                <div>
-                    <label for="badge" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Badge (Optional)
-                    </label>
-                    <input type="text" id="badge" name="badge" 
-                        value="{{ old('badge', $experience?->badge) }}"
-                        class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" 
-                        placeholder="e.g., Top Spot, Hidden Gem" @error('badge') aria-invalid="true" aria-describedby="badge-error" @enderror>
-                    <x-admin.field-error name="badge" />
-                </div>
-
-                <!-- Order -->
-                <div>
-                    <label for="order" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Order *
-                    </label>
-                    <input type="number" id="order" name="order" min="0"
-                        value="{{ old('order', $experience?->order ?? 0) }}"
-                        class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" 
-                        required @error('order') aria-invalid="true" aria-describedby="order-error" @enderror>
-                    <x-admin.field-error name="order" />
-                </div>
-            </div>
-
-            <div class="mt-6 flex items-center justify-end space-x-4">
-                <a href="{{ route('admin.experiences.index') }}" 
-                    class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
-                    Cancel
-                </a>
-                <button type="submit" 
-                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                    {{ $experience ? 'Update' : 'Create' }} Experience
-                </button>
-            </div>
-        </form>
-    </div>
-
-    <script>
-        function previewImage(input) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('upload-prompt').classList.add('hidden');
-                    document.getElementById('image-preview').classList.remove('hidden');
-                    document.getElementById('preview-img').src = e.target.result;
-                    document.getElementById('file-name').textContent = input.files[0].name;
-                };
-                reader.readAsDataURL(input.files[0]);
+            if ($this->image) {
+                PublicImages::delete($previous, Experience::where('image_url', $previous)->count());
             }
+
+            $this->success('Experience updated.', redirectTo: route('admin.experiences.index'));
+
+            return;
         }
 
-        // Drag and drop handling
-        const uploadArea = document.getElementById('upload-area');
-        
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            uploadArea.addEventListener(eventName, preventDefaults, false);
-        });
+        Experience::create($data);
 
-        function preventDefaults(e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
+        $this->success('Experience created.', redirectTo: route('admin.experiences.index'));
+    }
 
-        ['dragenter', 'dragover'].forEach(eventName => {
-            uploadArea.addEventListener(eventName, () => {
-                uploadArea.classList.add('border-blue-500', 'bg-blue-50', 'dark:bg-blue-900/20');
-            }, false);
-        });
+    public function with(): array
+    {
+        return [
+            'placeholder' => 'data:image/svg+xml;utf8,'.rawurlencode('<svg xmlns="http://www.w3.org/2000/svg" width="240" height="320" viewBox="0 0 240 320"><rect width="240" height="320" fill="#eef2f3"/><g fill="none" stroke="#9aa5ab" stroke-width="3"><rect x="56" y="120" width="128" height="80" rx="8"/><circle cx="90" cy="148" r="10"/><path d="M70 192l34-34 30 30 18-18 22 22"/></g></svg>'),
+        ];
+    }
+}; ?>
 
-        ['dragleave', 'drop'].forEach(eventName => {
-            uploadArea.addEventListener(eventName, () => {
-                uploadArea.classList.remove('border-blue-500', 'bg-blue-50', 'dark:bg-blue-900/20');
-            }, false);
-        });
+<div>
+    <x-mary-header :title="$experience ? 'Edit experience' : 'New experience'" :subtitle="$experience ? $experience->title : 'Add an attraction card to the homepage carousel.'" separator>
+        <x-slot:actions>
+            <x-mary-button label="Back to experiences" icon="o-arrow-uturn-left" link="{{ route('admin.experiences.index') }}" class="btn-ghost btn-sm" />
+        </x-slot:actions>
+    </x-mary-header>
 
-        uploadArea.addEventListener('drop', function(e) {
-            const dt = e.dataTransfer;
-            const files = dt.files;
-            const input = document.getElementById('image');
-            input.files = files;
-            previewImage(input);
-        }, false);
-    </script>
-</x-layouts.admin-layout>
+    <x-mary-form wire:submit="save">
+        <div class="grid gap-6 lg:grid-cols-5">
+            <x-mary-card class="border border-base-content/10 lg:col-span-3" title="Details">
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <x-mary-input label="Title" wire:model="title" placeholder="Coconut Tree Hill" required />
+                    <x-mary-input label="Badge" wire:model="badge" placeholder="Top Spot" hint="Optional short label over the photo" />
+                    <div class="sm:col-span-2">
+                        <x-mary-textarea label="Description" wire:model="description" rows="3" placeholder="One line that sells the place." required />
+                    </div>
+                    <div class="sm:col-span-2">
+                        <x-mary-input label="Image description (alt text)" wire:model="alt_text" placeholder="Coconut palms on a hill above the ocean" hint="Read by screen readers and search engines" required />
+                    </div>
+                    <x-mary-input label="Order" wire:model="sort_order" type="number" inputmode="numeric" min="0" hint="Lower numbers appear first" required />
+                    <div class="sm:col-span-2">
+                        <x-mary-textarea label="Badge icon (optional inline SVG)" wire:model="icon" rows="2" placeholder="<svg ...></svg>" hint="Advanced: a small SVG shown next to the badge text" />
+                    </div>
+                </div>
+            </x-mary-card>
+
+            <x-mary-card class="border border-base-content/10 lg:col-span-2" title="Photo">
+                <x-mary-file wire:model="image" accept="image/png,image/jpeg,image/webp,image/avif" :label="$experience ? 'Replace photo' : 'Photo'" hint="JPG, PNG, WEBP or AVIF, portrait works best, up to 10 MB." change-text="Choose a photo" :required="! $experience">
+                    <img src="{{ $experience?->image_url ?? $placeholder }}" alt="" class="aspect-[3/4] w-full max-w-xs rounded-lg border border-dashed border-base-content/20 object-cover bg-base-200">
+                </x-mary-file>
+            </x-mary-card>
+        </div>
+
+        <x-slot:actions>
+            <x-mary-button label="Cancel" link="{{ route('admin.experiences.index') }}" class="btn-ghost" />
+            <x-mary-button :label="$experience ? 'Save changes' : 'Create experience'" icon="o-check" type="submit" spinner="save" class="btn-primary" />
+        </x-slot:actions>
+    </x-mary-form>
+</div>

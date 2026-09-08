@@ -1,93 +1,92 @@
 <?php
 
 use App\Models\Experience;
-use function Livewire\Volt\{state};
+use App\Support\PublicImages;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
+use Livewire\Volt\Component;
+use Mary\Traits\Toast;
 
-state('experiences', fn() => Experience::all());
+new #[Layout('components.layouts.admin')] #[Title('Experiences')] class extends Component {
+    use Toast;
 
-$delete = function ($id) {
-    Experience::find($id)->delete();
-    session()->flash('success', 'Experience deleted successfully.');
-    return redirect()->route('admin.experiences.index');
-};
+    public bool $confirmingDelete = false;
 
-?>
+    public ?int $deletingId = null;
 
-<x-layouts.admin-layout>
-    <div class="mb-6 flex justify-between items-center">
-        <div>
-            <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Experiences</h1>
-            <p class="mt-2 text-gray-600 dark:text-gray-400">Manage attraction cards for the homepage</p>
-        </div>
-        <a href="{{ route('admin.experiences.create') }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-            Add New Experience
-        </a>
-    </div>
+    public function with(): array
+    {
+        return [
+            'experiences' => Experience::ordered()->get(),
+            'deleting' => $this->deletingId ? Experience::find($this->deletingId) : null,
+            'headers' => [
+                ['key' => 'image_url', 'label' => '', 'class' => 'w-28'],
+                ['key' => 'title', 'label' => 'Title'],
+                ['key' => 'badge', 'label' => 'Badge', 'class' => 'w-36'],
+                ['key' => 'sort_order', 'label' => 'Order', 'class' => 'w-20'],
+            ],
+        ];
+    }
 
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
-        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead class="bg-gray-50 dark:bg-gray-900">
-                <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                        Image
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                        Title
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                        Badge
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                        Order
-                    </th>
-                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                        Actions
-                    </th>
-                </tr>
-            </thead>
-            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                @forelse($experiences as $experience)
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <img src="{{ $experience- loading="lazy" decoding="async">image_url }}" alt="{{ $experience->alt_text }}" class="h-16 w-24 object-cover rounded">
-                        </td>
-                        <td class="px-6 py-4">
-                            <div class="text-sm font-medium text-gray-900 dark:text-white">
-                                {{ $experience->title }}
-                            </div>
-                            <div class="text-sm text-gray-500 dark:text-gray-400 truncate max-w-xs">
-                                {{ $experience->description }}
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            @if($experience->badge)
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                                    {{ $experience->badge }}
-                                </span>
-                            @else
-                                <span class="text-gray-400">—</span>
-                            @endif
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                            {{ $experience->order }}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <a href="{{ route('admin.experiences.edit', $experience->id) }}" class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 mr-3">
-                                Edit
-                            </a>
-                            <button type="button" wire:click="delete({{ $experience->id }})" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 cursor-pointer">
-                                Delete
-                            </button>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="5" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
-                            No experiences found. <a href="{{ route('admin.experiences.create') }}" class="text-blue-600 hover:underline">Create one</a>
-                        </td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
-</x-layouts.admin-layout>
+    public function confirmDelete(int $id): void
+    {
+        $this->deletingId = $id;
+        $this->confirmingDelete = true;
+    }
+
+    public function delete(): void
+    {
+        $experience = Experience::findOrFail($this->deletingId);
+        $otherReferences = Experience::where('image_url', $experience->image_url)->whereKeyNot($experience->id)->count();
+
+        $experience->delete();
+        PublicImages::delete($experience->image_url, $otherReferences);
+
+        $this->confirmingDelete = false;
+        $this->deletingId = null;
+        $this->success("{$experience->title} deleted.");
+    }
+}; ?>
+
+<div>
+    <x-mary-header title="Experiences" subtitle="Attraction cards in the homepage Must-Visit carousel." separator>
+        <x-slot:actions>
+            <x-mary-button label="Add experience" icon="o-plus" link="{{ route('admin.experiences.create') }}" class="btn-primary btn-sm" />
+        </x-slot:actions>
+    </x-mary-header>
+
+    <x-mary-card class="border border-base-content/10" body-class="p-0 sm:p-2">
+        <x-mary-table :headers="$headers" :rows="$experiences" show-empty-text empty-text="No experiences yet. Add the first attraction card.">
+            @scope('cell_image_url', $experience)
+                <img src="{{ $experience->image_url }}" alt="{{ $experience->alt_text }}" width="96" height="64" loading="lazy" class="h-16 w-24 rounded-md object-cover bg-base-200">
+            @endscope
+            @scope('cell_title', $experience)
+                <span class="font-medium">{{ $experience->title }}</span>
+                <span class="block max-w-md truncate text-xs text-base-content/60">{{ $experience->description }}</span>
+            @endscope
+            @scope('cell_badge', $experience)
+                @if ($experience->badge)
+                    <x-mary-badge :value="$experience->badge" class="badge-primary badge-soft" />
+                @else
+                    <span class="text-base-content/40">&mdash;</span>
+                @endif
+            @endscope
+            @scope('actions', $experience)
+                <div class="flex justify-end gap-1">
+                    <x-mary-button icon="o-pencil-square" link="{{ route('admin.experiences.edit', $experience->id) }}" class="btn-ghost btn-sm" tooltip-left="Edit" aria-label="Edit {{ $experience->title }}" />
+                    <x-mary-button icon="o-trash" wire:click="confirmDelete({{ $experience->id }})" class="btn-ghost btn-sm text-error" tooltip-left="Delete" aria-label="Delete {{ $experience->title }}" />
+                </div>
+            @endscope
+        </x-mary-table>
+    </x-mary-card>
+
+    <x-mary-modal wire:model="confirmingDelete" title="Delete experience?" separator>
+        <p class="text-sm text-base-content/70">
+            {{ $deleting?->title ?? 'This card' }} will disappear from the homepage carousel. This cannot be undone.
+        </p>
+        <x-slot:actions>
+            <x-mary-button label="Cancel" @click="$wire.confirmingDelete = false" class="btn-ghost" />
+            <x-mary-button label="Delete" icon="o-trash" wire:click="delete" spinner="delete" class="btn-error" />
+        </x-slot:actions>
+    </x-mary-modal>
+</div>

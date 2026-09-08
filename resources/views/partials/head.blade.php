@@ -57,13 +57,13 @@
 
 {{-- Favicons & Web Manifest --}}
 <link rel="icon" href="/favicon.ico" sizes="any">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="apple-touch-icon" href="/android-chrome-192x192.png">
 <link rel="manifest" href="/site.webmanifest">
 
 {{-- Preconnect for Performance --}}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Merienda:wght@300..900&family=Nata+Sans:wght@100..900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Merienda:wght@300..900&family=Nata+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 
 {{-- Structured Data - LocalBusiness & Hotel Schema --}}
 @php
@@ -138,4 +138,3 @@
 </script>
 
 @vite(['resources/css/app.css', 'resources/js/app.js'])
-@fluxAppearance

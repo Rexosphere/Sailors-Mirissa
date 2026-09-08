@@ -1,79 +1,109 @@
 <?php
 
+use App\Models\Floor;
 use App\Models\Room;
-use function Livewire\Volt\{state};
+use App\Support\PublicImages;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
+use Livewire\Volt\Component;
+use Mary\Traits\Toast;
 
-state('rooms', fn() => Room::all()->groupBy('floor_id')->toArray());
+new #[Layout('components.layouts.admin')] #[Title('Rooms')] class extends Component {
+    use Toast;
 
-$confirmDelete = function ($id) {
-    Room::find($id)->delete();
-    session()->flash('success', 'Room deleted successfully.');
-    return redirect()->route('admin.rooms.index');
-};
+    public string $floor = '';
 
-?>
+    public bool $confirmingDelete = false;
 
-<x-layouts.admin-layout>
-    <div class="mb-6 flex justify-between items-center">
-        <div>
-            <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Room Categories</h1>
-            <p class="mt-2 text-gray-600 dark:text-gray-400">Manage room categories by floor and type</p>
-        </div>
-        <a href="{{ route('admin.rooms.create') }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-            Add New Room Category
-        </a>
-    </div>
+    public ?int $deletingId = null;
 
-    @forelse($rooms as $floorId => $floorRooms)
-        @php
-            $firstRoom = is_array($floorRooms) ? collect($floorRooms)->first() : $floorRooms->first();
-        @endphp
-        <div class="mb-6 bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
-            <div class="bg-gray-50 dark:bg-gray-900 px-6 py-3 border-b border-gray-200 dark:border-gray-700">
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">{{ config("floors.{$floorId}.name", ucfirst($floorId) . ' Floor') }}</h2>
-                <p class="text-sm text-gray-500 dark:text-gray-400">{{ $firstRoom['floor_view'] ?? $firstRoom->floor_view }}</p>
-            </div>
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead class="bg-gray-50 dark:bg-gray-900">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Room Type</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Price</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Images</th>
-                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                    @foreach($floorRooms as $room)
-                        @php
-                            $roomData = is_array($room) ? $room : $room;
-                            $roomType = is_array($roomData) ? ($roomData['room_type'] ?? 'double') : ($roomData->room_type ?? 'double');
-                            $roomTypeName = ucfirst($roomType) . ' Room';
-                        @endphp
-                        <tr>
-                            <td class="px-6 py-4">
-                                <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $roomTypeName }}</div>
-                                <div class="text-sm text-gray-500 dark:text-gray-400 truncate max-w-md">{{ is_array($roomData) ? $roomData['description'] : $roomData->description }}</div>
-                            </td>
-                            <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ is_array($roomData) ? $roomData['price'] : $roomData->price }}</td>
-                            <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                                @php
-                                    $images = is_array($roomData) ? ($roomData['images'] ?? []) : ($roomData->images ?? []);
-                                    $imageCount = is_array($images) ? count($images) : 0;
-                                @endphp
-                                {{ $imageCount }} image(s)
-                            </td>
-                            <td class="px-6 py-4 text-right text-sm font-medium">
-                                <a href="{{ route('admin.rooms.edit', is_array($roomData) ? $roomData['id'] : $roomData->id) }}" class="text-blue-600 hover:text-blue-900 mr-3">Edit</a>
-                                <button type="button" wire:click="confirmDelete({{ is_array($roomData) ? $roomData['id'] : $roomData->id }})" class="text-red-600 hover:text-red-900 cursor-pointer">Delete</button>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-    @empty
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 text-center text-gray-500 dark:text-gray-400">
-            No room categories found. Create your first room category to get started.
-        </div>
-    @endforelse
-</x-layouts.admin-layout>
+    public function mount(): void
+    {
+        $this->floor = Floor::ordered()->value('slug') ?? '';
+    }
+
+    public function with(): array
+    {
+        $floors = Floor::ordered()->with('rooms')->get();
+
+        return [
+            'floors' => $floors,
+            'deleting' => $this->deletingId ? Room::find($this->deletingId) : null,
+            'headers' => [
+                ['key' => 'image_url', 'label' => '', 'class' => 'w-28', 'sortable' => false],
+                ['key' => 'room_number', 'label' => 'No.', 'class' => 'w-20'],
+                ['key' => 'room_name', 'label' => 'Room'],
+                ['key' => 'price', 'label' => 'Price', 'class' => 'w-40'],
+                ['key' => 'sort_order', 'label' => 'Order', 'class' => 'w-20'],
+            ],
+        ];
+    }
+
+    public function confirmDelete(int $id): void
+    {
+        $this->deletingId = $id;
+        $this->confirmingDelete = true;
+    }
+
+    public function delete(): void
+    {
+        $room = Room::findOrFail($this->deletingId);
+        $otherReferences = Room::where('image_url', $room->image_url)->whereKeyNot($room->id)->count();
+
+        $room->delete();
+        PublicImages::delete($room->image_url, $otherReferences);
+
+        $this->confirmingDelete = false;
+        $this->deletingId = null;
+        $this->success("Room {$room->room_name} deleted.");
+    }
+}; ?>
+
+<div>
+    <x-mary-header title="Rooms" subtitle="Rooms are grouped by floor and shown in the homepage floor picker." separator>
+        <x-slot:actions>
+            <x-mary-button label="Add room" icon="o-plus" link="{{ route('admin.rooms.create') }}" class="btn-primary btn-sm" />
+        </x-slot:actions>
+    </x-mary-header>
+
+    @if ($floors->isEmpty())
+        <x-mary-alert title="No floors yet" description="Run the database seeder or add floors before creating rooms." icon="o-exclamation-triangle" class="alert-warning" />
+    @else
+        <x-mary-card class="border border-base-content/10" body-class="p-0 sm:p-2">
+            <x-mary-tabs wire:model="floor" label-class="font-medium" active-class="text-primary" content-class="px-0 py-2">
+                @foreach ($floors as $floorItem)
+                    <x-mary-tab name="{{ $floorItem->slug }}" label="{{ $floorItem->name }}" badge="{{ $floorItem->rooms->count() }}" badge-class="badge-ghost">
+                        <x-mary-table :headers="$headers" :rows="$floorItem->rooms" show-empty-text empty-text="No rooms on this floor yet.">
+                            @scope('cell_image_url', $room)
+                                <img src="{{ $room->image_url }}" alt="" width="96" height="64" loading="lazy" class="h-16 w-24 rounded-md object-cover bg-base-200">
+                            @endscope
+                            @scope('cell_room_name', $room)
+                                <span class="font-medium">{{ $room->room_name }}</span>
+                                <span class="block max-w-md truncate text-xs text-base-content/60">{{ $room->description }}</span>
+                            @endscope
+                            @scope('cell_price', $room)
+                                <span class="tabular-nums">{{ $room->price }}</span>
+                            @endscope
+                            @scope('actions', $room)
+                                <div class="flex justify-end gap-1">
+                                    <x-mary-button icon="o-pencil-square" link="{{ route('admin.rooms.edit', $room->id) }}" class="btn-ghost btn-sm" tooltip-left="Edit" aria-label="Edit {{ $room->room_name }}" />
+                                    <x-mary-button icon="o-trash" wire:click="confirmDelete({{ $room->id }})" class="btn-ghost btn-sm text-error" tooltip-left="Delete" aria-label="Delete {{ $room->room_name }}" />
+                                </div>
+                            @endscope
+                        </x-mary-table>
+                    </x-mary-tab>
+                @endforeach
+            </x-mary-tabs>
+        </x-mary-card>
+    @endif
+
+    <x-mary-modal wire:model="confirmingDelete" title="Delete room?" separator>
+        <p class="text-sm text-base-content/70">
+            {{ $deleting?->room_name ?? 'This room' }} will be removed from the homepage immediately. This cannot be undone.
+        </p>
+        <x-slot:actions>
+            <x-mary-button label="Cancel" @click="$wire.confirmingDelete = false" class="btn-ghost" />
+            <x-mary-button label="Delete room" icon="o-trash" wire:click="delete" spinner="delete" class="btn-error" />
+        </x-slot:actions>
+    </x-mary-modal>
+</div>

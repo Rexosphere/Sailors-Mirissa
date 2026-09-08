@@ -4,26 +4,11 @@
 
     <x-homepage.hero />
 
-    {{-- <x-homepage.location-info /> --}}
-
     <x-homepage.interactive-map />
 
     <x-homepage.floor-room-booking />
 
-    {{-- <x-homepage.accommodation-header />
-
-    <x-homepage.coastal-living />
-
-    <x-homepage.room-tabs /> --}}
-
-    
-
-    {{-- <x-homepage.gallery /> --}}
-
     <x-homepage.experiences />
 
-    <x-homepage.viewer-360 />
-
-    <x-homepage.map-location />
-
+    <x-homepage.photo-journey />
 </x-layout>

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class Experience extends Model
@@ -13,15 +14,18 @@ class Experience extends Model
         'alt_text',
         'badge',
         'icon',
-        'order',
+        'sort_order',
     ];
 
-    protected static function boot()
+    protected function casts(): array
     {
-        parent::boot();
-        
-        static::addGlobalScope('order', function ($builder) {
-            $builder->orderBy('order', 'asc');
-        });
+        return [
+            'sort_order' => 'integer',
+        ];
+    }
+
+    public function scopeOrdered(Builder $query): Builder
+    {
+        return $query->orderBy('sort_order')->orderBy('id');
     }
 }

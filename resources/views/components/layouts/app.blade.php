@@ -13,16 +13,18 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @fluxAppearance
     </head>
     <body class="min-h-screen bg-white dark:bg-zinc-800">
         <flux:header container class="border-b dark:bg-zinc-900 bg-zinc-50 dark:border-zinc-700">
             <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
 
-            <flux:brand href="{{ route('home') }}" logo="/images/logos/android-chrome-512x512.png" name="{{ config('app.name') }}" class="max-sm:hidden dark:hidden" />
-            <flux:brand href="{{ route('home') }}" logo="/images/logos/android-chrome-512x512.png" name="{{ config('app.name') }}" class="hidden max-sm:!hidden dark:max-sm:!flex" />
+            <flux:brand href="{{ route('home') }}" logo="/android-chrome-512x512.png" name="{{ config('app.name') }}" class="max-sm:hidden dark:hidden" />
+            <flux:brand href="{{ route('home') }}" logo="/android-chrome-512x512.png" name="{{ config('app.name') }}" class="hidden max-sm:!hidden dark:max-sm:!flex" />
 
             <flux:navbar class="-mb-px max-lg:hidden">
-                <flux:navbar.item icon="home" href="{{ route('home') }}" wire:navigate>Home</flux:navbar.item>
+                <flux:navbar.item icon="squares-2x2" href="{{ route('admin.dashboard') }}">Admin</flux:navbar.item>
+                <flux:navbar.item icon="home" href="{{ route('home') }}">Site</flux:navbar.item>
             </flux:navbar>
 
             <flux:spacer />
@@ -45,5 +47,7 @@
         <flux:main container>
             {{ $slot }}
         </flux:main>
+        @livewireScriptConfig
+        @fluxScripts
     </body>
 </html>

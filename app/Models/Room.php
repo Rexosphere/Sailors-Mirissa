@@ -2,33 +2,37 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Room extends Model
 {
     protected $fillable = [
         'floor_id',
-        'floor_view',
-        'room_type',
+        'room_number',
+        'room_name',
         'price',
         'description',
-        'facilities',
         'image_url',
-        'images',
-        'order',
+        'sort_order',
     ];
 
-    protected $casts = [
-        'images' => 'array',
-        'facilities' => 'array',
-    ];
-
-    protected static function boot()
+    protected function casts(): array
     {
-        parent::boot();
-        
-        static::addGlobalScope('order', function ($builder) {
-            $builder->orderBy('order', 'asc');
-        });
+        return [
+            'room_number' => 'integer',
+            'sort_order' => 'integer',
+        ];
+    }
+
+    public function floor(): BelongsTo
+    {
+        return $this->belongsTo(Floor::class);
+    }
+
+    public function scopeOrdered(Builder $query): Builder
+    {
+        return $query->orderBy('sort_order')->orderBy('room_number');
     }
 }

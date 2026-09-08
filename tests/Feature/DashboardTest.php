@@ -3,14 +3,20 @@
 use App\Models\User;
 
 test('guests are redirected to the login page', function () {
-    $response = $this->get(route('dashboard'));
-    $response->assertRedirect(route('login'));
+    $this->get(route('admin.dashboard'))->assertRedirect(route('login'));
 });
 
-test('authenticated users can visit the dashboard', function () {
-    $user = User::factory()->create();
-    $this->actingAs($user);
+test('non-admin users are sent back to the homepage', function () {
+    $this->actingAs(User::factory()->create());
 
-    $response = $this->get(route('dashboard'));
-    $response->assertStatus(200);
+    $this->get(route('admin.dashboard'))->assertRedirect(route('home'));
+});
+
+test('admins can visit the dashboard', function () {
+    $this->actingAs(User::factory()->admin()->create());
+
+    $this->get(route('admin.dashboard'))
+        ->assertOk()
+        ->assertSee('Dashboard')
+        ->assertSee(route('admin.rooms.index'));
 });

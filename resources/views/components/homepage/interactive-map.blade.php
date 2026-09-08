@@ -1,82 +1,105 @@
-<div id="interactive-map">
+@php
+    $landmarks = \App\Models\MapPoint::orderBy('name')->get();
+    $landmarkData = $landmarks->mapWithKeys(fn ($point) => [
+        $point->name => [
+            'coords' => $point->coords,
+            'centerX' => $point->center_x,
+            'centerY' => $point->center_y,
+            'image' => $point->image_url,
+            'description' => $point->description,
+            'icon' => $point->icon,
+        ],
+    ]);
+@endphp
 
-<!-- Mobile fallback: the interactive image-map below needs a pointer and a wide
-     viewport, so phones get the same landmarks as a plain scrollable list.
-     Without this the header's EXPLORE anchor has no target on mobile. -->
-<section class="md:hidden bg-gray-100 py-12">
-    <div class="px-4">
-        <h2 class="text-3xl font-bold font-display text-slate-800">Explore Mirissa</h2>
-        <p class="text-slate-600 mt-2 mb-6">Everything worth seeing, within a short walk or tuk-tuk ride.</p>
+<!-- Interactive Map Section -->
+<section id="interactive-map" class="fp-screen bg-gray-100" data-fp-section data-header-theme="dark" tabindex="-1" aria-label="Explore Mirissa">
 
-        <img src="/images/photos/interactive-map.avif" alt="Map of the Mirissa area" loading="lazy" decoding="async"
-            class="w-full rounded-2xl shadow-md mb-8">
+    <!-- Desktop: clickable map -->
+    <div class="relative hidden h-full w-full md:block">
+        <div class="relative h-full w-full">
+            <!-- Image Map -->
+            <img id="map-image" src="/images/photos/interactive-map.avif" alt="Mirissa Area Map" decoding="async"
+                class="h-full w-full object-cover">
 
-        <ul class="space-y-4">
-            @foreach (\App\Models\MapPoint::all() as $point)
-                <li class="bg-white rounded-2xl shadow-sm overflow-hidden">
-                    @if ($point->image_url)
-                        <img src="{{ $point->image_url }}" alt="{{ $point->name }}" loading="lazy" decoding="async"
-                            class="w-full h-40 object-cover">
-                    @endif
-                    <div class="p-4">
-                        <h3 class="text-lg font-bold text-slate-800">{{ $point->name }}</h3>
-                        <p class="text-slate-600 mt-1 leading-relaxed">{{ $point->description }}</p>
-                    </div>
-                </li>
-            @endforeach
-        </ul>
-    </div>
-</section>
+            <!-- SVG Overlay for clickable areas -->
+            <svg id="map-overlay" class="pointer-events-none absolute inset-0 h-full w-full" style="top: 0; left: 0;" aria-hidden="true">
+                <!-- Areas will be dynamically added here -->
+            </svg>
 
-<!-- Interactive Map Section (pointer + wide viewport only) -->
-<section aria-label="Explore Mirissa" class="hidden md:block relative h-dvh md:min-h-[600px] overflow-hidden bg-gray-100">
-    <div class="relative w-full h-full">
-        <!-- Image Map -->
-        <img id="map-image" src="/images/photos/interactive-map.avif" alt="Mirissa Area Map"
-            class="w-full h-full object-cover" loading="lazy" decoding="async">
+            <!-- Floating Icon Buttons -->
+            <div id="landmark-buttons" class="pointer-events-none absolute inset-0 h-full w-full">
+                <!-- Buttons will be dynamically added here -->
+            </div>
+        </div>
 
-        <!-- SVG Overlay for clickable areas -->
-        <svg id="map-overlay" class="absolute inset-0 w-full h-full pointer-events-none" style="top: 0; left: 0;">
-            <!-- Areas will be dynamically added here -->
+        <!-- Floating Card Popup -->
+        <div id="floating-card" class="pointer-events-none absolute z-40 opacity-0 transition-all duration-500">
+            <div id="card-content"
+                class="pointer-events-all glass-card max-w-sm scale-90 transform overflow-hidden rounded-2xl">
+                <div class="relative h-48 overflow-hidden">
+                    <img id="card-image" src="" alt="" class="h-full w-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#0a1628]/80 via-[#0a1628]/10 to-transparent"></div>
+                    <button id="close-card" type="button" aria-label="Close"
+                        class="absolute right-3 top-3 grid size-10 place-items-center rounded-full bg-white/15 text-white backdrop-blur transition hover:bg-white/30 active:scale-95">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="p-6">
+                    <p class="fp-eyebrow !text-[#8fd0d3]">Landmark</p>
+                    <h3 id="card-title" class="mt-1 mb-3 font-serif text-2xl font-bold text-white"></h3>
+                    <p id="card-description" class="leading-relaxed text-white/80"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Curved Connection Line -->
+        <svg id="connection-line" class="pointer-events-none absolute inset-0 z-30" width="100%" height="100%" aria-hidden="true">
+            <path id="curved-path" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-dasharray="7,7" opacity="0.85"
+                filter="drop-shadow(0 4px 6px rgba(0,0,0,0.3))">
+            </path>
         </svg>
+    </div>
 
-        <!-- Floating Icon Buttons -->
-        <div id="landmark-buttons" class="absolute inset-0 w-full h-full pointer-events-none">
-            <!-- Buttons will be dynamically added here -->
+    <!-- Mobile: map backdrop + swipeable landmark cards -->
+    <div class="relative flex h-full flex-col md:hidden" data-carousel-group>
+        <img src="/images/photos/interactive-map.avif" alt="" loading="lazy" decoding="async"
+            class="absolute inset-0 h-full w-full object-cover">
+        <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-black/70"></div>
+
+        <div class="relative z-10 flex h-full flex-col pb-16 pt-24">
+            <div class="px-5">
+                <p class="fp-eyebrow !text-[#8fd0d3]">Around the hotel</p>
+                <h2 class="mt-1 font-serif text-3xl font-bold text-white">Explore Mirissa</h2>
+                <p class="mt-1 text-sm text-white/80">Swipe through the landmarks within reach</p>
+            </div>
+
+            <div data-carousel class="fp-carousel mt-4 flex min-h-0 flex-1 snap-x snap-mandatory items-center gap-4 overflow-x-auto px-5">
+                @foreach ($landmarks as $point)
+                    <article class="glass-card w-[78vw] max-w-sm shrink-0 snap-center overflow-hidden rounded-2xl">
+                        <div class="relative h-[28dvh] max-h-64">
+                            <img src="{{ $point->image_url }}" alt="{{ $point->name }}" loading="lazy" decoding="async" class="h-full w-full object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-t from-[#0a1628]/70 to-transparent"></div>
+                            @if ($point->icon)
+                                <span class="absolute left-3 top-3 grid size-11 place-items-center rounded-full bg-[#0a1628]/60 p-2 backdrop-blur">{!! $point->icon !!}</span>
+                            @endif
+                        </div>
+                        <div class="p-4">
+                            <h3 class="font-serif text-lg font-bold text-white">{{ $point->name }}</h3>
+                            <p class="mt-1 line-clamp-3 text-sm leading-relaxed text-white/80">{{ $point->description }}</p>
+                        </div>
+                    </article>
+                @endforeach
+            </div>
+
+            <div data-carousel-dots class="mt-2 flex justify-center text-white"></div>
         </div>
     </div>
 
-    <!-- Floating Card Popup -->
-    <div id="floating-card" class="absolute pointer-events-none z-40 opacity-0 transition-all duration-500">
-        <div id="card-content"
-            class="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl max-w-sm overflow-hidden pointer-events-all transform scale-90">
-            <div class="h-48 relative overflow-hidden">
-                <img id="card-image" src="" alt="" class="w-full h-full object-cover" loading="lazy" decoding="async">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                <button id="close-card" type="button" aria-label="Close landmark details"
-                    class="absolute top-3 right-3 bg-black/40 backdrop-blur p-2 min-w-11 min-h-11 flex items-center justify-center rounded-full hover:bg-black/60 transition cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12">
-                        </path>
-                    </svg>
-                </button>
-            </div>
-            <div class="p-6">
-                <h3 id="card-title" class="text-2xl font-bold text-stone-800 mb-3 font-display"></h3>
-                <p id="card-description" class="text-stone-600 leading-relaxed"></p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Curved Connection Line -->
-    <svg id="connection-line" class="absolute inset-0 pointer-events-none z-30" width="100%" height="100%">
-        <path id="curved-path" fill="none" stroke="#ffffff" stroke-width="3" stroke-dasharray="8,6" opacity="0.9"
-            filter="drop-shadow(0 4px 6px rgba(0,0,0,0.3))">
-        </path>
-    </svg>
+    <x-scroll-next target="floor-booking" label="our rooms" theme="dark" />
 </section>
-
-</div>
 
 <style>
     #map-overlay polygon {
@@ -91,15 +114,11 @@
     }
 
     #map-overlay polygon.highlight {
-        /* fill: rgba(255, 255, 255, 0.2); */
-        /* stroke: rgba(255, 255, 255, 0.5); */
         stroke-width: 5;
         filter: drop-shadow(0 0 20px rgba(0, 0, 0, 0.3));
     }
 
     #map-overlay polygon.active {
-        /* fill: rgba(255, 255, 255, 0.25) !important; */
-        /* stroke: #ffffff !important; */
         stroke-width: 6;
         filter: drop-shadow(0 0 25px rgba(255, 255, 255, 0.6));
         transition: all 0.4s ease;
@@ -128,17 +147,6 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        /* Rendered as a <button>, so reset UA chrome */
-        background: none;
-        border: 0;
-        padding: 0;
-        cursor: pointer;
-    }
-
-    .landmark-button:focus-visible {
-        outline: 3px solid #fff;
-        outline-offset: 4px;
-        border-radius: 8px;
     }
 
     /* Ripple effect container */
@@ -156,15 +164,8 @@
         animation: ripple 2s ease-out infinite;
     }
 
-    @media (max-width: 768px) {
-        .landmark-button::before {
-            width: 50px;
-            height: 50px;
-            border: 2px solid rgba(255, 255, 255, 0.7);
-        }
-    }
-
-    .landmark-button:hover .landmark-icon {
+    .landmark-button:hover .landmark-icon,
+    .landmark-button:focus-visible .landmark-icon {
         transform: scale(1.5);
         filter: drop-shadow(0px 10px 20px rgba(0, 0, 0, 1)) drop-shadow(0 0 25px rgba(255, 255, 255, 1)) drop-shadow(0 0 40px rgba(255, 255, 255, 0.8)) drop-shadow(0 0 60px rgba(255, 255, 255, 0.5));
         animation: none;
@@ -188,15 +189,6 @@
         animation: gentle-pulse 2.5s ease-in-out infinite;
     }
 
-    /* Mobile: Larger icons for better visibility */
-    @media (max-width: 768px) {
-        .landmark-icon {
-            width: 50px;
-            height: 50px;
-            filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 15px rgba(255, 255, 255, 0.7)) drop-shadow(0 0 25px rgba(255, 255, 255, 0.5));
-        }
-    }
-
     /* Pulsing animation for icons */
     @keyframes gentle-pulse {
 
@@ -209,22 +201,6 @@
         50% {
             transform: scale(1.05);
             filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 18px rgba(255, 255, 255, 0.8)) drop-shadow(0 0 30px rgba(255, 255, 255, 0.6));
-        }
-    }
-
-    @media (max-width: 768px) {
-        @keyframes gentle-pulse {
-
-            0%,
-            100% {
-                transform: scale(1);
-                filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 15px rgba(255, 255, 255, 0.7)) drop-shadow(0 0 25px rgba(255, 255, 255, 0.5));
-            }
-
-            50% {
-                transform: scale(1.08);
-                filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 1)) drop-shadow(0 0 20px rgba(255, 255, 255, 0.9)) drop-shadow(0 0 35px rgba(255, 255, 255, 0.7));
-            }
         }
     }
 
@@ -241,37 +217,21 @@
         }
     }
 
-    .landmark-tail {
-        display: none;
-        width: 2px;
-        height: 60px;
-        z-index: 1;
-    }
-
-    .landmark-tail svg {
-        width: 100%;
-        height: 100%;
+    @media (prefers-reduced-motion: reduce) {
+        .landmark-button::before,
+        .landmark-icon {
+            animation: none;
+        }
     }
 </style>
 
 <script>
     // Landmark configuration with original image coordinates
-    // Original image dimensions: 8000 x 6000 (adjust if different)
+    // Original image dimensions: 8000 x 6000
     const ORIGINAL_WIDTH = 8000;
     const ORIGINAL_HEIGHT = 6000;
 
-    const landmarkData = {!! json_encode(\App\Models\MapPoint::all()->mapWithKeys(function ($point) {
-    return [
-        $point->name => [
-            'coords' => $point->coords,
-            'centerX' => $point->center_x,
-            'centerY' => $point->center_y,
-            'image' => $point->image_url,
-            'description' => $point->description,
-            'icon' => $point->icon,
-        ]
-    ];
-})) !!};
+    const landmarkData = {!! json_encode($landmarkData) !!};
 
     function scaleCoordinates(coordsString, scaleX, scaleY, offsetX, offsetY) {
         const coords = coordsString.split(',').map(Number);
@@ -295,31 +255,27 @@
         if (!img || !svg || !buttonsContainer) return;
 
         const containerRect = svg.getBoundingClientRect();
+        if (containerRect.width === 0) return;
 
         // Calculate how object-cover scales and positions the image
         const imageAspect = ORIGINAL_WIDTH / ORIGINAL_HEIGHT;
         const containerAspect = containerRect.width / containerRect.height;
 
         if (containerAspect > imageAspect) {
-            // Container is wider - image fills width, crops top/bottom
             scale = containerRect.width / ORIGINAL_WIDTH;
             offsetX = 0;
             offsetY = (containerRect.height - (ORIGINAL_HEIGHT * scale)) / 2;
         } else {
-            // Container is taller - image fills height, crops left/right
             scale = containerRect.height / ORIGINAL_HEIGHT;
             offsetX = (containerRect.width - (ORIGINAL_WIDTH * scale)) / 2;
             offsetY = 0;
         }
 
-        // Clear existing polygons and buttons
         svg.innerHTML = '';
         buttonsContainer.innerHTML = '';
         svg.setAttribute('viewBox', `0 0 ${containerRect.width} ${containerRect.height}`);
 
-        // Create polygons and buttons for each landmark
         Object.entries(landmarkData).forEach(([name, data]) => {
-            // Create polygon
             const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
             const scaledCoords = scaleCoordinates(data.coords, scale, scale, offsetX, offsetY);
 
@@ -329,7 +285,6 @@
 
             svg.appendChild(polygon);
 
-            // Create floating button
             const buttonX = (data.centerX * scale) + offsetX;
             const buttonY = (data.centerY * scale) + offsetY;
 
@@ -339,28 +294,12 @@
             button.style.left = `${buttonX}px`;
             button.style.top = `${buttonY}px`;
             button.setAttribute('data-landmark', name);
-            button.setAttribute('aria-label', `${name} — show details`);
+            button.setAttribute('aria-label', name);
 
-            button.innerHTML = `
-                <div class="landmark-icon">
-                    ${data.icon}
-                </div>
-                <div class="landmark-tail">
-                    <svg viewBox="0 0 2 60" xmlns="http://www.w3.org/2000/svg">
-                        <line x1="1" y1="0" x2="1" y2="60" stroke="rgba(255,255,255,0.8)" stroke-width="2" stroke-dasharray="5,5" stroke-linecap="round"/>
-                    </svg>
-                </div>
-            `;
+            button.innerHTML = `<div class="landmark-icon">${data.icon ?? ''}</div>`;
 
-            // Highlight the matching area on hover and on keyboard focus
-            const highlight = () => polygon.classList.add('highlight');
-            const clear = () => polygon.classList.remove('highlight');
-
-            button.addEventListener('mouseenter', highlight);
-            button.addEventListener('mouseleave', clear);
-            button.addEventListener('focus', highlight);
-            button.addEventListener('blur', clear);
-
+            button.addEventListener('mouseenter', () => polygon.classList.add('highlight'));
+            button.addEventListener('mouseleave', () => polygon.classList.remove('highlight'));
             button.addEventListener('click', () => openLandmarkPopup(name));
 
             buttonsContainer.appendChild(button);
@@ -369,7 +308,6 @@
 
     let activeLandmark = null;
     const floatingCard = document.getElementById('floating-card');
-    const cardContent = document.getElementById('card-content');
     const cardImage = document.getElementById('card-image');
     const cardTitle = document.getElementById('card-title');
     const cardDescription = document.getElementById('card-description');
@@ -377,30 +315,26 @@
 
     function openLandmarkPopup(landmarkName) {
         if (activeLandmark === landmarkName) return;
-        closeLandmarkPopup(); // Close any previous
+        closeLandmarkPopup();
 
         const landmark = landmarkData[landmarkName];
         if (!landmark) return;
 
         activeLandmark = landmarkName;
 
-        // Update card content
         cardTitle.textContent = landmarkName;
         cardDescription.textContent = landmark.description;
         cardImage.src = landmark.image;
         cardImage.alt = landmarkName;
 
-        // Find the button and polygon
         const button = document.querySelector(`.landmark-button[data-landmark="${landmarkName}"]`);
         const polygon = document.getElementById(`polygon-${landmarkName.replace(/\s+/g, '-')}`);
 
         if (!button) return;
 
-        // Highlight polygon and button
         polygon.classList.add('active');
         button.classList.add('active');
 
-        // Position the popup
         positionPopup();
 
         floatingCard.classList.add('visible');
@@ -415,33 +349,28 @@
         const container = document.getElementById('interactive-map');
         const containerRect = container.getBoundingClientRect();
 
-        // Get coordinates relative to container
         const markerX = button.offsetLeft + button.offsetWidth / 2;
         const markerY = button.offsetTop;
 
-        // Card dimensions (approx)
         const cardWidth = 384;
         const cardHeight = 500;
 
-        // Decide card position (prefer right, fallback left/top/bottom)
         let cardX = markerX + 80;
         let cardY = markerY - cardHeight / 2;
 
         if (cardX + cardWidth > containerRect.width - 20) {
             cardX = markerX - cardWidth - 80;
         }
-        if (cardY < 20) cardY = 20;
+        if (cardY < 100) cardY = 100;
         if (cardY + cardHeight > containerRect.height - 20) {
             cardY = containerRect.height - cardHeight - 20;
         }
 
-        // Position card
         floatingCard.style.left = `${cardX}px`;
         floatingCard.style.top = `${cardY}px`;
 
-        // Draw curved connection line
         const startX = markerX;
-        const startY = markerY; // top of icon
+        const startY = markerY;
         const endX = cardX + (cardX > markerX ? 0 : cardWidth);
         const endY = cardY + cardHeight / 2;
 
@@ -450,15 +379,7 @@
         const ctrl2X = endX;
         const ctrl2Y = endY - 80;
 
-        const pathData = `M ${startX} ${startY}
-                        C ${ctrl1X} ${ctrl1Y}, ${ctrl2X} ${ctrl2Y}, ${endX} ${endY}`;
-
-        curvedPath.setAttribute('d', pathData);
-
-        // Reset dash animation only on initial open
-        if (!floatingCard.classList.contains('visible')) {
-            curvedPath.querySelector('animate')?.beginElement();
-        }
+        curvedPath.setAttribute('d', `M ${startX} ${startY} C ${ctrl1X} ${ctrl1Y}, ${ctrl2X} ${ctrl2Y}, ${endX} ${endY}`);
     }
 
     function closeLandmarkPopup() {
@@ -475,53 +396,39 @@
         activeLandmark = null;
     }
 
-    // Close on button click
     document.getElementById('close-card')?.addEventListener('click', (e) => {
         e.stopPropagation();
         closeLandmarkPopup();
     });
 
-    // Close on escape
     document.addEventListener('keydown', e => {
         if (e.key === 'Escape') closeLandmarkPopup();
     });
 
-    // Close when clicking outside the card
     document.addEventListener('click', (e) => {
         if (!activeLandmark) return;
 
         const cardContent = document.getElementById('card-content');
-        const landmarkButtons = document.querySelectorAll('.landmark-button');
-
-        // Check if click is outside card and not on any landmark button
-        let clickedButton = false;
-        landmarkButtons.forEach(button => {
-            if (button.contains(e.target)) clickedButton = true;
-        });
+        const clickedButton = e.target.closest('.landmark-button');
 
         if (!cardContent.contains(e.target) && !clickedButton) {
             closeLandmarkPopup();
         }
     });
 
-    // Initialize map areas when image loads
-    const img = document.getElementById('map-image');
-    img.addEventListener('load', updateMapAreas);
+    const mapImage = document.getElementById('map-image');
+    mapImage.addEventListener('load', updateMapAreas);
 
-    // Update on window resize
     let resizeTimeout;
     window.addEventListener('resize', () => {
         clearTimeout(resizeTimeout);
         resizeTimeout = setTimeout(() => {
             updateMapAreas();
-            positionPopup(); // Reposition popup if open
+            positionPopup();
         }, 100);
     });
 
-
-
-    // Initial update if image is already loaded
-    if (img.complete) {
+    if (mapImage.complete) {
         updateMapAreas();
     }
 </script>

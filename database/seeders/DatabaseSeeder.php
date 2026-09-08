@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             ExperienceSeeder::class,
             MapPointSeeder::class,
+            FloorSeeder::class,
             RoomSeeder::class,
         ]);
     }

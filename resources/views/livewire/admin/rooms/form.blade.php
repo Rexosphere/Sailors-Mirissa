@@ -1,362 +1,145 @@
 <?php
 
+use App\Models\Floor;
 use App\Models\Room;
-use function Livewire\Volt\{state, mount};
+use App\Support\PublicImages;
+use Illuminate\Validation\Rule;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
+use Livewire\Volt\Component;
+use Livewire\WithFileUploads;
+use Mary\Traits\Toast;
 
-state(['room' => null]);
-state(['id' => null]);
+new #[Layout('components.layouts.admin')] #[Title('Room')] class extends Component {
+    use Toast, WithFileUploads;
 
-mount(function ($id = null) {
-    $this->id = $id;
-    if ($id) {
-        $this->room = Room::findOrFail($id);
+    public ?Room $room = null;
+
+    public ?int $floor_id = null;
+
+    public ?int $room_number = null;
+
+    public string $room_name = '';
+
+    public string $price = '';
+
+    public string $description = '';
+
+    public int $sort_order = 0;
+
+    public $image = null;
+
+    public function mount(?int $id = null): void
+    {
+        if ($id) {
+            $this->room = Room::findOrFail($id);
+            $this->floor_id = $this->room->floor_id;
+            $this->room_number = $this->room->room_number;
+            $this->room_name = $this->room->room_name;
+            $this->price = $this->room->price;
+            $this->description = $this->room->description;
+            $this->sort_order = $this->room->sort_order;
+        } else {
+            $this->floor_id = Floor::ordered()->value('id');
+            $this->sort_order = (int) Room::max('sort_order') + 1;
+        }
     }
-});
 
-?>
+    public function rules(): array
+    {
+        return [
+            'floor_id' => ['required', Rule::exists('floors', 'id')],
+            'room_number' => ['required', 'integer', 'min:1', 'max:9999'],
+            'room_name' => ['required', 'string', 'max:255'],
+            'price' => ['required', 'string', 'max:255'],
+            'description' => ['required', 'string', 'max:2000'],
+            'sort_order' => ['required', 'integer', 'min:0', 'max:65535'],
+            'image' => [$this->room ? 'nullable' : 'required', 'file', 'mimes:jpg,jpeg,png,webp,avif', 'max:10240'],
+        ];
+    }
 
-<x-layouts.admin-layout>
-    <div class="mb-6">
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
-            {{ $room ? 'Edit' : 'Create' }} Room Category
-        </h1>
-        <p class="mt-2 text-gray-600 dark:text-gray-400">
-            {{ $room ? 'Update the room category details below' : 'Add a new room category (Floor + Room Type combination)' }}
-        </p>
-    </div>
+    public function messages(): array
+    {
+        return [
+            'image.required' => 'Add a photo of the room.',
+            'image.mimes' => 'Use a JPG, PNG, WEBP or AVIF photo. iPhone HEIC photos must be converted first.',
+            'image.max' => 'The photo must be 10 MB or smaller.',
+        ];
+    }
 
-    @if ($errors->any())
-        <div role="alert" tabindex="-1" data-error-summary
-            class="mb-4 p-4 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-100 rounded-lg">
-            <p class="font-semibold mb-2">Please fix the following before saving:</p>
-            <ul class="list-disc list-inside">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
+    public function updatedImage(): void
+    {
+        $this->validateOnly('image');
+    }
+
+    public function save(): void
+    {
+        $data = $this->validate();
+        unset($data['image']);
+
+        if ($this->image) {
+            $data['image_url'] = PublicImages::store($this->image, 'rooms', $data['room_name']);
+        }
+
+        if ($this->room) {
+            $previous = $this->room->image_url;
+            $this->room->update($data);
+
+            if ($this->image) {
+                PublicImages::delete($previous, Room::where('image_url', $previous)->count());
+            }
+
+            $this->success('Room updated.', redirectTo: route('admin.rooms.index'));
+
+            return;
+        }
+
+        Room::create($data);
+
+        $this->success('Room created.', 'It is now visible in the homepage floor picker.', redirectTo: route('admin.rooms.index'));
+    }
+
+    public function with(): array
+    {
+        return [
+            'floors' => Floor::ordered()->get(),
+            'placeholder' => 'data:image/svg+xml;utf8,'.rawurlencode('<svg xmlns="http://www.w3.org/2000/svg" width="320" height="200" viewBox="0 0 320 200"><rect width="320" height="200" fill="#eef2f3"/><g fill="none" stroke="#9aa5ab" stroke-width="3"><rect x="96" y="60" width="128" height="80" rx="8"/><circle cx="130" cy="88" r="10"/><path d="M110 132l34-34 30 30 18-18 22 22"/></g></svg>'),
+        ];
+    }
+}; ?>
+
+<div>
+    <x-mary-header :title="$room ? 'Edit room' : 'New room'" :subtitle="$room ? $room->room_name : 'Add a room to a floor of the building.'" separator>
+        <x-slot:actions>
+            <x-mary-button label="Back to rooms" icon="o-arrow-uturn-left" link="{{ route('admin.rooms.index') }}" class="btn-ghost btn-sm" />
+        </x-slot:actions>
+    </x-mary-header>
+
+    <x-mary-form wire:submit="save">
+        <div class="grid gap-6 lg:grid-cols-5">
+            <x-mary-card class="border border-base-content/10 lg:col-span-3" title="Details">
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <x-mary-select label="Floor" wire:model="floor_id" :options="$floors" option-value="id" option-label="name" required />
+                    <x-mary-input label="Room number" wire:model="room_number" type="number" inputmode="numeric" min="1" max="9999" placeholder="101" required />
+                    <x-mary-input label="Room name" wire:model="room_name" placeholder="Room 101" required />
+                    <x-mary-input label="Price" wire:model="price" placeholder="$120" hint="Shown as typed, e.g. $120 or From $120" required />
+                    <div class="sm:col-span-2">
+                        <x-mary-textarea label="Description" wire:model="description" rows="4" placeholder="What makes this room special?" hint="One or two sentences. Shown in the room card." required />
+                    </div>
+                    <x-mary-input label="Order" wire:model="sort_order" type="number" inputmode="numeric" min="0" hint="Lower numbers appear first on the floor" required />
+                </div>
+            </x-mary-card>
+
+            <x-mary-card class="border border-base-content/10 lg:col-span-2" title="Photo">
+                <x-mary-file wire:model="image" accept="image/png,image/jpeg,image/webp,image/avif" :label="$room ? 'Replace photo' : 'Photo'" hint="JPG, PNG, WEBP or AVIF, landscape, up to 10 MB." change-text="Choose a photo" :required="! $room">
+                    <img src="{{ $room?->image_url ?? $placeholder }}" alt="" class="aspect-[4/3] w-full rounded-lg border border-dashed border-base-content/20 object-cover bg-base-200">
+                </x-mary-file>
+            </x-mary-card>
         </div>
-    @endif
 
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-        <form action="{{ $room ? route('admin.rooms.update', $room->id) : route('admin.rooms.store') }}" 
-              method="POST" 
-              enctype="multipart/form-data">
-            @csrf
-            
-            <div class="space-y-6">
-                <!-- Floor Information -->
-                <div class="border-b border-gray-200 dark:border-gray-700 pb-6">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Floor Information</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Floor ID -->
-                        <div>
-                            <label for="floor_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Floor *
-                            </label>
-                            <select id="floor_id" name="floor_id" required
-                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500" @error('floor_id') aria-invalid="true" aria-describedby="floor_id-error" @enderror>
-                                @foreach (config('floors') as $floorId => $floor)
-                                    <option value="{{ $floorId }}" {{ ($room?->floor_id ?? '') == $floorId ? 'selected' : '' }}>
-                                        {{ $floor['name'] }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            <x-admin.field-error name="floor_id" />
-                        </div>
-
-
-
-                        <!-- Floor View -->
-                        <div>
-                            <label for="floor_view" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Floor View *
-                            </label>
-                            <input type="text" id="floor_view" name="floor_view" 
-                                value="{{ old('floor_view', $room?->floor_view) }}"
-                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500"
-                                placeholder="e.g., Garden View, Ocean View"
-                                required @error('floor_view') aria-invalid="true" aria-describedby="floor_view-error" @enderror>
-                            <x-admin.field-error name="floor_view" />
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Room Information -->
-                <div>
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Room Details</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Room Type -->
-                        <div>
-                            <label for="room_type" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Room Type *
-                            </label>
-                            <select id="room_type" name="room_type" required
-                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500" @error('room_type') aria-invalid="true" aria-describedby="room_type-error" @enderror>
-                                <option value="double" {{ ($room?->room_type ?? 'double') == 'double' ? 'selected' : '' }}>Double Room</option>
-                                <option value="twin" {{ ($room?->room_type ?? '') == 'twin' ? 'selected' : '' }}>Twin Room</option>
-                            </select>
-                            <x-admin.field-error name="room_type" />
-                        </div>
-
-                        <!-- Price -->
-                        <div>
-                            <label for="price" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Price per Night *
-                            </label>
-                            <input type="text" id="price" name="price" 
-                                value="{{ old('price', $room?->price) }}"
-                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500"
-                                placeholder="$120"
-                                required @error('price') aria-invalid="true" aria-describedby="price-error" @enderror>
-                            <x-admin.field-error name="price" />
-                        </div>
-
-                        <!-- Order -->
-                        <div>
-                            <label for="order" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Display Order *
-                            </label>
-                            <input type="number" id="order" name="order" min="0"
-                                value="{{ old('order', $room?->order ?? 0) }}"
-                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500"
-                                required @error('order') aria-invalid="true" aria-describedby="order-error" @enderror>
-                            <x-admin.field-error name="order" />
-                        </div>
-
-                        <!-- Description -->
-                        <div class="md:col-span-2">
-                            <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Description *
-                            </label>
-                            <textarea id="description" name="description" rows="4"
-                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500"
-                                required @error('description') aria-invalid="true" aria-describedby="description-error" @enderror>{{ old('description', $room?->description) }}</textarea>
-                            <x-admin.field-error name="description" />
-                        </div>
-
-                        <!-- Facilities/Amenities -->\n                        <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Facilities & Amenities
-                            </label>
-                            <div id="facilities-container" class="space-y-2">
-                                @if($room && $room->facilities)
-                                    @foreach($room->facilities as $index => $facility)
-                                        <div class="flex gap-2 facility-item">
-                                            <input type="text" name="facilities[]" value="{{ $facility }}"
-                                                class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500"
-                                                placeholder="e.g., Free Wi-Fi">
-                                            <button type="button" onclick="removeFacility(this)" 
-                                                class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
-                                                Remove
-                                            </button>
-                                        </div>
-                                    @endforeach
-                                @else
-                                    <div class="flex gap-2 facility-item">
-                                        <input type="text" name="facilities[]" value="Free Wi-Fi"
-                                            class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500"
-                                            placeholder="e.g., Free Wi-Fi">
-                                        <button type="button" onclick="removeFacility(this)" 
-                                            class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
-                                            Remove
-                                        </button>
-                                    </div>
-                                    <div class="flex gap-2 facility-item">
-                                        <input type="text" name="facilities[]" value="Air Conditioning"
-                                            class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500"
-                                            placeholder="e.g., Air Conditioning">
-                                        <button type="button" onclick="removeFacility(this)" 
-                                            class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
-                                            Remove
-                                        </button>
-                                    </div>
-                                    <div class="flex gap-2 facility-item">
-                                        <input type="text" name="facilities[]" value="24/7 Room Service"
-                                            class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500"
-                                            placeholder="e.g., 24/7 Room Service">
-                                        <button type="button" onclick="removeFacility(this)" 
-                                            class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
-                                            Remove
-                                        </button>
-                                    </div>
-                                    <div class="flex gap-2 facility-item">
-                                        <input type="text" name="facilities[]" value="Premium Amenities"
-                                            class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500"
-                                            placeholder="e.g., Premium Amenities">
-                                        <button type="button" onclick="removeFacility(this)" 
-                                            class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
-                                            Remove
-                                        </button>
-                                    </div>
-                                @endif
-                            </div>
-                            <button type="button" onclick="addFacility()" 
-                                class="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                                + Add Facility
-                            </button>
-                        </div>
-
-                        <!-- Multiple Image Upload -->
-                        <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Room Images (Multiple) {{ $room ? '(Upload new to add more)' : '*' }}
-                            </label>
-                            
-                            <!-- Drag and Drop Upload Area -->
-                            <div 
-                                id="upload-area"
-                                class="relative border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center hover:border-blue-400 dark:hover:border-blue-500 transition-colors cursor-pointer"
-                                onclick="document.getElementById('images').click()"
-                            >
-                                <input type="file" id="images" name="images[]" accept="image/*" multiple
-                                    class="hidden"
-                                    onchange="previewMultipleImages(this)">
-                                
-                                <!-- Default upload prompt -->
-                                <div id="upload-prompt" class="space-y-2">
-                                    <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
-                                        <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                    <div class="text-gray-600 dark:text-gray-400">
-                                        <span class="font-medium text-blue-600 dark:text-blue-400">Click to upload</span> or drag and drop
-                                    </div>
-                                    <p class="text-xs text-gray-500">PNG, JPG, AVIF, WEBP up to 5MB (Multiple files allowed)</p>
-                                </div>
-                                
-                                <!-- Multiple Images preview grid -->
-                                <div id="images-preview-grid" class="hidden grid grid-cols-2 md:grid-cols-4 gap-4"></div>
-                            </div>
-                            
-                            @if($room && $room->images)
-                                <div class="mt-4">
-                                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Current images:</p>
-                                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="current-images-grid">
-                                        @foreach($room->images as $index => $image)
-                                            <div class="relative group" data-image="{{ $image }}">
-                                                <img src="{{ asset($image) }}" alt="Room image" class="h-32 w-full rounded border object-cover" loading="lazy" decoding="async">
-                                                <button type="button" onclick="removeExistingImage(this, '{{ $image }}')" 
-                                                    class="absolute top-1 right-1 bg-red-600 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                                    </svg>
-                                                </button>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                    <input type="hidden" id="removed-images" name="removed_images" value="">
-                                </div>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mt-6 flex items-center justify-end space-x-4">
-                <a href="{{ route('admin.rooms.index') }}" 
-                    class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
-                    Cancel
-                </a>
-                <button type="submit" 
-                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                    {{ $room ? 'Update' : 'Create' }} Room
-                </button>
-            </div>
-        </form>
-    </div>
-
-    <script>
-        let removedImages = [];
-
-        function previewMultipleImages(input) {
-            if (input.files && input.files.length > 0) {
-                const grid = document.getElementById('images-preview-grid');
-                grid.innerHTML = '';
-                
-                Array.from(input.files).forEach((file, index) => {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const div = document.createElement('div');
-                        div.className = 'relative';
-                        div.innerHTML = `
-                            <img src="${e.target.result}" alt="Preview ${index + 1}" class="h-32 w-full rounded-lg object-cover" loading="lazy" decoding="async">
-                            <div class="absolute bottom-1 right-1 bg-black/60 text-white text-xs px-2 py-1 rounded">
-                                ${index + 1}
-                            </div>
-                        `;
-                        grid.appendChild(div);
-                    };
-                    reader.readAsDataURL(file);
-                });
-                
-                document.getElementById('upload-prompt').classList.add('hidden');
-                grid.classList.remove('hidden');
-            }
-        }
-
-        function removeExistingImage(button, imagePath) {
-            if (confirm('Remove this image?')) {
-                removedImages.push(imagePath);
-                document.getElementById('removed-images').value = JSON.stringify(removedImages);
-                button.closest('[data-image]').remove();
-            }
-        }
-
-        // Drag and drop handling
-        const uploadArea = document.getElementById('upload-area');
-        
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            uploadArea.addEventListener(eventName, preventDefaults, false);
-        });
-
-        function preventDefaults(e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
-
-        ['dragenter', 'dragover'].forEach(eventName => {
-            uploadArea.addEventListener(eventName, () => {
-                uploadArea.classList.add('border-blue-500', 'bg-blue-50', 'dark:bg-blue-900/20');
-            }, false);
-        });
-
-        ['dragleave', 'drop'].forEach(eventName => {
-            uploadArea.addEventListener(eventName, () => {
-                uploadArea.classList.remove('border-blue-500', 'bg-blue-50', 'dark:bg-blue-900/20');
-            }, false);
-        });
-
-        uploadArea.addEventListener('drop', function(e) {
-            const dt = e.dataTransfer;
-            const files = dt.files;
-            const input = document.getElementById('images');
-            input.files = files;
-            previewMultipleImages(input);
-        }, false);
-
-        // Facilities management
-        function addFacility() {
-            const container = document.getElementById('facilities-container');
-            const div = document.createElement('div');
-            div.className = 'flex gap-2 facility-item';
-            div.innerHTML = `
-                <input type="text" name="facilities[]" value=""
-                    class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500"
-                    placeholder="e.g., Swimming Pool">
-                <button type="button" onclick="removeFacility(this)" 
-                    class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
-                    Remove
-                </button>
-            `;
-            container.appendChild(div);
-        }
-
-        function removeFacility(button) {
-            const container = document.getElementById('facilities-container');
-            if (container.children.length > 1) {
-                button.closest('.facility-item').remove();
-            } else {
-                alert('At least one facility must remain');
-            }
-        }
-    </script>
-</x-layouts.admin-layout>
+        <x-slot:actions>
+            <x-mary-button label="Cancel" link="{{ route('admin.rooms.index') }}" class="btn-ghost" />
+            <x-mary-button :label="$room ? 'Save changes' : 'Create room'" icon="o-check" type="submit" spinner="save" class="btn-primary" />
+        </x-slot:actions>
+    </x-mary-form>
+</div>
